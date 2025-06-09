@@ -30,13 +30,17 @@ export const LayoutBaseDePagina: React.FC<LayoutBaseDePaginaProps> = ({
 
   return (
     <>
-      <Box padding={5} height={"100%"} display={"flex"} flexDirection={"column"}>
-        <Header
-          onMenuClick={smDown ? toggleDrawerOpen : undefined}
-          title="White Label"
-          
-        />
+      <Header
+        onMenuClick={smDown ? toggleDrawerOpen : undefined}
+        title="White Label"
+      />
 
+      <Box
+        padding={5}
+        height={"100%"}
+        display={"flex"}
+        sx={{ minWidth: 0, flexDirection: "column" }}
+      >
         <Box
           height={"100%"}
           display={"flex"}
@@ -44,7 +48,7 @@ export const LayoutBaseDePagina: React.FC<LayoutBaseDePaginaProps> = ({
           gap={"1"}
         >
           <Box
-            padding={2}
+            padding={1}
             display={"flex"}
             alignItems={"center"}
             gap={"1"}

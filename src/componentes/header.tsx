@@ -40,12 +40,14 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
+  
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
-  paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+  paddingLeft: `calc(1em + ${theme.spacing(5)})`,
   width: "100%",
+  
 }));
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick, title = "Meu Site" }) => {
