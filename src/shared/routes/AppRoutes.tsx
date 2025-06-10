@@ -19,6 +19,7 @@ import { colors } from "@mui/material";
 import ProtectedRoute from "./PrivateRoute";
 import Login from "../../pages/Login";
 import Home from "../../pages/dashboard/Home";
+import ClientList from "../../componentes/ClientList";
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();
@@ -79,6 +80,7 @@ export const AppRoutes = () => {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/pagina-inicial" element={<Home />} />
+        <Route path="/clientes" element={<ClientList />} /> 
       </Route>
 
       <Route path="/" element={<Navigate to="/pagina-inicial" replace />} />

@@ -1,22 +1,24 @@
+import React from "react";
 import {
   Avatar,
   Divider,
   Drawer,
-  Icon,
   IconButton,
-  InitColorSchemeScript,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   useTheme,
+  Box,
+  useMediaQuery,
 } from "@mui/material";
-import { Box, useMediaQuery } from "@mui/material";
+
+import Header from "../../componentes/Header";
 
 import { useAppThemeContext, useDrawerContext } from "../../shared/contexts";
-import { useMatch, useNavigate, useResolvedPath } from "react-router-dom";
+import { useNavigate, useMatch, useResolvedPath } from "react-router-dom";
 import MaterialUISwitch from "../../componentes/ThemeSwitch";
-import { FormControlLabel } from "@mui/material";
+
 import { ReactNode, CSSProperties } from "react";
 
 interface IListItemLinkProps {
@@ -24,7 +26,7 @@ interface IListItemLinkProps {
   icon: ReactNode;
   to: string;
   flexDirection?: CSSProperties["flexDirection"];
-  onClick: (() => void) | undefined;
+  onClick?: () => void;
 }
 
 const ListItemLink: React.FC<IListItemLinkProps> = ({
@@ -35,8 +37,8 @@ const ListItemLink: React.FC<IListItemLinkProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const resolvedPatch = useResolvedPath(to);
-  const match = useMatch({ path: resolvedPatch.pathname, end: false });
+  const resolvedPath = useResolvedPath(to);
+  const match = useMatch({ path: resolvedPath.pathname, end: false });
 
   const handleClick = () => {
     navigate(to);
@@ -88,40 +90,51 @@ export const MenuLateral: React.FC<IAppThemeProviderProps> = ({ children }) => {
 
   return (
     <>
+      <Header onMenuClick={toggleDrawerOpen} />
+
       <Drawer
         open={isDrawerOpen}
         variant={smDown ? "temporary" : "permanent"}
         onClose={toggleDrawerOpen}
+        sx={{
+          width: theme.spacing(15),
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: theme.spacing(15),
+            boxSizing: "border-box",
+          },
+        }}
       >
         <Box
-          width={theme.spacing(15)}
           height="100%"
           display="flex"
           flexDirection="column"
+          justifyContent="space-between"
         >
-          <Box
-            width="100%"
-            height={theme.spacing(8)}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          ></Box>
+          <Box>
+            <Box
+              width="100%"
+              height={theme.spacing(8)}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            ></Box>
 
-          <Box flex={1}>
-            <List component={"nav"}>
-              {drawerOptions.map((Options) => (
+            <List component="nav">
+              {drawerOptions.map((option) => (
                 <ListItemLink
-                  key={Options.path}
-                  icon={Options.icon}
-                  to={Options.path}
-                  label={Options.label}
+                  key={option.path}
+                  icon={option.icon}
+                  to={option.path}
+                  label={option.label}
                   onClick={smDown ? toggleDrawerOpen : undefined}
                 />
               ))}
             </List>
           </Box>
+
           <Box>
-            <List component={"nav"}>
+            <List component="nav">
               <ListItemButton>
                 <ListItemIcon>
                   <MaterialUISwitch
@@ -136,7 +149,16 @@ export const MenuLateral: React.FC<IAppThemeProviderProps> = ({ children }) => {
         </Box>
       </Drawer>
 
-      <Box height={"100vh"} marginLeft={smDown ? 0 : theme.spacing(10)}>
+      <Box
+        component="main"
+        sx={{
+          marginTop: theme.spacing(8),
+          marginLeft: smDown ? 0 : theme.spacing(15),
+          padding: 2,
+          height: "calc(100vh - 64px)",
+          overflow: "auto",
+        }}
+      >
         {children}
       </Box>
     </>

@@ -1,5 +1,3 @@
-// src/pages/dashboard/Home.tsx
-
 import React from "react";
 import { Container, Box } from "@mui/material";
 import SessionsCard from "../../componentes/cards/SessionsCard";

@@ -4,7 +4,6 @@ import { AppThemeProvider } from "./shared/contexts/ThemeContext";
 import { MenuLateral } from "./componentes/Index";
 import { DrawerProvider } from "./shared/contexts";
 import { AuthProvider, useAuth } from "./shared/contexts/AuthContext";
-
 const AppContent = () => {
   const { user } = useAuth();
 

@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useDrawerContext } from "../contexts";
 import { MoveDown } from "@mui/icons-material";
-import Header from "../../componentes/header";
+import Header from "../../componentes/Header";
 
 interface LayoutBaseDePaginaProps {
   titulo: string;

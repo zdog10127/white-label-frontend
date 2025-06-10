@@ -30,7 +30,7 @@ interface IFerramentasDeDetalheProps {
 
 export const FerramentasDeDetalhe: React.FC<IFerramentasDeDetalheProps> = ({
   textoBotaoNovo = "Novo",
-  
+
   mostarBotaoAdicionarCliente = true,
   mostarBotaoListagemDeCliente = true,
   mostarBotaoListaDeEspera = true,
