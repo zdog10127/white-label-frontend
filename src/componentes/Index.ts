@@ -1,3 +1,3 @@
-export * from "./menu-lateral/MenuLateral";
-export * from "./menu-lateral/ferramentas-da-listagem/FerramentasDeListagem"
-export * from "./ferramentas-de-detalhe/FerramentasDeDetalhe"
+export * from "./menu-lateral/SideBar";
+export * from "./menu-lateral/tools/ToolsList"
+export * from "./tools-details/ToolsDatails"

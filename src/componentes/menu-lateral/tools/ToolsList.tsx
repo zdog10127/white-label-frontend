@@ -9,12 +9,12 @@ interface IFerramentasDaListagemProps {
   aoClicarEmNovo?: () => void;
 }
 
-export const FerramentasDaListagem: React.FC<IFerramentasDaListagemProps> = ( {
+export const FerramentasDaListagem: React.FC<IFerramentasDaListagemProps> = ({
   textoDaBusca = "",
   mostrarInputBusca = false,
   aoMudarTextoDeBusca,
-  textoBotaoNovo= "Novo",
-  mostrarBotaoNovo= true,
+  textoBotaoNovo = "Novo",
+  mostrarBotaoNovo = true,
   aoClicarEmNovo,
 }) => {
   const theme = useTheme();
@@ -28,28 +28,27 @@ export const FerramentasDaListagem: React.FC<IFerramentasDaListagemProps> = ( {
       gap={1}
       component={Paper}
     >
-  {mostrarInputBusca && (
+      {mostrarInputBusca && (
         <TextField
-        value={textoDaBusca}
-        onChange={(e) => aoMudarTextoDeBusca?.(e.target.value)}
-        size="small"
-        placeholder="Pesquisar"
-      />
-
-  )}
+          value={textoDaBusca}
+          onChange={(e) => aoMudarTextoDeBusca?.(e.target.value)}
+          size="small"
+          placeholder="Pesquisar"
+        />
+      )}
 
       <Box flex={1} display={"flex"} justifyContent={"end"}>
-       {mostrarBotaoNovo && (
-         <Button
-          color="primary"
-          variant="contained"
-          disableElevation
-          onClick={aoClicarEmNovo}
-          endIcon={<Icon>add</Icon>}
-        >
-          {textoBotaoNovo}
-        </Button>
-       )}
+        {mostrarBotaoNovo && (
+          <Button
+            color="primary"
+            variant="contained"
+            disableElevation
+            onClick={aoClicarEmNovo}
+            endIcon={<Icon>add</Icon>}
+          >
+            {textoBotaoNovo}
+          </Button>
+        )}
       </Box>
     </Box>
   );

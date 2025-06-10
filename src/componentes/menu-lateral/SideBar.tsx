@@ -71,7 +71,6 @@ const ListItemLink: React.FC<IListItemLinkProps> = ({
       <ListItemText
         primary={label}
         sx={{ textAlign: "center", margin: 0, mt: 0.5 }}
-        //primaryTypographyProps={{ variant: "caption" }}
       />
     </ListItemButton>
   );

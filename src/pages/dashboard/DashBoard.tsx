@@ -2,40 +2,34 @@ import React from "react";
 import { LayoutBaseDePagina } from "../../shared/layouts";
 import { FerramentasDeDetalhe } from "../../componentes/Index";
 
-
-
-export const Dashboard= () => {
+export const Dashboard = () => {
   return (
-    <LayoutBaseDePagina 
-    titulo="White Label" 
-    barradeferramentas={(
-      <FerramentasDeDetalhe
-    
-      />
-    )}>
-       teste
+    <LayoutBaseDePagina
+      titulo="White Label"
+      barradeferramentas={<FerramentasDeDetalhe />}
+    >
+      teste
     </LayoutBaseDePagina>
-
   );
 };
 
 const DashboardPanel: React.FC = () => {
   return (
     <div className="dashboard-container">
-    
       <div className="left-column">
-      
         <div className="card">
           <h2> Próximas sessões</h2>
           <div className="card-content center">
             <div>
-           <p className="bold">Você ainda não cadastrou nenhuma sessão.</p>
-              <p>No momento, não há nenhuma sessão agendada. Registre uma sessão acessando o módulo Agenda.</p>
+              <p className="bold">Você ainda não cadastrou nenhuma sessão.</p>
+              <p>
+                No momento, não há nenhuma sessão agendada. Registre uma sessão
+                acessando o módulo Agenda.
+              </p>
             </div>
           </div>
         </div>
 
-       
         <div className="card">
           <div className="tabs">
             <button className="active-tab"> Pendências (0)</button>
@@ -44,16 +38,20 @@ const DashboardPanel: React.FC = () => {
           </div>
           <div className="card-content center">
             <div>
-              <img src="/robot-placeholder.svg" alt="Placeholder" className="placeholder-img" />
-              <p className="bold">Opss! Ainda não existem registros para mostrar aqui.</p>
+              <img
+                src="/robot-placeholder.svg"
+                alt="Placeholder"
+                className="placeholder-img"
+              />
+              <p className="bold">
+                Opss! Ainda não existem registros para mostrar aqui.
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      
       <div className="right-column">
-      
         <div className="card">
           <div className="tabs">
             <button className="active-tab"> Relatório financeiro</button>
@@ -73,9 +71,18 @@ const DashboardPanel: React.FC = () => {
             <div className="finance-details">
               <h3>Recebimentos do mês</h3>
               <ul>
-                <li><span>Cartão de crédito</span><span>R$ 0,00</span></li>
-                <li><span>Boleto bancário</span><span>R$ 0,00</span></li>
-                <li><span>Pix</span><span>R$ 0,00</span></li>
+                <li>
+                  <span>Cartão de crédito</span>
+                  <span>R$ 0,00</span>
+                </li>
+                <li>
+                  <span>Boleto bancário</span>
+                  <span>R$ 0,00</span>
+                </li>
+                <li>
+                  <span>Pix</span>
+                  <span>R$ 0,00</span>
+                </li>
               </ul>
               <div className="total">
                 <span>Total</span>
@@ -90,8 +97,14 @@ const DashboardPanel: React.FC = () => {
           <button className="new-task">+ Criar uma nova tarefa</button>
           <div className="card-content center">
             <div>
-              <img src="/robot-placeholder.svg" alt="Placeholder" className="placeholder-img" />
-              <p className="bold">Opss! Ainda não existe nenhuma tarefa cadastrada.</p>
+              <img
+                src="/robot-placeholder.svg"
+                alt="Placeholder"
+                className="placeholder-img"
+              />
+              <p className="bold">
+                Opss! Ainda não existe nenhuma tarefa cadastrada.
+              </p>
             </div>
           </div>
         </div>
@@ -99,5 +112,3 @@ const DashboardPanel: React.FC = () => {
     </div>
   );
 };
-
-

@@ -40,14 +40,12 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   paddingLeft: `calc(1em + ${theme.spacing(5)})`,
   width: "100%",
-  
 }));
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick, title = "Meu Site" }) => {
@@ -56,40 +54,46 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, title = "Meu Site" }) => {
       position="fixed"
       sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
     >
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Toolbar
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          {onMenuClick && (
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={onMenuClick}
+              sx={{ mr: 1 }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
 
- 
-  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-    {onMenuClick && (
-      <IconButton color="inherit" edge="start" onClick={onMenuClick} sx={{ mr: 1 }}>
-        <MenuIcon />
-      </IconButton>
-    )}
+          <Typography variant="h6" noWrap component="div">
+            {title}
+          </Typography>
 
-    <Typography variant="h6" noWrap component="div">
-      {title}
-    </Typography>
+          <Search sx={{ maxWidth: 300 }}>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase placeholder="Pesquisar clientes..." />
+          </Search>
+        </Box>
 
-    <Search sx={{ maxWidth: 300 }}>
-      <SearchIconWrapper>
-        <SearchIcon />
-      </SearchIconWrapper>
-      <StyledInputBase placeholder="Pesquisar clientes..." />
-    </Search>
-  </Box>
-
- 
-  <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
-    <IconButton color="inherit">
-      <Badge badgeContent={3} color="error">
-        <NotificationsIcon />
-      </Badge>
-    </IconButton>
-    <Avatar alt="Usuário" src="/caminho/para/imagem.jpg" />
-  </Box>
-
-</Toolbar>
-
+        <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+          <IconButton color="inherit">
+            <Badge badgeContent={3} color="error">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+          <Avatar alt="Usuário" src="/caminho/para/imagem.jpg" />
+        </Box>
+      </Toolbar>
     </AppBar>
   );
 };

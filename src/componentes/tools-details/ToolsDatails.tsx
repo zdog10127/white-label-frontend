@@ -30,7 +30,7 @@ interface IFerramentasDeDetalheProps {
 
 export const FerramentasDeDetalhe: React.FC<IFerramentasDeDetalheProps> = ({
   textoBotaoNovo = "Novo",
- // mostrarBotaoNovo = true,
+  
   mostarBotaoAdicionarCliente = true,
   mostarBotaoListagemDeCliente = true,
   mostarBotaoListaDeEspera = true,
@@ -56,66 +56,64 @@ export const FerramentasDeDetalhe: React.FC<IFerramentasDeDetalheProps> = ({
       gap={1}
       component={Paper}
     >
-    {mostarBotaoAdicionarCliente && (
-          <Button
-        color="primary"
-        variant="contained"
-        disableElevation
-        onClick={aoClicarEmAdicionar}
-        endIcon={<Icon>add</Icon>}
-      >
-       Adicionar Cliente
-
-      </Button>
-     
-    )}
-
-  {mostarBotaoListagemDeCliente && (
+      {mostarBotaoAdicionarCliente && (
         <Button
-        color="primary"
-        variant="contained"
-        disableElevation
-        onClick={aoClicarEmListaDeCliente}
-        endIcon={<Icon>list</Icon>}
-      >
-        Listagem de clientes
-      </Button>
-  )}
-    {mostarBotaoListaDeEspera && (
-          <Button
-        color="primary"
-        variant="contained"
-        disableElevation
-        onClick={aoClicarEmListaDeEspera}
-        endIcon={<Icon>list</Icon>}
-      >
-        Lista de espera
-      </Button>
-    )}
+          color="primary"
+          variant="contained"
+          disableElevation
+          onClick={aoClicarEmAdicionar}
+          endIcon={<Icon>add</Icon>}
+        >
+          Adicionar Cliente
+        </Button>
+      )}
 
-   {mostarBotaoDeGrupos && (
-       <Button
-        color="primary"
-        variant="contained"
-        disableElevation
-        onClick={aoClicarEmGrupos}
-        endIcon={<Group></Group>}
-      >
-        Grupos
-      </Button>
-   )}
-
-  {mostarBotaoDeVoltar && (
+      {mostarBotaoListagemDeCliente && (
         <Button
-        color="primary"
-        variant="contained"
-        disableElevation
-        onClick={aoClicarEmVoltar}
-        endIcon={<Icon>arrow_back</Icon>}
-      >
-        Voltar
-      </Button>
-  )}
+          color="primary"
+          variant="contained"
+          disableElevation
+          onClick={aoClicarEmListaDeCliente}
+          endIcon={<Icon>list</Icon>}
+        >
+          Listagem de clientes
+        </Button>
+      )}
+      {mostarBotaoListaDeEspera && (
+        <Button
+          color="primary"
+          variant="contained"
+          disableElevation
+          onClick={aoClicarEmListaDeEspera}
+          endIcon={<Icon>list</Icon>}
+        >
+          Lista de espera
+        </Button>
+      )}
+
+      {mostarBotaoDeGrupos && (
+        <Button
+          color="primary"
+          variant="contained"
+          disableElevation
+          onClick={aoClicarEmGrupos}
+          endIcon={<Group></Group>}
+        >
+          Grupos
+        </Button>
+      )}
+
+      {mostarBotaoDeVoltar && (
+        <Button
+          color="primary"
+          variant="contained"
+          disableElevation
+          onClick={aoClicarEmVoltar}
+          endIcon={<Icon>arrow_back</Icon>}
+        >
+          Voltar
+        </Button>
+      )}
     </Box>
   );
 };
