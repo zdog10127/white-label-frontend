@@ -55,21 +55,19 @@ const ListItemLink: React.FC<IListItemLinkProps> = ({
         px: 2,
       }}
     >
-      
-    <ListItemIcon 
-    sx={{ 
-      minWidth: 'auto', 
-      fontSize: 36, 
-      color: 'inherit',
-      display: 'flex', 
-       justifyContent: 'center',
-       alignItems: "center",
-       
-      }}>
-  {icon}
-</ListItemIcon>
+      <ListItemIcon
+        sx={{
+          minWidth: "auto",
+          fontSize: 36,
+          color: "inherit",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {icon}
+      </ListItemIcon>
 
-      
       <ListItemText
         primary={label}
         sx={{ textAlign: "center", margin: 0, mt: 0.5 }}
@@ -104,17 +102,12 @@ export const MenuLateral: React.FC<IAppThemeProviderProps> = ({ children }) => {
         >
           <Box
             width="100%"
-            height={theme.spacing(28)}
+            height={theme.spacing(8)}
             display="flex"
             alignItems="center"
             justifyContent="center"
-          >
-            <Avatar
-              sx={{ height: theme.spacing(10), width: theme.spacing(10) }}
-              src=""
-            />
-          </Box>
-          <Divider />
+          ></Box>
+
           <Box flex={1}>
             <List component={"nav"}>
               {drawerOptions.map((Options) => (
@@ -124,7 +117,6 @@ export const MenuLateral: React.FC<IAppThemeProviderProps> = ({ children }) => {
                   to={Options.path}
                   label={Options.label}
                   onClick={smDown ? toggleDrawerOpen : undefined}
-                 
                 />
               ))}
             </List>
@@ -132,12 +124,10 @@ export const MenuLateral: React.FC<IAppThemeProviderProps> = ({ children }) => {
           <Box>
             <List component={"nav"}>
               <ListItemButton>
-                <ListItemIcon >
+                <ListItemIcon>
                   <MaterialUISwitch
-                  
                     onChange={toggleTheme}
                     checked={themeName === "dark"}
-                    
                   />
                 </ListItemIcon>
                 <ListItemText primary="" />

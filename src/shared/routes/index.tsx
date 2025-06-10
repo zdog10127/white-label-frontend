@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import { Apartment, Article, CalendarMonth, Campaign, Group, Groups2, Home, Paid, Palette, PersonalVideo, Settings } from "@mui/icons-material";
 import styled from "styled-components";
 import { colors } from "@mui/material";
+import ProtectedRoute from "./PrivateRoute";
+import Login from "../../pages/dashboard/Login";
 
 
 
@@ -62,15 +64,21 @@ export const AppRoutes = () => {
         icon:  <Apartment fontSize="large"/>,
       },
     ])
-  })
+  }, [setDrawerOptions]);
 
   return (
     <Routes>
-      <Route
-        path="/pagina-inicial"
-        element={ <Dashboard />}/>
+      {/* rota pública */}
+      <Route path="/login" element={<Login />} />
 
-      <Route path="*" element={<Navigate to="/pagina-inicial" />} />
+      {/* rotas privadas envolvidas por ProtectedRoute */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/pagina-inicial" element={<Dashboard />} />
+        {/* aqui você pode colocar outras rotas privadas */}
+      </Route>
+
+      {/* redirecionamento padrão */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };
