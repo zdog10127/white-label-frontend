@@ -14,7 +14,7 @@ import {
 import ProtectedRoute from "./PrivateRoute";
 import Login from "../../pages/Login";
 import Home from "../../pages/dashboard/Home";
-import ClientList from "../../componentes/ClientList";
+import ClientList from "../../components/ClientList";
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();

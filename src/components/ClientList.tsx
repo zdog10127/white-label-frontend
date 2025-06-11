@@ -20,8 +20,8 @@ import {
   TablePagination,
   Stack,
 } from "@mui/material";
-import { Client } from "../componentes/types/Client";
-import clientsDataRaw from "../componentes/data/clients.json";
+import { Client } from "./types/Client";
+import clientsDataRaw from "./data/clients.json";
 
 type RawClient = {
   NomeCompleto: string;

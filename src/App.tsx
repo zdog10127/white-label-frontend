@@ -2,10 +2,10 @@ import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { AppRoutes } from "./shared/routes/AppRoutes";
 import { AppThemeProvider } from "./shared/contexts/ThemeContext";
-import { SideBar } from "./componentes/side-bar/SideBar";
+import { SideBar } from "./components/side-bar/SideBar";
 import { DrawerProvider, useDrawerContext } from "./shared/contexts";
 import { AuthProvider, useAuth } from "./shared/contexts/AuthContext";
-import Header from "./componentes/Header";
+import Header from "./components/Header";
 
 const AppContent: React.FC = () => {
   const { user } = useAuth();

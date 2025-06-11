@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useDrawerContext, useAppThemeContext } from "../../shared/contexts";
 import { useNavigate, useResolvedPath, useMatch } from "react-router-dom";
-import MaterialUISwitch from "../../componentes/ThemeSwitch";
+import MaterialUISwitch from "../ThemeSwitch";
 
 interface IListItemLinkProps {
   label: string;
@@ -79,11 +79,7 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
 
   return (
     <>
-      <Drawer
-        open={isDrawerOpen}
-        variant={smDown ? "temporary" : "permanent"}
-        onClose={toggleDrawerOpen}
-      >
+      <Drawer open={isDrawerOpen} variant={"persistent"}>
         <Box
           width={theme.spacing(15)}
           height="100%"
@@ -96,9 +92,7 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
             display="flex"
             alignItems="center"
             justifyContent="center"
-          >
-            {/* Aqui pode colocar logo ou título */}
-          </Box>
+          ></Box>
 
           <Box flex={1}>
             <List component="nav">

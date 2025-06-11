@@ -21,7 +21,7 @@ import {
   Stack,
 } from "@mui/material";
 import { Client } from "../types/Client";
-import clientsDataRaw from "../../componentes/data/clients.json";
+import clientsDataRaw from "../data/clients.json";
 
 type RawClient = {
   NomeCompleto: string;

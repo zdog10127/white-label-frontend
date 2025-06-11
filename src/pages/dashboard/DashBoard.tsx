@@ -1,6 +1,6 @@
 import React from "react";
 import { LayoutBasePage } from "../../shared/layouts";
-import ToolsDetails from "../../componentes/tools-details/ToolsDetails";
+import ToolsDetails from "../../components/tools-details/ToolsDetails";
 
 export const Dashboard = () => {
   return (
