@@ -101,14 +101,14 @@ const ClientForm: React.FC = () => {
         <FormInput
           id="birthDate"
           label="Data de nascimento"
-          name="birthDate"
+          name="birthdate"
           type="date"
           value={formData.birthdate}
           onChange={handleChange}
         />
-        <button type="submit">Cadastrar</button>
+        <button type="submit">Cadastrar</button>{" "}
       </form>
-      {submitted && <p>Formulário enviado com sucesso!</p>}
+      {submitted && <p>Formulário enviado com sucesso!</p>}{" "}
     </div>
   );
 };

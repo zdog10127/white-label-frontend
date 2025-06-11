@@ -1,3 +1,3 @@
-export * from "./menu-lateral/SideBar";
-export * from "./menu-lateral/tools/ToolsList"
-export * from "./tools-details/ToolsDatails"
+export * from "./side-bar/SideBar";
+export * from "./side-bar/tools/ToolsList"
+export * from "./tools-details/ToolsDetails"

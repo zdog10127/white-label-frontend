@@ -1,15 +1,12 @@
 import React from "react";
-import { LayoutBaseDePagina } from "../../shared/layouts";
-import { FerramentasDeDetalhe } from "../../componentes/Index";
+import { LayoutBasePage } from "../../shared/layouts";
+import ToolsDetails from "../../componentes/tools-details/ToolsDetails";
 
 export const Dashboard = () => {
   return (
-    <LayoutBaseDePagina
-      titulo="White Label"
-      barradeferramentas={<FerramentasDeDetalhe />}
-    >
+    <LayoutBasePage title="White Label" toolsBar={<ToolsDetails />}>
       teste
-    </LayoutBaseDePagina>
+    </LayoutBasePage>
   );
 };
 
@@ -18,7 +15,7 @@ const DashboardPanel: React.FC = () => {
     <div className="dashboard-container">
       <div className="left-column">
         <div className="card">
-          <h2> Próximas sessões</h2>
+          <h2>Próximas sessões</h2>
           <div className="card-content center">
             <div>
               <p className="bold">Você ainda não cadastrou nenhuma sessão.</p>
@@ -32,9 +29,9 @@ const DashboardPanel: React.FC = () => {
 
         <div className="card">
           <div className="tabs">
-            <button className="active-tab"> Pendências (0)</button>
-            <button> Atividade de clientes (0)</button>
-            <button> Aniversariantes do mês</button>
+            <button className="active-tab">Pendências (0)</button>
+            <button>Atividade de clientes (0)</button>
+            <button>Aniversariantes do mês</button>
           </div>
           <div className="card-content center">
             <div>
@@ -54,8 +51,8 @@ const DashboardPanel: React.FC = () => {
       <div className="right-column">
         <div className="card">
           <div className="tabs">
-            <button className="active-tab"> Relatório financeiro</button>
-            <button> Psicobank</button>
+            <button className="active-tab">Relatório financeiro</button>
+            <button>Psicobank</button>
           </div>
           <div className="finance-box">
             <div className="finance-row">
@@ -93,7 +90,7 @@ const DashboardPanel: React.FC = () => {
         </div>
 
         <div className="card">
-          <h2> Tarefas</h2>
+          <h2>Tarefas</h2>
           <button className="new-task">+ Criar uma nova tarefa</button>
           <div className="card-content center">
             <div>

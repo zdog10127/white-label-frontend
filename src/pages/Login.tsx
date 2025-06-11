@@ -9,10 +9,8 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../shared/contexts/AuthContext";
-import { Password } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
-import { blue } from "@mui/material/colors";
 
 const Login: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -24,7 +22,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     if (name.trim() !== "") {
       login(name);
-      navigate("/dashboard");
+      navigate("/pagina-inicial");
     }
   };
 
@@ -86,6 +84,7 @@ const Login: React.FC = () => {
           >
             Entrar
           </Button>
+
           <Box
             display="flex"
             justifyContent="space-between"

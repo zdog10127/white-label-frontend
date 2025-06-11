@@ -20,8 +20,8 @@ import {
   TablePagination,
   Stack,
 } from "@mui/material";
-import { Client } from "../componentes/types/Client";
-import clientsDataRaw from "../componentes/data/clients.json";
+import { Client } from "../types/Client";
+import clientsDataRaw from "../../componentes/data/clients.json";
 
 type RawClient = {
   NomeCompleto: string;
@@ -41,11 +41,13 @@ interface ExtendedClient {
 
 const ClientList: React.FC = () => {
   const [clients, setClients] = useState<ExtendedClient[]>([]);
-  const [nameFilter, setNameFilter] = useState("");
+  const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "Todos" | "Ativo" | "Inativo" | "Lista de Espera"
   >("Todos");
+
   const [showOnlyGroups, setShowOnlyGroups] = useState(false);
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -102,7 +104,7 @@ const ClientList: React.FC = () => {
   const handleStatusFilterChange = (
     event: SelectChangeEvent<"Todos" | "Ativo" | "Inativo" | "Lista de Espera">
   ) => {
-    setStatusFilter(event.target.value as typeof statusFilter);
+    setStatusFilter(event.target.value as ExtendedClient["status"] | "Todos");
     setPage(0);
     setShowOnlyGroups(false);
   };
@@ -112,7 +114,7 @@ const ClientList: React.FC = () => {
       const newValue = !prev;
       if (newValue) {
         setStatusFilter("Todos");
-        setNameFilter("");
+        setSearchText("");
         setPage(0);
       }
       return newValue;
@@ -122,21 +124,21 @@ const ClientList: React.FC = () => {
   const filteredClients = clients.filter((client) => {
     const matchesName = client.name
       .toLowerCase()
-      .includes(nameFilter.toLowerCase());
-    const matchesStatus =
+      .includes(searchText.toLowerCase());
+
+    const statusMatches =
       statusFilter === "Todos" || client.status === statusFilter;
 
-    if (showOnlyGroups) return client.group !== null && matchesName;
+    if (showOnlyGroups) {
+      return client.group !== null && matchesName;
+    }
 
-    return matchesStatus && matchesName;
+    return statusMatches && matchesName;
   });
 
-  const paginatedClients = filteredClients.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
-
-  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -144,6 +146,11 @@ const ClientList: React.FC = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const paginatedClients = filteredClients.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   return (
     <Box p={3}>
@@ -200,8 +207,8 @@ const ClientList: React.FC = () => {
           variant="outlined"
           size="small"
           sx={{ flexGrow: 1, minWidth: 250 }}
-          value={nameFilter}
-          onChange={(e) => setNameFilter(e.target.value)}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
           disabled={showOnlyGroups}
         />
       </Box>

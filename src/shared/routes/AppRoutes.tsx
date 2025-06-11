@@ -1,24 +1,20 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useDrawerContext } from "../contexts/DrawerContext";
-import { Dashboard } from "../../pages/dashboard/DashBoard";
 import { useEffect } from "react";
 import {
   Apartment,
   Article,
   CalendarMonth,
   Campaign,
-  Group,
   Groups2,
   Paid,
-  Palette,
   PersonalVideo,
   Settings,
 } from "@mui/icons-material";
-import styled from "styled-components";
-import { colors } from "@mui/material";
 import ProtectedRoute from "./PrivateRoute";
 import Login from "../../pages/Login";
 import Home from "../../pages/dashboard/Home";
+import ClientList from "../../componentes/ClientList";
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();
@@ -27,7 +23,7 @@ export const AppRoutes = () => {
     setDrawerOptions([
       {
         label: "Painel",
-        path: "/pagina-inicial",
+        path: "/home",
         icon: <PersonalVideo fontSize="large" />,
         flexDirection: "column",
       },
@@ -46,27 +42,23 @@ export const AppRoutes = () => {
         path: "/financeiro",
         icon: <Paid fontSize="large" />,
       },
-
       {
-        label: "Relatorios",
+        label: "Relatórios",
         path: "/relatorios",
         icon: <Article fontSize="large" />,
       },
-
       {
         label: "Marketing",
         path: "/marketing",
         icon: <Campaign fontSize="large" />,
       },
-
       {
         label: "Configuração",
         path: "/configuracao",
         icon: <Settings fontSize="large" />,
       },
-
       {
-        label: "Minha Clinica",
+        label: "Minha Clínica",
         path: "/minhaclinica",
         icon: <Apartment fontSize="large" />,
       },
@@ -78,12 +70,11 @@ export const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
 
       <Route element={<ProtectedRoute />}>
-        <Route path="/pagina-inicial" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/clientes" element={<ClientList />} />
       </Route>
 
-      <Route path="/" element={<Navigate to="/pagina-inicial" replace />} />
-      {/* outras rotas */}
-
+      <Route path="/" element={<Navigate to="/home" replace />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

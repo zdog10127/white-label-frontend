@@ -1,9 +1,9 @@
-import {
+import React, {
   createContext,
-  useCallback,
-  useState,
   useContext,
+  useState,
   ReactNode,
+  useCallback,
   CSSProperties,
 } from "react";
 
@@ -25,18 +25,16 @@ const DrawerContext = createContext({} as IDrawerContextData);
 
 export const useDrawerContext = () => useContext(DrawerContext);
 
-interface IAppThemeProviderProps {
-  children: React.ReactNode;
+interface DrawerProviderProps {
+  children: ReactNode;
 }
 
-export const DrawerProvider: React.FC<IAppThemeProviderProps> = ({
-  children,
-}) => {
+export const DrawerProvider: React.FC<DrawerProviderProps> = ({ children }) => {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [drawerOptions, setDrawerOptions] = useState<IDrawerOptions[]>([]);
 
   const toggleDrawerOpen = useCallback(() => {
-    setDrawerOpen((oldDrawerOpen) => !oldDrawerOpen);
+    setDrawerOpen((prevOpen) => !prevOpen);
   }, []);
 
   const handleSetDrawerOptions = useCallback(
@@ -50,8 +48,8 @@ export const DrawerProvider: React.FC<IAppThemeProviderProps> = ({
     <DrawerContext.Provider
       value={{
         isDrawerOpen,
-        drawerOptions,
         toggleDrawerOpen,
+        drawerOptions,
         setDrawerOptions: handleSetDrawerOptions,
       }}
     >

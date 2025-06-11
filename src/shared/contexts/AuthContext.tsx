@@ -19,14 +19,18 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<string | null>(() => {
+    return localStorage.getItem("user");
+  });
 
   const login = (name: string) => {
     setUser(name);
+    localStorage.setItem("user", name);
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem("user");
   };
 
   return (

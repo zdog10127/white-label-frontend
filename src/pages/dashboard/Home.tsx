@@ -1,5 +1,3 @@
-// src/pages/dashboard/Home.tsx
-
 import React from "react";
 import { Container, Box } from "@mui/material";
 import SessionsCard from "../../componentes/cards/SessionsCard";
@@ -7,7 +5,7 @@ import FinanceCard from "../../componentes/cards/FinanceCard";
 import TabsCard from "../../componentes/cards/TabsCard";
 import TasksCard from "../../componentes/cards/TasksCard";
 
-export default function DashboardHome(): React.ReactNode {
+export default function DashboardHome(): JSX.Element {
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Box
