@@ -7,20 +7,20 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useDrawerContext } from "../contexts";
+import { useDrawerContext } from "../contexts/IndexContexts";
 import { MoveDown } from "@mui/icons-material";
-import Header from "../../componentes/header";
+import Header from "../../components/Header";
 
-interface LayoutBaseDePaginaProps {
-  titulo: string;
+interface LayoutBasePageProps {
+  title: string;
   children: React.ReactNode;
-  barradeferramentas?: ReactNode;
+  toolsBar?: ReactNode;
 }
 
-export const LayoutBaseDePagina: React.FC<LayoutBaseDePaginaProps> = ({
+export const LayoutBasePage: React.FC<LayoutBasePageProps> = ({
   children,
-  titulo,
-  barradeferramentas,
+  title,
+  toolsBar,
 }) => {
   const theme = useTheme();
 
@@ -66,10 +66,10 @@ export const LayoutBaseDePagina: React.FC<LayoutBaseDePaginaProps> = ({
               whiteSpace={"nowrap"}
               textOverflow={"ellipsis"}
             >
-              {titulo}
+              {title}
             </Typography>
           </Box>
-          {barradeferramentas && <Box>{barradeferramentas}</Box>}
+          {toolsBar && <Box>{toolsBar}</Box>}
 
           <Box flex={1} overflow={"auto"}>
             {children}

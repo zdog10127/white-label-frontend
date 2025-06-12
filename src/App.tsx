@@ -1,19 +1,29 @@
+import React from "react";
 import { BrowserRouter } from "react-router-dom";
-import { AppRoutes } from "./shared/routes";
+import { AppRoutes } from "./shared/routes/AppRoutes";
 import { AppThemeProvider } from "./shared/contexts/ThemeContext";
-import { MenuLateral } from "./componentes/Index";
-import { DrawerProvider } from "./shared/contexts";
+import { SideBar } from "./components/side-bar/SideBar";
+import {
+  DrawerProvider,
+  useDrawerContext,
+} from "./shared/contexts/IndexContexts";
 import { AuthProvider, useAuth } from "./shared/contexts/AuthContext";
+import Header from "./components/Header";
+import { CircularProgress } from "@mui/material";
 
-const AppContent = () => {
-  const { user } = useAuth();
+const AppContent: React.FC = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <CircularProgress />;
+  }
 
   return (
     <BrowserRouter>
       {user ? (
-        <MenuLateral>
+        <>
           <AppRoutes />
-        </MenuLateral>
+        </>
       ) : (
         <AppRoutes />
       )}
@@ -21,16 +31,12 @@ const AppContent = () => {
   );
 };
 
-export const App = () => {
-  return (
-    <AppThemeProvider>
-      <AuthProvider>
+export const App: React.FC = () => (
+  <AppThemeProvider>
+    <AuthProvider>
       <DrawerProvider>
-        
-            <AppContent />
-         
+        <AppContent />
       </DrawerProvider>
-      </AuthProvider>
-    </AppThemeProvider>
-  );
-};
+    </AuthProvider>
+  </AppThemeProvider>
+);

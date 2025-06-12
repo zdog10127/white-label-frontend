@@ -1,30 +1,26 @@
+import React from "react";
 import {
-  Avatar,
-  Divider,
   Drawer,
-  Icon,
-  IconButton,
-  InitColorSchemeScript,
+  Box,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   useTheme,
+  useMediaQuery,
 } from "@mui/material";
-import { Box, useMediaQuery } from "@mui/material";
-
-import { useAppThemeContext, useDrawerContext } from "../../shared/contexts";
-import { useMatch, useNavigate, useResolvedPath } from "react-router-dom";
-import MaterialUISwitch from "../../componentes/ThemeSwitch";
-import { FormControlLabel } from "@mui/material";
-import { ReactNode, CSSProperties } from "react";
+import {
+  useDrawerContext,
+  useAppThemeContext,
+} from "../../shared/contexts/IndexContexts";
+import { useNavigate, useResolvedPath, useMatch } from "react-router-dom";
+import MaterialUISwitch from "../ThemeSwitch";
 
 interface IListItemLinkProps {
   label: string;
-  icon: ReactNode;
+  icon: React.ReactNode;
   to: string;
-  flexDirection?: CSSProperties["flexDirection"];
-  onClick: (() => void) | undefined;
+  onClick?: () => void;
 }
 
 const ListItemLink: React.FC<IListItemLinkProps> = ({
@@ -34,9 +30,8 @@ const ListItemLink: React.FC<IListItemLinkProps> = ({
   onClick,
 }) => {
   const navigate = useNavigate();
-
-  const resolvedPatch = useResolvedPath(to);
-  const match = useMatch({ path: resolvedPatch.pathname, end: false });
+  const resolvedPath = useResolvedPath(to);
+  const match = useMatch({ path: resolvedPath.pathname, end: false });
 
   const handleClick = () => {
     navigate(to);
@@ -67,21 +62,19 @@ const ListItemLink: React.FC<IListItemLinkProps> = ({
       >
         {icon}
       </ListItemIcon>
-
       <ListItemText
         primary={label}
         sx={{ textAlign: "center", margin: 0, mt: 0.5 }}
-        //primaryTypographyProps={{ variant: "caption" }}
       />
     </ListItemButton>
   );
 };
 
-interface IAppThemeProviderProps {
+interface SideBarProps {
   children: React.ReactNode;
 }
 
-export const MenuLateral: React.FC<IAppThemeProviderProps> = ({ children }) => {
+export const SideBar: React.FC<SideBarProps> = ({ children }) => {
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down("sm"));
   const { isDrawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
@@ -89,11 +82,7 @@ export const MenuLateral: React.FC<IAppThemeProviderProps> = ({ children }) => {
 
   return (
     <>
-      <Drawer
-        open={isDrawerOpen}
-        variant={smDown ? "temporary" : "permanent"}
-        onClose={toggleDrawerOpen}
-      >
+      <Drawer open={isDrawerOpen} variant={"persistent"}>
         <Box
           width={theme.spacing(15)}
           height="100%"
@@ -109,20 +98,21 @@ export const MenuLateral: React.FC<IAppThemeProviderProps> = ({ children }) => {
           ></Box>
 
           <Box flex={1}>
-            <List component={"nav"}>
-              {drawerOptions.map((Options) => (
+            <List component="nav">
+              {drawerOptions.map((option) => (
                 <ListItemLink
-                  key={Options.path}
-                  icon={Options.icon}
-                  to={Options.path}
-                  label={Options.label}
+                  key={option.path}
+                  icon={option.icon}
+                  to={option.path}
+                  label={option.label}
                   onClick={smDown ? toggleDrawerOpen : undefined}
                 />
               ))}
             </List>
           </Box>
+
           <Box>
-            <List component={"nav"}>
+            <List component="nav">
               <ListItemButton>
                 <ListItemIcon>
                   <MaterialUISwitch
@@ -137,7 +127,11 @@ export const MenuLateral: React.FC<IAppThemeProviderProps> = ({ children }) => {
         </Box>
       </Drawer>
 
-      <Box height={"100vh"} marginLeft={smDown ? 0 : theme.spacing(10)}>
+      <Box
+        height="calc(100vh - 64px)"
+        marginLeft={smDown ? 0 : theme.spacing(15)}
+        marginTop="64px"
+      >
         {children}
       </Box>
     </>
