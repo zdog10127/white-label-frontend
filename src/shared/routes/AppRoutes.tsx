@@ -15,6 +15,7 @@ import ProtectedRoute from "./PrivateRoute";
 import Login from "../../pages/Login";
 import Home from "../../pages/dashboard/Home";
 import ClientList from "../../components/ClientList";
+import PrivateLayout from "../layouts/PrivateLayout";
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();
@@ -70,11 +71,13 @@ export const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
 
       <Route element={<ProtectedRoute />}>
-        <Route path="/home" element={<Home />} />
-        <Route path="/clientes" element={<ClientList />} />
+        <Route element={<PrivateLayout />}>
+          <Route path="/home" element={<Home />} />
+          <Route path="/clientes" element={<ClientList />} />
+        </Route>
       </Route>
 
-      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

@@ -22,7 +22,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     if (name.trim() !== "") {
       login(name);
-      navigate("/pagina-inicial");
+      navigate("/home");
     }
   };
 

@@ -9,7 +9,10 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import { useDrawerContext, useAppThemeContext } from "../../shared/contexts";
+import {
+  useDrawerContext,
+  useAppThemeContext,
+} from "../../shared/contexts/IndexContexts";
 import { useNavigate, useResolvedPath, useMatch } from "react-router-dom";
 import MaterialUISwitch from "../ThemeSwitch";
 

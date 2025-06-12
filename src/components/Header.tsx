@@ -12,39 +12,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import { styled, alpha } from "@mui/material/styles";
+import InputBase from "@mui/material/InputBase";
 
 interface HeaderProps {
   onMenuClick?: () => void;
   title?: string;
 }
-
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginLeft: theme.spacing(2),
-  marginRight: theme.spacing(2),
-  width: "100%",
-  maxWidth: 400,
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled("input")(({ theme }) => ({
-  color: "inherit",
-  paddingLeft: `calc(1em + ${theme.spacing(5)})`,
-  width: "100%",
-}));
 
 const Header: React.FC<HeaderProps> = ({
   onMenuClick,
@@ -64,24 +37,12 @@ const Header: React.FC<HeaderProps> = ({
             color="inherit"
             edge="start"
             onClick={onMenuClick}
-            sx={{ mr: 2 }}
+            sx={{ ml: 2 }}
             aria-label="menu"
           >
             <MenuIcon />
           </IconButton>
         )}
-        <Typography variant="h6" noWrap component="div" sx={{ minWidth: 100 }}>
-          {title}
-        </Typography>
-        <Search>
-          <SearchIconWrapper>
-            <SearchIcon />
-          </SearchIconWrapper>
-          <StyledInputBase
-            placeholder="Pesquisar clientes..."
-            aria-label="Pesquisar clientes"
-          />
-        </Search>
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>

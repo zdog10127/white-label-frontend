@@ -7,7 +7,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useDrawerContext } from "../contexts";
+import { useDrawerContext } from "../contexts/IndexContexts";
 import { MoveDown } from "@mui/icons-material";
 import Header from "../../components/Header";
 
