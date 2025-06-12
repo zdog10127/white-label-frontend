@@ -1,9 +1,9 @@
 import React from "react";
 import { Container, Box } from "@mui/material";
-import SessionsCard from "../../components/cards/SessionsCard";
-import FinanceCard from "../../components/cards/FinanceCard";
-import TabsCard from "../../components/cards/TabsCard";
-import TasksCard from "../../components/cards/TasksCard";
+import SessionsCard from "../components/cards/SessionsCard";
+import FinanceCard from "../components/cards/FinanceCard";
+import TabsCard from "../components/cards/TabsCard";
+import TasksCard from "../components/cards/TasksCard";
 
 export default function DashboardHome(): JSX.Element {
   return (
