@@ -28,18 +28,21 @@ const Header: React.FC<HeaderProps> = ({
         alignItems: "center",
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexGrow: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
         {onMenuClick && (
           <IconButton
             color="inherit"
             edge="start"
             onClick={onMenuClick}
-            sx={{ ml: 2 }}
+            sx={{ ml: 1 }}
             aria-label="menu"
           >
             <MenuIcon />
           </IconButton>
         )}
+        <Typography variant="h6" noWrap component="div">
+          {title}
+        </Typography>
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
