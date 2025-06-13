@@ -16,7 +16,7 @@ import Login from "../../pages/Login";
 import Home from "../../pages/Home";
 import ClientList from "../../components/ClientList";
 import PrivateLayout from "../layouts/PrivateLayout";
-import Agenda from "../../pages/dashboard/schedule";
+import Agenda from "../../pages/Schedule";
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();
@@ -80,7 +80,6 @@ export const AppRoutes = () => {
       </Route>
 
       <Route path="/" element={<Navigate to="/login" replace />} />
-    
     </Routes>
   );
 };

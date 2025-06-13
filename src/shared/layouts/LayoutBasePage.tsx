@@ -1,81 +1,48 @@
-import React, { ReactNode } from "react";
-import { Box, flex } from "@mui/system";
-import {
-  Icon,
-  IconButton,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { useDrawerContext } from "../contexts/IndexContexts";
-import { MoveDown } from "@mui/icons-material";
-import Header from "../../components/Header";
+import React from "react";
+import { Box, Typography, useTheme, IconButton } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import { useDrawerContext } from "../contexts/DrawerContext";
 
 interface LayoutBasePageProps {
   title: string;
   children: React.ReactNode;
-  toolsBar?: ReactNode;
+  toolsBar?: React.ReactNode;
 }
 
 export const LayoutBasePage: React.FC<LayoutBasePageProps> = ({
-  children,
   title,
+  children,
   toolsBar,
 }) => {
   const theme = useTheme();
-
-  const smDown = useMediaQuery(theme.breakpoints.down("sm"));
-  const mdDown = useMediaQuery(theme.breakpoints.down("md"));
   const { toggleDrawerOpen } = useDrawerContext();
 
   return (
-    <>
-      <Header
-        onMenuClick={smDown ? toggleDrawerOpen : undefined}
-        title="White Label"
-      />
-
+    <Box width="100%">
       <Box
-        padding={5}
-        height={"100%"}
-        display={"flex"}
-        sx={{ minWidth: 0, flexDirection: "column" }}
+        height={theme.spacing(8)}
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        px={2}
+        bgcolor={theme.palette.background.paper}
+        boxShadow={1}
+        position="fixed"
+        top={0}
+        left={0}
+        right={0}
+        zIndex={1100}
       >
-        <Box
-          height={"100%"}
-          display={"flex"}
-          flexDirection={"column"}
-          gap={"1"}
-        >
-          <Box
-            padding={1}
-            display={"flex"}
-            alignItems={"center"}
-            gap={"1"}
-            height={theme.spacing(smDown ? 6 : mdDown ? 8 : 12)}
-          >
-            {smDown && (
-              <IconButton onClick={toggleDrawerOpen}>
-                <Icon>menu</Icon>
-              </IconButton>
-            )}
-
-            <Typography
-              variant={smDown ? "h5" : mdDown ? "h4" : "h3"}
-              overflow={"hidden"}
-              whiteSpace={"nowrap"}
-              textOverflow={"ellipsis"}
-            >
-              {title}
-            </Typography>
-          </Box>
-          {toolsBar && <Box>{toolsBar}</Box>}
-
-          <Box flex={1} overflow={"auto"}>
-            {children}
-          </Box>
+        <Box display="flex" alignItems="center" gap={1}>
+          <IconButton onClick={toggleDrawerOpen}>
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6">{title}</Typography>
         </Box>
+        <Box>{toolsBar}</Box>
       </Box>
-    </>
+
+      <Box mt={theme.spacing(8)}>{children}</Box>
+    </Box>
   );
 };

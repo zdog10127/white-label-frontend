@@ -27,7 +27,7 @@ export default function CardBase({
   avatar,
   actions,
   children,
-  centerContent = false,
+  centerContent = true,
   sx,
   ...rest
 }: CardBaseProps) {
@@ -35,9 +35,16 @@ export default function CardBase({
     <Card
       elevation={3}
       sx={{
-        minHeight: 300,
-        minWidth: 300,
-        borderRadius: 3,
+        marginTop: 4,
+        boxShadow: 5,
+        padding: 1,
+        marginBottom: 1,
+        marginRight: 30,
+        marginLeft: 0.1,  
+        minHeight: 400,
+        width: "100%",
+        borderRadius: 4,
+
         transition: "transform 0.2s ease-in-out",
         "&:hover": {
           transform: "scale(1.01)",
@@ -61,7 +68,15 @@ export default function CardBase({
         />
       )}
 
-      <CardContent sx={centerContent ? { textAlign: "center" } : undefined}>
+      <CardContent
+        sx={
+          centerContent
+            ? {
+                textAlign: "center",
+              }
+            : undefined
+        }
+      >
         {children}
       </CardContent>
     </Card>
