@@ -75,7 +75,7 @@ export const AppRoutes = () => {
         <Route element={<PrivateLayout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/clientes" element={<ClientList />} />
-          <Route path="/Agenda" element={<Agenda />} />
+          <Route path="/agenda" element={<Agenda />} />
         </Route>
       </Route>
 

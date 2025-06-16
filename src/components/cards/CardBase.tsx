@@ -33,14 +33,10 @@ export default function CardBase({
 }: CardBaseProps) {
   return (
     <Card
-      elevation={3}
+      elevation={6}
       sx={{
-        marginTop: 4,
         boxShadow: 5,
-        padding: 1,
-        marginBottom: 1,
-        marginRight: 30,
-        marginLeft: 0.1,  
+
         minHeight: 400,
         width: "100%",
         borderRadius: 4,

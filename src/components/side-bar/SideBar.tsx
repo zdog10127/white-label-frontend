@@ -80,7 +80,7 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
   const { isDrawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
   const { toggleTheme, themeName } = useAppThemeContext();
 
-  const drawerWidth = theme.spacing(15);
+  const drawerWidth = theme.spacing(13);
 
   return (
     <>
@@ -131,7 +131,7 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
           height: "100vh",
           ml: smDown ? 0 : drawerWidth,
           mt: theme.spacing(8),
-          p: 2,
+          p: 1,
           overflow: "auto",
         }}
       >
