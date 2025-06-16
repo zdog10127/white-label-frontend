@@ -1,4 +1,3 @@
-import React from "react";
 import { Typography } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CardBase from "./CardBase";

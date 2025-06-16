@@ -8,14 +8,14 @@ export default function FinanceCard() {
     <CardBase
       title="Relatório financeiro"
       avatar={<AccountBalanceIcon color="primary" />}
-      sx={{ minHeight: 300 }}
+      sx={{ minHeight: 400 }}
     >
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <Box sx={{ flex: 1 }}>
+      <Box sx={{ display: "flex", gap: 8 }}>
+        <Box sx={{ flex: 3 }}>
           <Typography variant="subtitle2">Saldo bloqueado</Typography>
           <Typography color="warning.main">R$ 0,00</Typography>
         </Box>
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ flex: 3 }}>
           <Typography variant="subtitle2">
             Saldo disponível para saque
           </Typography>

@@ -80,23 +80,23 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
   const { isDrawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
   const { toggleTheme, themeName } = useAppThemeContext();
 
+  const drawerWidth = theme.spacing(13);
+
   return (
     <>
-      <Drawer open={isDrawerOpen} variant={"persistent"}>
-        <Box
-          width={theme.spacing(15)}
-          height="100%"
-          display="flex"
-          flexDirection="column"
-        >
+      <Drawer
+        open={isDrawerOpen}
+        variant={"persistent"}
+        PaperProps={{ sx: { width: drawerWidth } }}
+      >
+        <Box width="100%" height="100%" display="flex" flexDirection="column">
           <Box
             width="100%"
             height={theme.spacing(8)}
             display="flex"
             alignItems="center"
             justifyContent="center"
-          ></Box>
-
+          />
           <Box flex={1}>
             <List component="nav">
               {drawerOptions.map((option) => (
@@ -110,7 +110,6 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
               ))}
             </List>
           </Box>
-
           <Box>
             <List component="nav">
               <ListItemButton>
@@ -120,7 +119,6 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
                     checked={themeName === "dark"}
                   />
                 </ListItemIcon>
-                <ListItemText primary="" />
               </ListItemButton>
             </List>
           </Box>
@@ -128,9 +126,14 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
       </Drawer>
 
       <Box
-        height="calc(100vh - 64px)"
-        marginLeft={smDown ? 0 : theme.spacing(15)}
-        marginTop="64px"
+        component="main"
+        sx={{
+          height: "100vh",
+          ml: smDown ? 0 : drawerWidth,
+          mt: theme.spacing(8),
+          p: 1,
+          overflow: "auto",
+        }}
       >
         {children}
       </Box>

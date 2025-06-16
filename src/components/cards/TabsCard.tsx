@@ -12,7 +12,7 @@ function TabPanel({ children, value, index }: TabPanelProps) {
   return (
     <div role="tabpanel" hidden={value !== index} id={`tabpanel-${index}`}>
       {value === index && (
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ p: 3 }}>
           <Typography variant="body2" color="text.secondary">
             {children}
           </Typography>

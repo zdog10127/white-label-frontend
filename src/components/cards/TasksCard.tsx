@@ -6,7 +6,7 @@ import CardBase from "./CardBase";
 export default function TasksCard() {
   return (
     <CardBase title="Tarefas" avatar={<ChecklistIcon color="primary" />}>
-      <Stack spacing={2}>
+      <Stack spacing={3}>
         <Button variant="text" color="primary">
           + Criar uma nova tarefa
         </Button>
