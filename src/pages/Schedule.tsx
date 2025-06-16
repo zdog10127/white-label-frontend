@@ -13,13 +13,11 @@ import {
 import ScheduleModal from "../components/modal-Schedule/sheduleModal";
 import rawClientsData from "../components/data/clients.json";
 
-// Define o tipo esperado pelo modal
 interface ClientType {
   id: string;
   name: string;
 }
 
-// Converte os dados do JSON para o formato esperado
 const clients: ClientType[] = rawClientsData.map((client, index) => ({
   id: String(index + 1),
   name: client.NomeCompleto,
