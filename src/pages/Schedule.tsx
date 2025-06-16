@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import ScheduleModal from "../components/modal-Schedule/sheduleModal";
 import rawClientsData from "../components/data/clients.json";
+import { getBrazilianHolidays } from "../utils/holidays";
 
 interface ClientType {
   id: string;
@@ -22,8 +23,6 @@ const clients: ClientType[] = rawClientsData.map((client, index) => ({
   id: String(index + 1),
   name: client.NomeCompleto,
 }));
-
-const holidays = ["2025-06-12", "2025-06-20"];
 
 const months = [
   "Janeiro",
@@ -55,6 +54,7 @@ const Schedule: React.FC = () => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const holidays = getBrazilianHolidays(currentYear);
   const [filter, setFilter] = useState("todos");
   const [view, setView] = useState<"mes" | "semana" | "dia">("mes");
   const [selectedSection, setSelectedSection] = useState("agendaGeneral");
