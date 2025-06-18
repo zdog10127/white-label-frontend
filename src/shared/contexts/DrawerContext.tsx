@@ -30,7 +30,7 @@ interface DrawerProviderProps {
 }
 
 export const DrawerProvider: React.FC<DrawerProviderProps> = ({ children }) => {
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [isDrawerOpen, setDrawerOpen] = useState(true);
   const [drawerOptions, setDrawerOptions] = useState<IDrawerOptions[]>([]);
 
   const toggleDrawerOpen = useCallback(() => {

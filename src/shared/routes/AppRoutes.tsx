@@ -11,12 +11,15 @@ import {
   PersonalVideo,
   Settings,
 } from "@mui/icons-material";
+
 import ProtectedRoute from "./PrivateRoute";
+
 import Login from "../../pages/Login";
 import Home from "../../pages/Home";
 import ClientList from "../../components/ClientList";
+import ClientRegister from "../../pages/clientRegister";
 import PrivateLayout from "../layouts/PrivateLayout";
-import Agenda from "../../pages/dashboard/schedule";
+import Agenda from "../../pages/Schedule";
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();
@@ -64,6 +67,7 @@ export const AppRoutes = () => {
         path: "/minhaclinica",
         icon: <Apartment fontSize="large" />,
       },
+   
     ]);
   }, [setDrawerOptions]);
 
@@ -75,12 +79,12 @@ export const AppRoutes = () => {
         <Route element={<PrivateLayout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/clientes" element={<ClientList />} />
-          <Route path="/Agenda" element={<Agenda />} />
+          <Route path="/agenda" element={<Agenda />} />
+          <Route path="/cadastro-usuario" element={<ClientRegister />} />{" "}
         </Route>
       </Route>
 
       <Route path="/" element={<Navigate to="/login" replace />} />
-    
     </Routes>
   );
 };
