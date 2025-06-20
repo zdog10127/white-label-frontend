@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
   Box,
   Button,
@@ -19,8 +19,14 @@ import InfoIcon from "@mui/icons-material/Info";
 import InputMask from "react-input-mask";
 import SideBarRegister from "../components/side-bar/sideBarRegister";
 import { estadosBrasil } from "../utils/estados";
-import Collapse from "@mui/material/Collapse";
 import { calculateAge } from "../utils/calculateAge";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
+import "dayjs/locale/pt-br";
+
+dayjs.locale("pt-br");
 
 const ClientRegister: React.FC = () => {
   const [activePage, setActivePage] = useState("cadastro");
@@ -32,7 +38,7 @@ const ClientRegister: React.FC = () => {
     rg: "",
     phone: "",
     cellphone: "",
-    birth: "",
+    birth: null as Dayjs | null,
     age: "",
     email: "",
     gender: "",
@@ -70,25 +76,153 @@ const ClientRegister: React.FC = () => {
     group: false,
   });
 
-  const handleSubmit = () => {
-    const newErrors = {
+  const updateFormField = useCallback((field: string, value: any) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }, []);
+
+  const validateForm = useCallback(() => {
+    return {
       name: form.name.trim() === "",
       cpf: form.cpf.replace(/[^0-9]/g, "").length !== 11,
       group: form.group === "",
     };
+  }, [form.name, form.cpf, form.group]);
 
+  const handleSubmit = useCallback(() => {
+    const newErrors = validateForm();
     setErrors(newErrors);
-    const hasError = Object.values(newErrors).some(Boolean);
-    if (!hasError) alert("Cadastro enviado com sucesso!");
-  };
 
-  const handleTagsChange = (value: string) => {
-    const tagsArray = value
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter((tag) => tag !== "");
-    setForm({ ...form, tags: tagsArray });
-  };
+    const hasError = Object.values(newErrors).some(Boolean);
+    if (!hasError) {
+      const formData = {
+        ...form,
+        birth: form.birth ? form.birth.format("DD/MM/YYYY") : "",
+      };
+      console.log("Dados do formulário:", formData);
+      alert("Cadastro enviado com sucesso!");
+    }
+  }, [validateForm, form]);
+
+  const handleTagsChange = useCallback(
+    (value: string) => {
+      const tagsArray = value
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag !== "");
+      updateFormField("tags", tagsArray);
+    },
+    [updateFormField]
+  );
+
+  const handleDateChange = useCallback((newValue: Dayjs | null) => {
+    console.log("Data selecionada:", newValue);
+
+    if (newValue && newValue.isValid()) {
+      const formattedDate = newValue.format("DD/MM/YYYY");
+      console.log("Data formatada:", formattedDate);
+
+      let calculatedAge = "";
+      try {
+        const age = calculateAge(formattedDate);
+        calculatedAge = age !== null ? age.toString() : "";
+        console.log("Idade calculada:", calculatedAge);
+      } catch (error) {
+        console.warn("Erro ao calcular idade:", error);
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        birth: newValue,
+        age: calculatedAge,
+      }));
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        birth: null,
+        age: "",
+      }));
+    }
+  }, []);
+
+  const memoizedEstados = useMemo(
+    () =>
+      estadosBrasil.map((estado) => (
+        <MenuItem key={estado.sigla} value={estado.sigla}>
+          {estado.nome}
+        </MenuItem>
+      )),
+    []
+  );
+
+  const selectOptions = useMemo(
+    () => ({
+      nacionalidade: [
+        { value: "", label: "--Selecione--" },
+        { value: "brasileira", label: "Brasileira" },
+        { value: "estrangeira", label: "Estrangeira" },
+      ],
+      grupo: [
+        { value: "", label: "--Selecione--" },
+        { value: "grupo1", label: "Grupo 1" },
+        { value: "grupo2", label: "Grupo 2" },
+      ],
+      pagamento: [
+        { value: "", label: "--Selecione--" },
+        { value: "pix", label: "PIX" },
+        { value: "boleto", label: "Boleto" },
+        { value: "cartao", label: "Cartão" },
+        { value: "dinheiro", label: "Dinheiro" },
+      ],
+      escolaridade: [
+        { value: "", label: "--Selecione--" },
+        { value: "fundamental", label: "Fundamental" },
+        { value: "medio", label: "Médio" },
+        { value: "superior", label: "Superior" },
+        { value: "pos-graduacao", label: "Pós-graduação" },
+      ],
+      ondeNosConheceu: [
+        { value: "", label: "--Selecione--" },
+        { value: "internet", label: "Internet" },
+        { value: "amigo", label: "Amigo" },
+        { value: "familia", label: "Família" },
+        { value: "publicidade", label: "Publicidade" },
+        { value: "outro", label: "Outro" },
+      ],
+      encaminhadoPor: [
+        { value: "", label: "--Selecione--" },
+        { value: "advogado", label: "Advogado" },
+        { value: "cliente", label: "Cliente" },
+        { value: "medico", label: "Médico" },
+        { value: "outro", label: "Outro" },
+      ],
+    }),
+    []
+  );
+
+  const renderSelect = useCallback(
+    (
+      field: string,
+      label: string,
+      options: Array<{ value: string; label: string }>,
+      error?: boolean
+    ) => (
+      <FormControl fullWidth size="small" error={error}>
+        <InputLabel>{label}</InputLabel>
+        <Select
+          value={form[field as keyof typeof form] as string}
+          label={label}
+          onChange={(e) => updateFormField(field, e.target.value)}
+        >
+          {options.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    ),
+    [form, updateFormField]
+  );
 
   return (
     <Box display="flex">
@@ -137,7 +271,7 @@ const ClientRegister: React.FC = () => {
                     fullWidth
                     value={form.nomeSocial}
                     onChange={(e) =>
-                      setForm({ ...form, nomeSocial: e.target.value })
+                      updateFormField("nomeSocial", e.target.value)
                     }
                     autoFocus
                   />
@@ -150,7 +284,7 @@ const ClientRegister: React.FC = () => {
                   label="Nome *"
                   fullWidth
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  onChange={(e) => updateFormField("name", e.target.value)}
                   error={!!errors.name}
                   helperText={errors.name ? "Campo obrigatório" : ""}
                 />
@@ -162,50 +296,37 @@ const ClientRegister: React.FC = () => {
                   label="E-mail"
                   fullWidth
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  onChange={(e) => updateFormField("email", e.target.value)}
                 />
               </Grid>
 
               <Grid item xs={12} md={4}>
-                <InputMask
-                  mask="99/99/9999"
-                  value={form.birth}
-                  onChange={(e) => {
-                    const dateValue = e.target.value;
-                    setForm({ ...form, birth: dateValue });
-
-                    const age = calculateAge(dateValue);
-                    if (age !== null) {
-                      setForm((prev) => ({ ...prev, age: age.toString() }));
-                    }
-                  }}
+                <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  adapterLocale="pt-br"
                 >
-                  {(inputProps: any) => (
-                    <TextField
-                      {...inputProps}
-                      label="Data de nascimento"
-                      fullWidth
-                      size="small"
-                    />
-                  )}
-                </InputMask>
+                  <DatePicker
+                    label="Data de nascimento"
+                    value={form.birth}
+                    onChange={handleDateChange}
+                    format="DD/MM/YYYY"
+                    slotProps={{
+                      textField: {
+                        size: "small",
+                        fullWidth: true,
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
               </Grid>
 
               <Grid item xs={12} md={4}>
-                <FormControl fullWidth size="small" error={errors.group}>
-                  <InputLabel>Grupo *</InputLabel>
-                  <Select
-                    value={form.group}
-                    label="Grupo *"
-                    onChange={(e) =>
-                      setForm({ ...form, group: e.target.value })
-                    }
-                  >
-                    <MenuItem value="">--Selecione--</MenuItem>
-                    <MenuItem value="grupo1">Grupo 1</MenuItem>
-                    <MenuItem value="grupo2">Grupo 2</MenuItem>
-                  </Select>
-                </FormControl>
+                {renderSelect(
+                  "group",
+                  "Grupo *",
+                  selectOptions.grupo,
+                  errors.group
+                )}
               </Grid>
 
               <Grid item xs={12} md={4}>
@@ -215,33 +336,24 @@ const ClientRegister: React.FC = () => {
                   fullWidth
                   value={form.naturalidade}
                   onChange={(e) =>
-                    setForm({ ...form, naturalidade: e.target.value })
+                    updateFormField("naturalidade", e.target.value)
                   }
                 />
               </Grid>
 
               <Grid item xs={12} md={4}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Nacionalidade</InputLabel>
-                  <Select
-                    value={form.nacionalidade}
-                    label="Nacionalidade"
-                    onChange={(e) =>
-                      setForm({ ...form, nacionalidade: e.target.value })
-                    }
-                  >
-                    <MenuItem value="">--Selecione--</MenuItem>
-                    <MenuItem value="brasileira">Brasileira</MenuItem>
-                    <MenuItem value="estrangeira">Estrangeira</MenuItem>
-                  </Select>
-                </FormControl>
+                {renderSelect(
+                  "nacionalidade",
+                  "Nacionalidade",
+                  selectOptions.nacionalidade
+                )}
               </Grid>
 
               <Grid item xs={12} md={3}>
                 <InputMask
                   mask="999.999.999-99"
                   value={form.cpf}
-                  onChange={(e) => setForm({ ...form, cpf: e.target.value })}
+                  onChange={(e) => updateFormField("cpf", e.target.value)}
                 >
                   {(inputProps: any) => (
                     <TextField
@@ -262,7 +374,7 @@ const ClientRegister: React.FC = () => {
                   label="RG"
                   fullWidth
                   value={form.rg}
-                  onChange={(e) => setForm({ ...form, rg: e.target.value })}
+                  onChange={(e) => updateFormField("rg", e.target.value)}
                 />
               </Grid>
 
@@ -270,9 +382,7 @@ const ClientRegister: React.FC = () => {
                 <InputMask
                   mask="(99) 99999-9999"
                   value={form.cellphone}
-                  onChange={(e) =>
-                    setForm({ ...form, cellphone: e.target.value })
-                  }
+                  onChange={(e) => updateFormField("cellphone", e.target.value)}
                 >
                   {(inputProps: any) => (
                     <TextField
@@ -291,7 +401,6 @@ const ClientRegister: React.FC = () => {
                   label="Idade"
                   fullWidth
                   value={form.age}
-                  onChange={(e) => setForm({ ...form, age: e.target.value })}
                   disabled
                 />
               </Grid>
@@ -305,11 +414,12 @@ const ClientRegister: React.FC = () => {
                   rows={2}
                   value={form.observacoes}
                   onChange={(e) =>
-                    setForm({ ...form, observacoes: e.target.value })
+                    updateFormField("observacoes", e.target.value)
                   }
                 />
               </Grid>
             </Grid>
+
             <Divider sx={{ my: 2 }} />
 
             <Typography
@@ -327,9 +437,7 @@ const ClientRegister: React.FC = () => {
                   label="Profissão"
                   fullWidth
                   value={form.profissao}
-                  onChange={(e) =>
-                    setForm({ ...form, profissao: e.target.value })
-                  }
+                  onChange={(e) => updateFormField("profissao", e.target.value)}
                 />
               </Grid>
 
@@ -339,27 +447,16 @@ const ClientRegister: React.FC = () => {
                   label="Renda mensal"
                   fullWidth
                   value={form.renda}
-                  onChange={(e) => setForm({ ...form, renda: e.target.value })}
+                  onChange={(e) => updateFormField("renda", e.target.value)}
                 />
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Forma de pagamento</InputLabel>
-                  <Select
-                    value={form.pagamento}
-                    label="Forma de pagamento"
-                    onChange={(e) =>
-                      setForm({ ...form, pagamento: e.target.value })
-                    }
-                  >
-                    <MenuItem value="">--Selecione--</MenuItem>
-                    <MenuItem value="pix">PIX</MenuItem>
-                    <MenuItem value="boleto">Boleto</MenuItem>
-                    <MenuItem value="cartao">Cartão</MenuItem>
-                    <MenuItem value="dinheiro">Dinheiro</MenuItem>
-                  </Select>
-                </FormControl>
+                {renderSelect(
+                  "pagamento",
+                  "Forma de pagamento",
+                  selectOptions.pagamento
+                )}
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
@@ -368,7 +465,7 @@ const ClientRegister: React.FC = () => {
                   label="Banco"
                   fullWidth
                   value={form.banco}
-                  onChange={(e) => setForm({ ...form, banco: e.target.value })}
+                  onChange={(e) => updateFormField("banco", e.target.value)}
                 />
               </Grid>
 
@@ -378,9 +475,7 @@ const ClientRegister: React.FC = () => {
                   label="Agência"
                   fullWidth
                   value={form.agencia}
-                  onChange={(e) =>
-                    setForm({ ...form, agencia: e.target.value })
-                  }
+                  onChange={(e) => updateFormField("agencia", e.target.value)}
                 />
               </Grid>
 
@@ -390,7 +485,7 @@ const ClientRegister: React.FC = () => {
                   label="Conta"
                   fullWidth
                   value={form.conta}
-                  onChange={(e) => setForm({ ...form, conta: e.target.value })}
+                  onChange={(e) => updateFormField("conta", e.target.value)}
                 />
               </Grid>
             </Grid>
@@ -412,9 +507,7 @@ const ClientRegister: React.FC = () => {
                   label="Endereço"
                   fullWidth
                   value={form.endereco}
-                  onChange={(e) =>
-                    setForm({ ...form, endereco: e.target.value })
-                  }
+                  onChange={(e) => updateFormField("endereco", e.target.value)}
                 />
               </Grid>
 
@@ -424,7 +517,7 @@ const ClientRegister: React.FC = () => {
                   label="Número"
                   fullWidth
                   value={form.numero}
-                  onChange={(e) => setForm({ ...form, numero: e.target.value })}
+                  onChange={(e) => updateFormField("numero", e.target.value)}
                 />
               </Grid>
 
@@ -435,7 +528,7 @@ const ClientRegister: React.FC = () => {
                   fullWidth
                   value={form.complemento}
                   onChange={(e) =>
-                    setForm({ ...form, complemento: e.target.value })
+                    updateFormField("complemento", e.target.value)
                   }
                 />
               </Grid>
@@ -446,7 +539,7 @@ const ClientRegister: React.FC = () => {
                   label="Bairro"
                   fullWidth
                   value={form.bairro}
-                  onChange={(e) => setForm({ ...form, bairro: e.target.value })}
+                  onChange={(e) => updateFormField("bairro", e.target.value)}
                 />
               </Grid>
 
@@ -456,7 +549,7 @@ const ClientRegister: React.FC = () => {
                   label="Cidade"
                   fullWidth
                   value={form.cidade}
-                  onChange={(e) => setForm({ ...form, cidade: e.target.value })}
+                  onChange={(e) => updateFormField("cidade", e.target.value)}
                 />
               </Grid>
 
@@ -466,16 +559,10 @@ const ClientRegister: React.FC = () => {
                   <Select
                     value={form.estado}
                     label="Estado"
-                    onChange={(e) =>
-                      setForm({ ...form, estado: e.target.value })
-                    }
+                    onChange={(e) => updateFormField("estado", e.target.value)}
                   >
                     <MenuItem value="">--Selecione--</MenuItem>
-                    {estadosBrasil.map((estado) => (
-                      <MenuItem key={estado.sigla} value={estado.sigla}>
-                        {estado.nome}
-                      </MenuItem>
-                    ))}
+                    {memoizedEstados}
                   </Select>
                 </FormControl>
               </Grid>
@@ -484,7 +571,7 @@ const ClientRegister: React.FC = () => {
                 <InputMask
                   mask="99999-999"
                   value={form.cep}
-                  onChange={(e) => setForm({ ...form, cep: e.target.value })}
+                  onChange={(e) => updateFormField("cep", e.target.value)}
                 >
                   {(inputProps: any) => (
                     <TextField
@@ -510,61 +597,27 @@ const ClientRegister: React.FC = () => {
 
             <Grid container spacing={2} sx={{ mb: 5 }}>
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Escolaridade</InputLabel>
-                  <Select
-                    value={form.escolaridade}
-                    label="Escolaridade"
-                    onChange={(e) =>
-                      setForm({ ...form, escolaridade: e.target.value })
-                    }
-                  >
-                    <MenuItem value="">--Selecione--</MenuItem>
-                    <MenuItem value="fundamental">Fundamental</MenuItem>
-                    <MenuItem value="medio">Médio</MenuItem>
-                    <MenuItem value="superior">Superior</MenuItem>
-                    <MenuItem value="pos-graduacao">Pós-graduação</MenuItem>
-                  </Select>
-                </FormControl>
+                {renderSelect(
+                  "escolaridade",
+                  "Escolaridade",
+                  selectOptions.escolaridade
+                )}
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Onde nos conheceu?</InputLabel>
-                  <Select
-                    value={form.ondeNosConheceu}
-                    label="Onde nos conheceu?"
-                    onChange={(e) =>
-                      setForm({ ...form, ondeNosConheceu: e.target.value })
-                    }
-                  >
-                    <MenuItem value="">--Selecione--</MenuItem>
-                    <MenuItem value="internet">Internet</MenuItem>
-                    <MenuItem value="amigo">Amigo</MenuItem>
-                    <MenuItem value="familia">Família</MenuItem>
-                    <MenuItem value="publicidade">Publicidade</MenuItem>
-                    <MenuItem value="outro">Outro</MenuItem>
-                  </Select>
-                </FormControl>
+                {renderSelect(
+                  "ondeNosConheceu",
+                  "Onde nos conheceu?",
+                  selectOptions.ondeNosConheceu
+                )}
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Encaminhado por:</InputLabel>
-                  <Select
-                    value={form.encaminhadoPor}
-                    label="Encaminhado por"
-                    onChange={(e) =>
-                      setForm({ ...form, encaminhadoPor: e.target.value })
-                    }
-                  >
-                    <MenuItem value="">--Selecione--</MenuItem>
-                    <MenuItem value="advogado">Advogado</MenuItem>
-                    <MenuItem value="cliente">Cliente</MenuItem>
-                    <MenuItem value="medico">Médico</MenuItem>
-                    <MenuItem value="outro">Outro</MenuItem>
-                  </Select>
-                </FormControl>
+                {renderSelect(
+                  "encaminhadoPor",
+                  "Encaminhado por",
+                  selectOptions.encaminhadoPor
+                )}
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
@@ -574,7 +627,7 @@ const ClientRegister: React.FC = () => {
                   fullWidth
                   value={form.nomeParente}
                   onChange={(e) =>
-                    setForm({ ...form, nomeParente: e.target.value })
+                    updateFormField("nomeParente", e.target.value)
                   }
                 />
               </Grid>
@@ -586,7 +639,7 @@ const ClientRegister: React.FC = () => {
                   fullWidth
                   value={form.parentesco}
                   onChange={(e) =>
-                    setForm({ ...form, parentesco: e.target.value })
+                    updateFormField("parentesco", e.target.value)
                   }
                 />
               </Grid>
@@ -596,7 +649,7 @@ const ClientRegister: React.FC = () => {
                   mask="(99) 99999-9999"
                   value={form.telefoneParente}
                   onChange={(e) =>
-                    setForm({ ...form, telefoneParente: e.target.value })
+                    updateFormField("telefoneParente", e.target.value)
                   }
                 >
                   {(inputProps: any) => (
@@ -630,7 +683,7 @@ const ClientRegister: React.FC = () => {
                     type="color"
                     value={form.corIdentificacao}
                     onChange={(e) =>
-                      setForm({ ...form, corIdentificacao: e.target.value })
+                      updateFormField("corIdentificacao", e.target.value)
                     }
                     style={{
                       width: 36,
@@ -645,12 +698,6 @@ const ClientRegister: React.FC = () => {
             </Grid>
 
             <Divider sx={{ my: 2 }} />
-
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{ mb: 2, fontWeight: 600 }}
-            ></Typography>
 
             <Box mt={3} display="flex" justifyContent="center" gap={2}>
               <Button variant="outlined" color="primary" size="medium">
