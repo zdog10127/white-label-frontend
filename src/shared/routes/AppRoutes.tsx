@@ -67,7 +67,6 @@ export const AppRoutes = () => {
         path: "/minhaclinica",
         icon: <Apartment fontSize="large" />,
       },
-   
     ]);
   }, [setDrawerOptions]);
 
@@ -80,7 +79,7 @@ export const AppRoutes = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/clientes" element={<ClientList />} />
           <Route path="/agenda" element={<Agenda />} />
-          <Route path="/cadastro-usuario" element={<ClientRegister />} />{" "}
+          <Route path="/cadastro-usuario" element={<ClientRegister />} />
         </Route>
       </Route>
 

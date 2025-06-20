@@ -21,7 +21,6 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
 import clientsDataRaw from "./data/clients.json";
 
 type RawClient = {
