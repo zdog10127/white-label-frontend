@@ -18,6 +18,9 @@ import {
 import InfoIcon from "@mui/icons-material/Info";
 import InputMask from "react-input-mask";
 import SideBarRegister from "../components/side-bar/sideBarRegister";
+import { estadosBrasil } from "../utils/estados";
+import Collapse from "@mui/material/Collapse";
+import { calculateAge } from "../utils/calculateAge";
 
 const ClientRegister: React.FC = () => {
   const [activePage, setActivePage] = useState("cadastro");
@@ -57,10 +60,8 @@ const ClientRegister: React.FC = () => {
     encaminhadoPor: "",
     tags: [] as string[],
     corIdentificacao: "#415a44",
-    nomeResponsavel: "",
-    cpfResponsavel: "",
-    telefoneResponsavel: "",
-    permitirEnvioCobranca: false,
+    nacionalidade: "",
+    nomeSocial: "",
   });
 
   const [errors, setErrors] = useState({
@@ -81,13 +82,6 @@ const ClientRegister: React.FC = () => {
     if (!hasError) alert("Cadastro enviado com sucesso!");
   };
 
-  const handleToggleEnvioCobranca = () => {
-    setForm((prev) => ({
-      ...prev,
-      permitirEnvioCobranca: !prev.permitirEnvioCobranca,
-    }));
-  };
-
   const handleTagsChange = (value: string) => {
     const tagsArray = value
       .split(",")
@@ -100,52 +94,104 @@ const ClientRegister: React.FC = () => {
     <Box display="flex">
       <SideBarRegister onSelect={setActivePage} activeSection={activePage} />
 
-      <Box flex={1} p={2} ml="220px" maxWidth="1200px" mx="auto">
+      <Box flex={1} p={5} ml="220px" maxWidth="700px" mx="auto">
         {activePage === "cadastro" && (
           <>
             <Typography
               variant="h6"
               gutterBottom
-              sx={{ mb: 2, fontWeight: 600 }}
+              sx={{ mb: 4, fontWeight: 600 }}
             >
               1. INFORMAÇÕES PESSOAIS
             </Typography>
-            <Grid container spacing={1.5} sx={{ mb: 3 }}>
-              <Grid item xs={12} sm={6} md={4}>
+
+            <Box sx={{ mb: 3 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={useSocialName}
+                    onChange={(e) => setUseSocialName(e.target.checked)}
+                    size="small"
+                  />
+                }
+                label={
+                  <Box display="flex" alignItems="center" gap={0.5}>
+                    <Typography variant="body2">Usar nome social</Typography>
+                    <Tooltip title="Você pode optar por usar um nome social">
+                      <IconButton size="small" color="primary">
+                        <InfoIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                }
+                labelPlacement="end"
+              />
+            </Box>
+
+            <Grid container spacing={2} sx={{ mb: 10 }}>
+              {useSocialName && (
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    size="small"
+                    label="Nome Social"
+                    fullWidth
+                    value={form.nomeSocial}
+                    onChange={(e) =>
+                      setForm({ ...form, nomeSocial: e.target.value })
+                    }
+                    autoFocus
+                  />
+                </Grid>
+              )}
+
+              <Grid item xs={12} md={useSocialName ? 8 : 12}>
                 <TextField
                   size="small"
                   label="Nome *"
                   fullWidth
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  error={errors.name}
+                  error={!!errors.name}
                   helperText={errors.name ? "Campo obrigatório" : ""}
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={4}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={useSocialName}
-                      onChange={(e) => setUseSocialName(e.target.checked)}
-                      size="small"
-                    />
-                  }
-                  label={
-                    <Box display="flex" alignItems="center">
-                      <Typography variant="body2">Usar nome social</Typography>
-                      <Tooltip title="Você pode optar por usar um nome social">
-                        <IconButton size="small" color="primary">
-                          <InfoIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  }
+              <Grid item xs={12} md={8}>
+                <TextField
+                  size="small"
+                  label="E-mail"
+                  fullWidth
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} md={4}>
+                <InputMask
+                  mask="99/99/9999"
+                  value={form.birth}
+                  onChange={(e) => {
+                    const dateValue = e.target.value;
+                    setForm({ ...form, birth: dateValue });
+
+                    const age = calculateAge(dateValue);
+                    if (age !== null) {
+                      setForm((prev) => ({ ...prev, age: age.toString() }));
+                    }
+                  }}
+                >
+                  {(inputProps: any) => (
+                    <TextField
+                      {...inputProps}
+                      label="Data de nascimento"
+                      fullWidth
+                      size="small"
+                    />
+                  )}
+                </InputMask>
+              </Grid>
+
+              <Grid item xs={12} md={4}>
                 <FormControl fullWidth size="small" error={errors.group}>
                   <InputLabel>Grupo *</InputLabel>
                   <Select
@@ -162,7 +208,7 @@ const ClientRegister: React.FC = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} md={4}>
                 <TextField
                   size="small"
                   label="Naturalidade"
@@ -174,59 +220,14 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
-                <InputMask
-                  mask="99/99/9999"
-                  value={form.birth}
-                  onChange={(e) => setForm({ ...form, birth: e.target.value })}
-                >
-                  {(inputProps: any) => (
-                    <TextField
-                      {...inputProps}
-                      label="Data de nascimento"
-                      fullWidth
-                      size="small"
-                    />
-                  )}
-                </InputMask>
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={2}>
-                <TextField
-                  size="small"
-                  label="Idade"
-                  fullWidth
-                  value={form.age}
-                  onChange={(e) => setForm({ ...form, age: e.target.value })}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={2}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Gênero</InputLabel>
-                  <Select
-                    value={form.gender}
-                    label="Gênero"
-                    onChange={(e) =>
-                      setForm({ ...form, gender: e.target.value })
-                    }
-                  >
-                    <MenuItem value="">--Selecione--</MenuItem>
-                    <MenuItem value="Masculino">Masculino</MenuItem>
-                    <MenuItem value="Feminino">Feminino</MenuItem>
-                    <MenuItem value="Outro">Outro</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={2}>
+              <Grid item xs={12} md={4}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Nacionalidade</InputLabel>
                   <Select
-                    value={form.gender}
+                    value={form.nacionalidade}
                     label="Nacionalidade"
                     onChange={(e) =>
-                      setForm({ ...form, gender: e.target.value })
+                      setForm({ ...form, nacionalidade: e.target.value })
                     }
                   >
                     <MenuItem value="">--Selecione--</MenuItem>
@@ -236,19 +237,38 @@ const ClientRegister: React.FC = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} md={3}>
+                <InputMask
+                  mask="999.999.999-99"
+                  value={form.cpf}
+                  onChange={(e) => setForm({ ...form, cpf: e.target.value })}
+                >
+                  {(inputProps: any) => (
+                    <TextField
+                      {...inputProps}
+                      label="CPF *"
+                      fullWidth
+                      size="small"
+                      error={!!errors.cpf}
+                      helperText={errors.cpf ? "CPF inválido" : ""}
+                    />
+                  )}
+                </InputMask>
+              </Grid>
+
+              <Grid item xs={12} md={3}>
                 <TextField
                   size="small"
-                  label="E-mail"
+                  label="RG"
                   fullWidth
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  value={form.rg}
+                  onChange={(e) => setForm({ ...form, rg: e.target.value })}
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} md={3}>
                 <InputMask
-                  mask="+55 (99) 99999-9999"
+                  mask="(99) 99999-9999"
                   value={form.cellphone}
                   onChange={(e) =>
                     setForm({ ...form, cellphone: e.target.value })
@@ -265,49 +285,14 @@ const ClientRegister: React.FC = () => {
                 </InputMask>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
-                <InputMask
-                  mask="(99) 9999-9999"
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                >
-                  {(inputProps: any) => (
-                    <TextField
-                      {...inputProps}
-                      label="Telefone"
-                      fullWidth
-                      size="small"
-                    />
-                  )}
-                </InputMask>
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={2}>
-                <InputMask
-                  mask="999.999.999-99"
-                  value={form.cpf}
-                  onChange={(e) => setForm({ ...form, cpf: e.target.value })}
-                >
-                  {(inputProps: any) => (
-                    <TextField
-                      {...inputProps}
-                      label="CPF *"
-                      fullWidth
-                      size="small"
-                      error={errors.cpf}
-                      helperText={errors.cpf ? "CPF inválido" : ""}
-                    />
-                  )}
-                </InputMask>
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={2}>
+              <Grid item xs={12} md={3}>
                 <TextField
                   size="small"
-                  label="RG"
+                  label="Idade"
                   fullWidth
-                  value={form.rg}
-                  onChange={(e) => setForm({ ...form, rg: e.target.value })}
+                  value={form.age}
+                  onChange={(e) => setForm({ ...form, age: e.target.value })}
+                  disabled
                 />
               </Grid>
 
@@ -325,7 +310,6 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
             </Grid>
-
             <Divider sx={{ my: 2 }} />
 
             <Typography
@@ -335,8 +319,9 @@ const ClientRegister: React.FC = () => {
             >
               2. INFORMAÇÕES FINANCEIRAS
             </Typography>
-            <Grid container spacing={1.5} sx={{ mb: 3 }}>
-              <Grid item xs={12} sm={6} md={3}>
+
+            <Grid container spacing={2} sx={{ mb: 10 }}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
                   label="Profissão"
@@ -348,7 +333,7 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
                   label="Renda mensal"
@@ -358,7 +343,7 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Forma de pagamento</InputLabel>
                   <Select
@@ -377,7 +362,7 @@ const ClientRegister: React.FC = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
                   label="Banco"
@@ -387,7 +372,7 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={2}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
                   label="Agência"
@@ -399,7 +384,7 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={2}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
                   label="Conta"
@@ -419,8 +404,9 @@ const ClientRegister: React.FC = () => {
             >
               3. ENDEREÇO
             </Typography>
-            <Grid container spacing={1.5} sx={{ mb: 3 }}>
-              <Grid item xs={12} sm={6} md={5}>
+
+            <Grid container spacing={2} sx={{ mb: 10 }}>
+              <Grid item xs={12} sm={6} md={6}>
                 <TextField
                   size="small"
                   label="Endereço"
@@ -432,7 +418,7 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={1.5}>
+              <Grid item xs={12} sm={6} md={2}>
                 <TextField
                   size="small"
                   label="Número"
@@ -442,7 +428,7 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={2.5}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
                   label="Complemento"
@@ -454,7 +440,7 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
                   label="Bairro"
@@ -464,7 +450,7 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
                   label="Cidade"
@@ -485,33 +471,11 @@ const ClientRegister: React.FC = () => {
                     }
                   >
                     <MenuItem value="">--Selecione--</MenuItem>
-                    <MenuItem value="AC">Acre</MenuItem>
-                    <MenuItem value="AL">Alagoas</MenuItem>
-                    <MenuItem value="AP">Amapá</MenuItem>
-                    <MenuItem value="AM">Amazonas</MenuItem>
-                    <MenuItem value="BA">Bahia</MenuItem>
-                    <MenuItem value="CE">Ceará</MenuItem>
-                    <MenuItem value="DF">Distrito Federal</MenuItem>
-                    <MenuItem value="ES">Espírito Santo</MenuItem>
-                    <MenuItem value="GO">Goiás</MenuItem>
-                    <MenuItem value="MA">Maranhão</MenuItem>
-                    <MenuItem value="MT">Mato Grosso</MenuItem>
-                    <MenuItem value="MS">Mato Grosso do Sul</MenuItem>
-                    <MenuItem value="MG">Minas Gerais</MenuItem>
-                    <MenuItem value="PA">Pará</MenuItem>
-                    <MenuItem value="PB">Paraíba</MenuItem>
-                    <MenuItem value="PR">Paraná</MenuItem>
-                    <MenuItem value="PE">Pernambuco</MenuItem>
-                    <MenuItem value="PI">Piauí</MenuItem>
-                    <MenuItem value="RJ">Rio de Janeiro</MenuItem>
-                    <MenuItem value="RN">Rio Grande do Norte</MenuItem>
-                    <MenuItem value="RS">Rio Grande do Sul</MenuItem>
-                    <MenuItem value="RO">Rondônia</MenuItem>
-                    <MenuItem value="RR">Roraima</MenuItem>
-                    <MenuItem value="SC">Santa Catarina</MenuItem>
-                    <MenuItem value="SP">São Paulo</MenuItem>
-                    <MenuItem value="SE">Sergipe</MenuItem>
-                    <MenuItem value="TO">Tocantins</MenuItem>
+                    {estadosBrasil.map((estado) => (
+                      <MenuItem key={estado.sigla} value={estado.sigla}>
+                        {estado.nome}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -544,8 +508,8 @@ const ClientRegister: React.FC = () => {
               4. DADOS ADICIONAIS
             </Typography>
 
-            <Grid container spacing={1.5} sx={{ mb: 3 }}>
-              <Grid item xs={12} sm={6} md={3}>
+            <Grid container spacing={2} sx={{ mb: 5 }}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Escolaridade</InputLabel>
                   <Select
@@ -564,7 +528,7 @@ const ClientRegister: React.FC = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Onde nos conheceu?</InputLabel>
                   <Select
@@ -584,7 +548,7 @@ const ClientRegister: React.FC = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Encaminhado por:</InputLabel>
                   <Select
@@ -603,7 +567,7 @@ const ClientRegister: React.FC = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   label="Nome de um parente"
                   size="small"
@@ -615,7 +579,7 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={3} md={2}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   label="Parentesco"
                   size="small"
@@ -627,7 +591,7 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={3} md={2}>
+              <Grid item xs={12} sm={6} md={4}>
                 <InputMask
                   mask="(99) 99999-9999"
                   value={form.telefoneParente}
@@ -646,7 +610,7 @@ const ClientRegister: React.FC = () => {
                 </InputMask>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={5}>
+              <Grid item xs={12} sm={6} md={6}>
                 <TextField
                   label="Tags"
                   placeholder="-- Clique para escolher --"
@@ -657,8 +621,8 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
-                <Box display="flex" alignItems="center" gap={1} height="40px">
+              <Grid item xs={12} sm={6} md={6}>
+                <Box display="flex" alignItems="center" gap={2} height="40px">
                   <Typography variant="body2" component="span">
                     Cor de Identificação:
                   </Typography>
@@ -669,8 +633,8 @@ const ClientRegister: React.FC = () => {
                       setForm({ ...form, corIdentificacao: e.target.value })
                     }
                     style={{
-                      width: 30,
-                      height: 30,
+                      width: 36,
+                      height: 36,
                       border: "1px solid #ccc",
                       borderRadius: 4,
                       cursor: "pointer",
@@ -686,80 +650,7 @@ const ClientRegister: React.FC = () => {
               variant="h6"
               gutterBottom
               sx={{ mb: 2, fontWeight: 600 }}
-            >
-              5. RESPONSÁVEL
-            </Typography>
-
-            <Grid container spacing={1.5} sx={{ mb: 3 }}>
-              <Grid item xs={12} sm={8} md={6}>
-                <TextField
-                  label="Nome do responsável"
-                  size="small"
-                  fullWidth
-                  value={form.nomeResponsavel}
-                  onChange={(e) =>
-                    setForm({ ...form, nomeResponsavel: e.target.value })
-                  }
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={3}>
-                <InputMask
-                  mask="999.999.999-99"
-                  value={form.cpfResponsavel}
-                  onChange={(e) =>
-                    setForm({ ...form, cpfResponsavel: e.target.value })
-                  }
-                >
-                  {(inputProps: any) => (
-                    <TextField
-                      {...inputProps}
-                      label="CPF"
-                      size="small"
-                      fullWidth
-                    />
-                  )}
-                </InputMask>
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={3}>
-                <InputMask
-                  mask="(99) 99999-9999"
-                  value={form.telefoneResponsavel}
-                  onChange={(e) =>
-                    setForm({ ...form, telefoneResponsavel: e.target.value })
-                  }
-                >
-                  {(inputProps: any) => (
-                    <TextField
-                      {...inputProps}
-                      label="Telefone"
-                      size="small"
-                      fullWidth
-                    />
-                  )}
-                </InputMask>
-              </Grid>
-
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={form.permitirEnvioCobranca}
-                      onChange={handleToggleEnvioCobranca}
-                      color="primary"
-                      size="small"
-                    />
-                  }
-                  label={
-                    <Typography variant="body2">
-                      Permitir o envio das cobranças no nome do responsável? (O
-                      sistema usará o Nome e o CPF do responsável nas cobranças)
-                    </Typography>
-                  }
-                />
-              </Grid>
-            </Grid>
+            ></Typography>
 
             <Box mt={3} display="flex" justifyContent="center" gap={2}>
               <Button variant="outlined" color="primary" size="medium">
