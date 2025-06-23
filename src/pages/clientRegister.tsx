@@ -26,117 +26,18 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/pt-br";
 import { z } from "zod";
+import {
+  GRUPO_OPTIONS,
+  GENDER_OPTIONS,
+  PAGAMENTO_OPTIONS,
+  ESCOLARIDADE_OPTIONS,
+  NACIONALIDADE_OPTIONS,
+  ONDE_NOS_CONHECEU_OPTIONS,
+  ENCAMINHADO_POR_OPTIONS,
+} from "../constants/inputSelectOptions";
+import { clientSchema } from "../schemas/clientSchemas";
 
 dayjs.locale("pt-br");
-
-const clientSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Nome é obrigatório")
-    .min(2, "Nome deve ter pelo menos 2 caracteres"),
-
-  cpf: z
-    .string()
-    .min(1, "CPF é obrigatório")
-    .regex(
-      /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
-      "CPF deve estar no formato 999.999.999-99"
-    )
-    .refine((cpf) => {
-      const digits = cpf.replace(/[^0-9]/g, "");
-      return digits.length === 11;
-    }, "CPF deve conter 11 dígitos"),
-
-  rg: z
-    .string()
-    .min(1, "RG é obrigatório")
-    .min(5, "RG deve ter pelo menos 5 caracteres"),
-
-  email: z
-    .string()
-    .min(1, "E-mail é obrigatório")
-    .email("E-mail deve ter um formato válido"),
-
-  phone: z.string().optional(),
-
-  cellphone: z
-    .string()
-    .min(1, "Celular é obrigatório")
-    .regex(
-      /^\(\d{2}\) \d{5}-\d{4}$/,
-      "Celular deve estar no formato (99) 99999-9999"
-    ),
-
-  birth: z.string().min(1, "Data de nascimento é obrigatória"),
-
-  age: z.string().min(1, "Idade é obrigatória"),
-
-  gender: z.string().min(1, "Gênero é obrigatório"),
-
-  group: z.string().min(1, "Grupo é obrigatório"),
-
-  naturalidade: z.string().min(1, "Naturalidade é obrigatória"),
-
-  nacionalidade: z.string().min(1, "Nacionalidade é obrigatória"),
-
-  nomeSocial: z.string().optional(),
-
-  observacoes: z.string().optional(),
-
-  profissao: z.string().min(1, "Profissão é obrigatória"),
-
-  renda: z
-    .string()
-    .min(1, "Renda mensal é obrigatória")
-    .regex(/^\d+([.,]\d{2})?$/, "Renda deve ser um valor válido (ex: 1500,00)"),
-
-  pagamento: z.string().min(1, "Forma de pagamento é obrigatória"),
-
-  banco: z.string().min(1, "Banco é obrigatório"),
-
-  agencia: z.string().min(1, "Agência é obrigatória"),
-
-  conta: z.string().min(1, "Conta é obrigatória"),
-
-  endereco: z.string().min(1, "Endereço é obrigatório"),
-
-  numero: z.string().min(1, "Número é obrigatório"),
-
-  complemento: z.string().optional(),
-
-  bairro: z.string().min(1, "Bairro é obrigatório"),
-
-  cidade: z.string().min(1, "Cidade é obrigatória"),
-
-  estado: z.string().min(1, "Estado é obrigatório"),
-
-  cep: z
-    .string()
-    .min(1, "CEP é obrigatório")
-    .regex(/^\d{5}-\d{3}$/, "CEP deve estar no formato 99999-999"),
-
-  escolaridade: z.string().min(1, "Escolaridade é obrigatória"),
-
-  ondeNosConheceu: z.string().min(1, "Campo 'Onde nos conheceu' é obrigatório"),
-
-  encaminhadoPor: z.string().min(1, "Campo 'Encaminhado por' é obrigatório"),
-
-  nomeParente: z.string().min(1, "Nome do parente é obrigatório"),
-
-  parentesco: z.string().min(1, "Parentesco é obrigatório"),
-
-  telefoneParente: z
-    .string()
-    .min(1, "Telefone do parente é obrigatório")
-    .regex(
-      /^\(\d{2}\) \d{5}-\d{4}$/,
-      "Telefone deve estar no formato (99) 99999-9999"
-    ),
-
-  tags: z.array(z.string()).optional(),
-
-  corIdentificacao: z.string().min(1, "Cor de identificação é obrigatória"),
-});
 
 type ClientFormData = z.infer<typeof clientSchema>;
 
@@ -157,7 +58,6 @@ const ClientRegister: React.FC = () => {
     name: "",
     cpf: "",
     rg: "",
-    phone: "",
     cellphone: "",
     birth: null,
     age: "",
@@ -242,10 +142,9 @@ const ClientRegister: React.FC = () => {
         ...form,
         birth: form.birth ? form.birth.format("DD/MM/YYYY") : "",
       };
-      console.log("Dados do formulário:", formData);
+
       alert("Cadastro enviado com sucesso!");
     } else {
-      console.log("Erros de validação:", validationErrors);
       alert("Por favor, corrija os erros no formulário antes de continuar.");
     }
   }, [validateForm, form]);
@@ -261,46 +160,48 @@ const ClientRegister: React.FC = () => {
     [updateFormField]
   );
 
-  const handleDateChange = useCallback(
-    (newValue: Dayjs | null) => {
-      console.log("Data selecionada:", newValue);
+  const handleDateChange = useCallback((newValue: Dayjs | null) => {
+    if (newValue && newValue.isValid()) {
+      const formattedDate = newValue.format("DD/MM/YYYY");
 
-      if (newValue && newValue.isValid()) {
-        const formattedDate = newValue.format("DD/MM/YYYY");
-        console.log("Data formatada:", formattedDate);
+      let calculatedAge = "";
+      try {
+        const age = calculateAge(formattedDate);
+        calculatedAge = age !== null ? age.toString() : "";
+      } catch (error) {}
 
-        let calculatedAge = "";
-        try {
-          const age = calculateAge(formattedDate);
-          calculatedAge = age !== null ? age.toString() : "";
-          console.log("Idade calculada:", calculatedAge);
-        } catch (error) {
-          console.warn("Erro ao calcular idade:", error);
-        }
+      setForm((prev) => ({
+        ...prev,
+        birth: newValue,
+        age: calculatedAge,
+      }));
 
-        setForm((prev) => ({
-          ...prev,
-          birth: newValue,
-          age: calculatedAge,
-        }));
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.birth;
+        delete newErrors.age;
+        return newErrors;
+      });
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        birth: null,
+        age: "",
+      }));
+    }
+  }, []);
 
-        if (errors.birth || errors.age) {
-          setErrors((prev) => {
-            const newErrors = { ...prev };
-            delete newErrors.birth;
-            delete newErrors.age;
-            return newErrors;
-          });
-        }
-      } else {
-        setForm((prev) => ({
-          ...prev,
-          birth: null,
-          age: "",
-        }));
-      }
-    },
-    [errors]
+  const selectOptions = useMemo(
+    () => ({
+      nacionalidade: NACIONALIDADE_OPTIONS,
+      grupo: GRUPO_OPTIONS,
+      gender: GENDER_OPTIONS,
+      pagamento: PAGAMENTO_OPTIONS,
+      escolaridade: ESCOLARIDADE_OPTIONS,
+      ondeNosConheceu: ONDE_NOS_CONHECEU_OPTIONS,
+      encaminhadoPor: ENCAMINHADO_POR_OPTIONS,
+    }),
+    []
   );
 
   const memoizedEstados = useMemo(
@@ -310,58 +211,6 @@ const ClientRegister: React.FC = () => {
           {estado.nome}
         </MenuItem>
       )),
-    []
-  );
-
-  const selectOptions = useMemo(
-    () => ({
-      nacionalidade: [
-        { value: "", label: "--Selecione--" },
-        { value: "brasileira", label: "Brasileira" },
-        { value: "estrangeira", label: "Estrangeira" },
-      ],
-      grupo: [
-        { value: "", label: "--Selecione--" },
-        { value: "grupo1", label: "Grupo 1" },
-        { value: "grupo2", label: "Grupo 2" },
-      ],
-      gender: [
-        { value: "", label: "--Selecione--" },
-        { value: "masculino", label: "Masculino" },
-        { value: "feminino", label: "Feminino" },
-        { value: "outro", label: "Outro" },
-        { value: "prefiro-nao-informar", label: "Prefiro não informar" },
-      ],
-      pagamento: [
-        { value: "", label: "--Selecione--" },
-        { value: "pix", label: "PIX" },
-        { value: "boleto", label: "Boleto" },
-        { value: "cartao", label: "Cartão" },
-        { value: "dinheiro", label: "Dinheiro" },
-      ],
-      escolaridade: [
-        { value: "", label: "--Selecione--" },
-        { value: "fundamental", label: "Fundamental" },
-        { value: "medio", label: "Médio" },
-        { value: "superior", label: "Superior" },
-        { value: "pos-graduacao", label: "Pós-graduação" },
-      ],
-      ondeNosConheceu: [
-        { value: "", label: "--Selecione--" },
-        { value: "internet", label: "Internet" },
-        { value: "amigo", label: "Amigo" },
-        { value: "familia", label: "Família" },
-        { value: "publicidade", label: "Publicidade" },
-        { value: "outro", label: "Outro" },
-      ],
-      encaminhadoPor: [
-        { value: "", label: "--Selecione--" },
-        { value: "advogado", label: "Advogado" },
-        { value: "cliente", label: "Cliente" },
-        { value: "medico", label: "Médico" },
-        { value: "outro", label: "Outro" },
-      ],
-    }),
     []
   );
 
@@ -393,6 +242,29 @@ const ClientRegister: React.FC = () => {
           </Typography>
         )}
       </FormControl>
+    ),
+    [form, updateFormField, errors]
+  );
+
+  const renderInputMask = useCallback(
+    (mask: string, field: string, label: string, placeholder?: string) => (
+      <InputMask
+        mask={mask}
+        value={form[field as keyof typeof form] as string}
+        onChange={(e) => updateFormField(field, e.target.value)}
+      >
+        {(inputProps: any) => (
+          <TextField
+            {...inputProps}
+            label={label}
+            fullWidth
+            size="small"
+            placeholder={placeholder}
+            error={!!errors[field]}
+            helperText={errors[field]}
+          />
+        )}
+      </InputMask>
     ),
     [form, updateFormField, errors]
   );
@@ -470,6 +342,7 @@ const ClientRegister: React.FC = () => {
                   size="small"
                   label="E-mail *"
                   fullWidth
+                  type="email"
                   value={form.email}
                   onChange={(e) => updateFormField("email", e.target.value)}
                   error={!!errors.email}
@@ -499,15 +372,15 @@ const ClientRegister: React.FC = () => {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 {renderSelect("group", "Grupo", selectOptions.grupo, true)}
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 {renderSelect("gender", "Gênero", selectOptions.gender, true)}
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 <TextField
                   size="small"
                   label="Naturalidade *"
@@ -521,7 +394,19 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
+                <TextField
+                  size="small"
+                  label="Idade *"
+                  fullWidth
+                  value={form.age}
+                  disabled
+                  error={!!errors.age}
+                  helperText={errors.age}
+                />
+              </Grid>
+
+              <Grid item xs={12} md={3}>
                 {renderSelect(
                   "nacionalidade",
                   "Nacionalidade",
@@ -531,22 +416,7 @@ const ClientRegister: React.FC = () => {
               </Grid>
 
               <Grid item xs={12} md={3}>
-                <InputMask
-                  mask="999.999.999-99"
-                  value={form.cpf}
-                  onChange={(e) => updateFormField("cpf", e.target.value)}
-                >
-                  {(inputProps: any) => (
-                    <TextField
-                      {...inputProps}
-                      label="CPF *"
-                      fullWidth
-                      size="small"
-                      error={!!errors.cpf}
-                      helperText={errors.cpf}
-                    />
-                  )}
-                </InputMask>
+                {renderInputMask("999.999.999-99", "cpf", "CPF *")}
               </Grid>
 
               <Grid item xs={12} md={3}>
@@ -562,34 +432,7 @@ const ClientRegister: React.FC = () => {
               </Grid>
 
               <Grid item xs={12} md={3}>
-                <InputMask
-                  mask="(99) 99999-9999"
-                  value={form.cellphone}
-                  onChange={(e) => updateFormField("cellphone", e.target.value)}
-                >
-                  {(inputProps: any) => (
-                    <TextField
-                      {...inputProps}
-                      label="Celular *"
-                      fullWidth
-                      size="small"
-                      error={!!errors.cellphone}
-                      helperText={errors.cellphone}
-                    />
-                  )}
-                </InputMask>
-              </Grid>
-
-              <Grid item xs={12} md={3}>
-                <TextField
-                  size="small"
-                  label="Idade *"
-                  fullWidth
-                  value={form.age}
-                  disabled
-                  error={!!errors.age}
-                  helperText={errors.age}
-                />
+                {renderInputMask("(99) 99999-9999", "cellphone", "Celular *")}
               </Grid>
 
               <Grid item xs={12}>
@@ -717,7 +560,7 @@ const ClientRegister: React.FC = () => {
               <Grid item xs={12} sm={6} md={2}>
                 <TextField
                   size="small"
-                  label="Número *"
+                  label="Número"
                   fullWidth
                   value={form.numero}
                   onChange={(e) => updateFormField("numero", e.target.value)}
@@ -788,22 +631,7 @@ const ClientRegister: React.FC = () => {
               </Grid>
 
               <Grid item xs={12} sm={6} md={2}>
-                <InputMask
-                  mask="99999-999"
-                  value={form.cep}
-                  onChange={(e) => updateFormField("cep", e.target.value)}
-                >
-                  {(inputProps: any) => (
-                    <TextField
-                      {...inputProps}
-                      label="CEP *"
-                      fullWidth
-                      size="small"
-                      error={!!errors.cep}
-                      helperText={errors.cep}
-                    />
-                  )}
-                </InputMask>
+                {renderInputMask("99999-999", "cep", "CEP *")}
               </Grid>
             </Grid>
 
@@ -874,24 +702,11 @@ const ClientRegister: React.FC = () => {
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
-                <InputMask
-                  mask="(99) 99999-9999"
-                  value={form.telefoneParente}
-                  onChange={(e) =>
-                    updateFormField("telefoneParente", e.target.value)
-                  }
-                >
-                  {(inputProps: any) => (
-                    <TextField
-                      {...inputProps}
-                      label="Telefone do parente *"
-                      size="small"
-                      fullWidth
-                      error={!!errors.telefoneParente}
-                      helperText={errors.telefoneParente}
-                    />
-                  )}
-                </InputMask>
+                {renderInputMask(
+                  "(99) 99999-9999",
+                  "telefoneParente",
+                  "Telefone do parente *"
+                )}
               </Grid>
 
               <Grid item xs={12} sm={6} md={6}>

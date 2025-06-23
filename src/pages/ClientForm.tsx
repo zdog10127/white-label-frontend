@@ -64,7 +64,7 @@ const ClientForm: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    console.log(formData);
+
     setSubmitted(true);
   };
 

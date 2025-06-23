@@ -71,7 +71,7 @@ export const clientSchema = z.object({
 
   endereco: z.string().min(1, "Endereço é obrigatório"),
 
-  numero: z.string().min(1, "Número é obrigatório"),
+  numero: z.string().optional(),
 
   complemento: z.string().optional(),
 
