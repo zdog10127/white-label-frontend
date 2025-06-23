@@ -20,7 +20,7 @@ import {
   TablePagination,
   Stack,
 } from "@mui/material";
-
+import { useNavigate } from "react-router-dom";
 import clientsDataRaw from "./data/clients.json";
 
 type RawClient = {
@@ -40,6 +40,7 @@ interface ExtendedClient {
 }
 
 const ClientList: React.FC = () => {
+  const navigate = useNavigate();
   const [clients, setClients] = useState<ExtendedClient[]>([]);
   const [nameFilter, setNameFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<
@@ -152,7 +153,11 @@ const ClientList: React.FC = () => {
       </Typography>
 
       <Stack direction="row" spacing={2} mb={2} flexWrap="wrap">
-        <Button variant="contained" color="primary" onClick={handleAddClient}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/cadastro-usuario")}
+        >
           Adicionar Cliente
         </Button>
 
