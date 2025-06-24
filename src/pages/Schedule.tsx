@@ -13,6 +13,7 @@ import {
 import ScheduleModal from "../components/modal-Schedule/sheduleModal";
 import rawClientsData from "../components/data/clients.json";
 import { getBrazilianHolidays } from "../utils/holidays";
+import DataGridPage from "./dataGrid";
 
 interface ClientType {
   id: string;
@@ -152,189 +153,199 @@ const Schedule: React.FC = () => {
         ))}
       </Box>
 
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-        flexWrap="wrap"
-        gap={2}
-      >
-        <Box
-          flex={1}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          gap={2}
-        >
-          <Button onClick={prevMonth}>&lt;</Button>
-          <Typography fontWeight="bold">
-            {months[currentMonth]} {currentYear}
-          </Typography>
-          <Button onClick={nextMonth}>&gt;</Button>
-
-          {view === "semana" && (
-            <Select
-              value={selectedWeek}
-              onChange={(e) => setSelectedWeek(Number(e.target.value))}
-              size="small"
-            >
-              {weeks.map((_, idx) => (
-                <MenuItem key={idx} value={idx + 1}>
-                  Semana {idx + 1}
-                </MenuItem>
-              ))}
-            </Select>
-          )}
-
-          {view === "dia" && (
-            <Select
-              value={selectedDay}
-              onChange={(e) => setSelectedDay(Number(e.target.value))}
-              size="small"
-            >
-              {generateDaysOfMonth().map((day) => (
-                <MenuItem key={day} value={day}>
-                  Dia {day}
-                </MenuItem>
-              ))}
-            </Select>
-          )}
-        </Box>
-
-        <ToggleButtonGroup
-          value={view}
-          exclusive
-          onChange={(e, newView) => newView && setView(newView)}
-          size="small"
-        >
-          <ToggleButton value="dia">Dia</ToggleButton>
-          <ToggleButton value="semana">Semana</ToggleButton>
-          <ToggleButton value="mes">Mês</ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
-
-      <Box
-        display="flex"
-        alignItems="center"
-        gap={2}
-        mb={3}
-        sx={{
-          border: "1px solid",
-          borderColor: "divider",
-          borderRadius: 1,
-          p: 2,
-          backgroundColor: "background.paper",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-        }}
-      >
-        <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
-          <Select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            size="small"
-          >
-            <MenuItem value="todos">Todos</MenuItem>
-            <MenuItem value="confirmados">Confirmados</MenuItem>
-            <MenuItem value="pendentes">Pendentes</MenuItem>
-            <MenuItem value="cancelados">Cancelados</MenuItem>
-          </Select>
-        </Box>
-
-        <Box display="flex" alignItems="center" gap={2}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setOpenDialog(true)}
-          >
-            Agendar Sessão
-          </Button>
-
-          <Button
-            variant="outlined"
-            onClick={handleMenuClick}
-            aria-controls={openMenu ? "options-menu" : undefined}
-            aria-haspopup="true"
-            aria-expanded={openMenu ? "true" : undefined}
-          >
-            Opções ▾
-          </Button>
-          <Menu
-            id="options-menu"
-            anchorEl={anchorEl}
-            open={openMenu}
-            onClose={handleMenuClose}
-          >
-            {extraOptions.map((option, idx) => (
-              <MenuItemDropdown
-                key={idx}
-                onClick={() => handleOptionClick(option)}
-              >
-                {option}
-              </MenuItemDropdown>
-            ))}
-          </Menu>
-        </Box>
-      </Box>
-
-      <ScheduleModal
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        clients={clients}
-      />
-
-      {view === "mes" && (
+      {selectedSection === "sessionsByDay" ? (
+        <DataGridPage />
+      ) : (
         <>
           <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "repeat(7, 1fr)",
-              borderBottom: "1px solid #ccc",
-              pb: 1,
-              mb: 1,
-            }}
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={2}
+            flexWrap="wrap"
+            gap={2}
           >
-            {weekDays.map((day) => (
-              <Typography
-                key={day}
-                align="center"
-                fontWeight="bold"
-                sx={{ userSelect: "none" }}
-              >
-                {day}
+            <Box
+              flex={1}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              gap={2}
+            >
+              <Button onClick={prevMonth}>&lt;</Button>
+              <Typography fontWeight="bold">
+                {months[currentMonth]} {currentYear}
               </Typography>
-            ))}
+              <Button onClick={nextMonth}>&gt;</Button>
+
+              {view === "semana" && (
+                <Select
+                  value={selectedWeek}
+                  onChange={(e) => setSelectedWeek(Number(e.target.value))}
+                  size="small"
+                >
+                  {weeks.map((_, idx) => (
+                    <MenuItem key={idx} value={idx + 1}>
+                      Semana {idx + 1}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+
+              {view === "dia" && (
+                <Select
+                  value={selectedDay}
+                  onChange={(e) => setSelectedDay(Number(e.target.value))}
+                  size="small"
+                >
+                  {generateDaysOfMonth().map((day) => (
+                    <MenuItem key={day} value={day}>
+                      Dia {day}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            </Box>
+
+            <ToggleButtonGroup
+              value={view}
+              exclusive
+              onChange={(e, newView) => newView && setView(newView)}
+              size="small"
+            >
+              <ToggleButton value="dia">Dia</ToggleButton>
+              <ToggleButton value="semana">Semana</ToggleButton>
+              <ToggleButton value="mes">Mês</ToggleButton>
+            </ToggleButtonGroup>
           </Box>
 
           <Box
+            display="flex"
+            alignItems="center"
+            gap={2}
+            mb={3}
             sx={{
-              display: "grid",
-              gridTemplateColumns: "repeat(7, 1fr)",
-              gap: 0,
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: 1,
+              p: 2,
+              backgroundColor: "background.paper",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
             }}
           >
-            {generateDaysOfMonth().map((day) => {
-              const holiday = isHoliday(day);
-              return (
-                <Box
-                  key={day}
-                  sx={{
-                    height: 160,
-                    border: "1px solid #eee",
-                    boxSizing: "border-box",
-                    bgcolor: holiday ? "#ffebee" : "background.paper",
-                    color: holiday ? "error.main" : "text.primary",
-                    p: 1,
-                  }}
-                >
-                  <Typography variant="body2" fontWeight="bold">
+            <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+              <Select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                size="small"
+              >
+                <MenuItem value="todos">Todos</MenuItem>
+                <MenuItem value="confirmados">Confirmados</MenuItem>
+                <MenuItem value="pendentes">Pendentes</MenuItem>
+                <MenuItem value="cancelados">Cancelados</MenuItem>
+              </Select>
+            </Box>
+
+            <Box display="flex" alignItems="center" gap={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setOpenDialog(true)}
+              >
+                Agendar Sessão
+              </Button>
+
+              <Button
+                variant="outlined"
+                onClick={handleMenuClick}
+                aria-controls={openMenu ? "options-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={openMenu ? "true" : undefined}
+              >
+                Opções ▾
+              </Button>
+              <Menu
+                id="options-menu"
+                anchorEl={anchorEl}
+                open={openMenu}
+                onClose={handleMenuClose}
+              >
+                {extraOptions.map((option, idx) => (
+                  <MenuItemDropdown
+                    key={idx}
+                    onClick={() => handleOptionClick(option)}
+                  >
+                    {option}
+                  </MenuItemDropdown>
+                ))}
+              </Menu>
+            </Box>
+          </Box>
+
+          <ScheduleModal
+            open={openDialog}
+            onClose={() => setOpenDialog(false)}
+            clients={clients}
+            onSave={(novaSessao) => {
+              console.log("Nova sessão salva na agenda mensal:", novaSessao);
+              setOpenDialog(false);
+            }}
+          />
+
+          {view === "mes" && (
+            <>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(7, 1fr)",
+                  borderBottom: "1px solid #ccc",
+                  pb: 1,
+                  mb: 1,
+                }}
+              >
+                {weekDays.map((day) => (
+                  <Typography
+                    key={day}
+                    align="center"
+                    fontWeight="bold"
+                    sx={{ userSelect: "none" }}
+                  >
                     {day}
                   </Typography>
-                </Box>
-              );
-            })}
-          </Box>
+                ))}
+              </Box>
+
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(7, 1fr)",
+                  gap: 0,
+                }}
+              >
+                {generateDaysOfMonth().map((day) => {
+                  const holiday = isHoliday(day);
+                  return (
+                    <Box
+                      key={day}
+                      sx={{
+                        height: 160,
+                        border: "1px solid #eee",
+                        boxSizing: "border-box",
+                        bgcolor: holiday ? "#ffebee" : "background.paper",
+                        color: holiday ? "error.main" : "text.primary",
+                        p: 1,
+                      }}
+                    >
+                      <Typography variant="body2" fontWeight="bold">
+                        {day}
+                      </Typography>
+                    </Box>
+                  );
+                })}
+              </Box>
+            </>
+          )}
         </>
       )}
     </Box>
