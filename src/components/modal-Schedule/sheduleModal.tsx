@@ -63,7 +63,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
     const novaSessao = {
       id: crypto.randomUUID(),
       cpf: client.id,
-      data: dayjs(date).format("YYYY-MM-DD"), // ✅ Corrigido
+      data: dayjs(date).format("YYYY-MM-DD"),
       titulo: service,
       name: client.name,
     };

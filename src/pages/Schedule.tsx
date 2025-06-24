@@ -288,7 +288,6 @@ const Schedule: React.FC = () => {
             onClose={() => setOpenDialog(false)}
             clients={clients}
             onSave={(novaSessao) => {
-              console.log("Nova sessão salva na agenda mensal:", novaSessao);
               setOpenDialog(false);
             }}
           />
