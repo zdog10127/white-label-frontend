@@ -16,6 +16,7 @@ import {
   Select,
 } from "@mui/material";
 import { Autocomplete } from "@mui/material";
+import dayjs from "dayjs";
 
 interface ClientType {
   id: string;
@@ -26,12 +27,20 @@ interface ScheduleModalProps {
   open: boolean;
   onClose: () => void;
   clients: ClientType[];
+  onSave: (novaSessao: {
+    id: string;
+    cpf: string;
+    data: string;
+    titulo: string;
+    name: string;
+  }) => void;
 }
 
 const ScheduleModal: React.FC<ScheduleModalProps> = ({
   open,
   onClose,
   clients,
+  onSave,
 }) => {
   const [eventType, setEventType] = React.useState<"individual" | "geral">(
     "individual"
@@ -49,17 +58,17 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
   const [service, setService] = React.useState<string>("");
 
   const handleSave = () => {
-    if (!client) return;
-    const eventData = {
-      eventType,
-      client: client.name,
-      date,
-      startTime,
-      endTime,
-      recurrence,
-      method,
-      service,
+    if (!client || !date || !startTime || !endTime || !service) return;
+
+    const novaSessao = {
+      id: crypto.randomUUID(),
+      cpf: client.id,
+      data: dayjs(date).format("YYYY-MM-DD"),
+      titulo: service,
+      name: client.name,
     };
+
+    onSave(novaSessao);
     onClose();
   };
 
@@ -165,6 +174,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
           </Select>
         </FormControl>
       </DialogContent>
+
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
         <Button
