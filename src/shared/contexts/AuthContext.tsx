@@ -1,58 +1,79 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
+
+interface User {
+  email: string;
+  avatar?: string;
+}
 
 interface AuthContextType {
-  user: string | null;
-  login: (name: string) => void;
+  user: User | null;
+  login: (email: string, password: string) => boolean;
   logout: () => void;
-  loading: boolean;
+  isAuthenticated: boolean;
+  updateUserAvatar: (avatar: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  login: () => {},
+  login: () => false,
   logout: () => {},
-  loading: true,
+  isAuthenticated: false,
+  updateUserAvatar: () => {},
 });
-
-export const useAuth = () => useContext(AuthContext);
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+  const login = (email: string, password: string): boolean => {
+    const usersDB = [
+      {
+        email: "admin@example.com",
+        password: "1234",
+      },
+      {
+        email: "jhonathancosta_dev@hotmail.com",
+        password: "1234567890",
+      },
+      {
+        email: "gabrielteles@example.com",
+        password: "1234567890",
+      },
+    ];
 
-    if (storedUser) {
-      setUser(storedUser);
+    const matchedUser = usersDB.find(
+      (user) => user.email === email && user.password === password
+    );
+
+    if (matchedUser) {
+      const { password: _, ...userData } = matchedUser;
+      setUser(userData);
+      return true;
     }
 
-    setLoading(false);
-  }, []);
-
-  const login = (name: string) => {
-    setUser(name);
-    localStorage.setItem("user", name);
+    return false;
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
+  };
+
+  const updateUserAvatar = (avatar: string) => {
+    if (user) {
+      setUser({ ...user, avatar });
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, isAuthenticated: !!user, updateUserAvatar }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);

@@ -6,6 +6,7 @@ import {
   TextField,
   Button,
   Paper,
+  Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../shared/contexts/AuthContext";
@@ -13,19 +14,25 @@ import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
 
 const Login: React.FC = () => {
-  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (name.trim() !== "") {
-      login(name);
+    setError(null);
+
+    const success = login(email, password);
+
+    if (success) {
       navigate("/home");
+    } else {
+      setError("email ou senha incorretos");
     }
   };
-
   return (
     <Container
       maxWidth={false}
@@ -56,24 +63,31 @@ const Login: React.FC = () => {
         <Typography variant="h4" align="center" gutterBottom>
           White Label
         </Typography>
+
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <TextField
             fullWidth
-            label="Digite seu nome"
+            label="Digite seu e-mail"
             variant="outlined"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             margin="normal"
           />
           <TextField
             fullWidth
-            label="Digite Sua Senha"
+            label="Digite sua senha"
             variant="outlined"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             margin="normal"
           />
+
+          {error && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {error}
+            </Alert>
+          )}
 
           <Button
             fullWidth
