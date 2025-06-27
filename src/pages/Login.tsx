@@ -25,14 +25,22 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError(null);
 
+    const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
+    if (!emailRegex.test(email)) {
+      setError("Formato de e-mail inválido. Use exemplo@exemplo.com");
+      return;
+    }
+
     const success = login(email, password);
 
     if (success) {
       navigate("/home");
     } else {
-      setError("email ou senha incorretos");
+      setError("E-mail ou senha incorretos");
     }
   };
+
   return (
     <Container
       maxWidth={false}

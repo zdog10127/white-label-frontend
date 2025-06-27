@@ -10,46 +10,48 @@ import {
   Avatar,
   Paper,
   Divider,
-  SelectChangeEvent,
 } from "@mui/material";
 import { useAuth } from "../shared/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { estadosBrasil } from "../utils/estados";
-
-interface ProfileData {
-  firstName: string;
-  lastName: string;
-  birthDate: string;
-  gender: string;
-  email: string;
-  phone: string;
-  street: string;
-  number: string;
-  city: string;
-  state: string;
-  zip: string;
-  neighborhood: string;
-}
+import { occupationOptions } from "../constants/occupationOptions";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  userProfileSchema,
+  UserProfileFormData,
+} from "../schemas/userPageSchemas";
 
 export default function UserPage() {
   const { user, logout, updateUserAvatar } = useAuth();
   const navigate = useNavigate();
 
   const [preview, setPreview] = useState<string | null>(null);
-  const [formData, setFormData] = useState<ProfileData>({
-    firstName: "",
-    lastName: "",
-    birthDate: "",
-    gender: "",
-    email: "",
-    phone: "",
-    street: "",
-    number: "",
-    city: "",
-    state: "",
-    zip: "",
-    neighborhood: "",
+
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<UserProfileFormData>({
+    resolver: zodResolver(userProfileSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      birthDate: "",
+      gender: "",
+      email: "",
+      phone: "",
+      occupation: "",
+      street: "",
+      number: "",
+      neighborhood: "",
+      city: "",
+      state: "",
+      zip: "",
+    },
   });
 
   useEffect(() => {
@@ -61,9 +63,14 @@ export default function UserPage() {
       else if (user.avatar) setPreview(user.avatar);
 
       const savedData = localStorage.getItem(`user-profile-data-${user.email}`);
-      if (savedData) setFormData(JSON.parse(savedData));
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        Object.keys(parsed).forEach((key) => {
+          setValue(key as keyof UserProfileFormData, parsed[key]);
+        });
+      }
     }
-  }, [user]);
+  }, [user, setValue]);
 
   const toBase64 = (file: File) =>
     new Promise<string>((resolve, reject) => {
@@ -85,21 +92,11 @@ export default function UserPage() {
     }
   };
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSelectChange = (e: SelectChangeEvent<string>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSave = () => {
+  const onSubmit = (data: UserProfileFormData) => {
     if (user?.email) {
       localStorage.setItem(
         `user-profile-data-${user.email}`,
-        JSON.stringify(formData)
+        JSON.stringify(data)
       );
       alert("Dados salvos com sucesso!");
     }
@@ -127,64 +124,120 @@ export default function UserPage() {
 
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Nome"
+                <Controller
                   name="firstName"
-                  value={formData.firstName}
-                  onChange={handleTextChange}
-                  fullWidth
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Nome"
+                      fullWidth
+                      error={!!errors.firstName}
+                      helperText={errors.firstName?.message}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Sobrenome"
+                <Controller
                   name="lastName"
-                  value={formData.lastName}
-                  onChange={handleTextChange}
-                  fullWidth
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Sobrenome"
+                      fullWidth
+                      error={!!errors.lastName}
+                      helperText={errors.lastName?.message}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Data de Nascimento"
+                <Controller
                   name="birthDate"
-                  type="date"
-                  value={formData.birthDate}
-                  onChange={handleTextChange}
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Data de Nascimento"
+                      type="date"
+                      fullWidth
+                      InputLabelProps={{ shrink: true }}
+                      error={!!errors.birthDate}
+                      helperText={errors.birthDate?.message}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Select
+                <Controller
                   name="gender"
-                  value={formData.gender}
-                  onChange={handleSelectChange}
-                  fullWidth
-                  displayEmpty
-                >
-                  <MenuItem value="">Gênero</MenuItem>
-                  <MenuItem value="male">Masculino</MenuItem>
-                  <MenuItem value="female">Feminino</MenuItem>
-                  <MenuItem value="other">Outro</MenuItem>
-                </Select>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="E-mail"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleTextChange}
-                  fullWidth
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      fullWidth
+                      displayEmpty
+                      error={!!errors.gender}
+                    >
+                      <MenuItem value="">Gênero</MenuItem>
+                      <MenuItem value="male">Masculino</MenuItem>
+                      <MenuItem value="female">Feminino</MenuItem>
+                      <MenuItem value="other">Outro</MenuItem>
+                    </Select>
+                  )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Telefone"
+              <Grid item xs={12} sm={5}>
+                <Controller
+                  name="email"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="E-mail"
+                      fullWidth
+                      error={!!errors.email}
+                      helperText={errors.email?.message}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Controller
                   name="phone"
-                  value={formData.phone}
-                  onChange={handleTextChange}
-                  fullWidth
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Telefone"
+                      fullWidth
+                      error={!!errors.phone}
+                      helperText={errors.phone?.message}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Controller
+                  name="occupation"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      fullWidth
+                      displayEmpty
+                      error={!!errors.occupation}
+                    >
+                      <MenuItem value="">Selecione sua ocupação</MenuItem>
+                      {occupationOptions.map((occupation) => (
+                        <MenuItem key={occupation} value={occupation}>
+                          {occupation}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
                 />
               </Grid>
             </Grid>
@@ -197,64 +250,99 @@ export default function UserPage() {
 
             <Grid container spacing={2}>
               <Grid item xs={12} sm={10}>
-                <TextField
-                  label="Rua"
+                <Controller
                   name="street"
-                  value={formData.street}
-                  onChange={handleTextChange}
-                  fullWidth
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Rua"
+                      fullWidth
+                      error={!!errors.street}
+                      helperText={errors.street?.message}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12} sm={2}>
-                <TextField
-                  label="Número"
+                <Controller
                   name="number"
-                  value={formData.number}
-                  onChange={handleTextChange}
-                  fullWidth
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Número"
+                      fullWidth
+                      error={!!errors.number}
+                      helperText={errors.number?.message}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Bairro"
+                <Controller
                   name="neighborhood"
-                  value={formData.neighborhood}
-                  onChange={handleTextChange}
-                  fullWidth
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Bairro"
+                      fullWidth
+                      error={!!errors.neighborhood}
+                      helperText={errors.neighborhood?.message}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
-                <TextField
-                  label="Cidade"
+                <Controller
                   name="city"
-                  value={formData.city}
-                  onChange={handleTextChange}
-                  fullWidth
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Cidade"
+                      fullWidth
+                      error={!!errors.city}
+                      helperText={errors.city?.message}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12} sm={3}>
-                <Select
+                <Controller
                   name="state"
-                  value={formData.state}
-                  onChange={handleSelectChange}
-                  fullWidth
-                  displayEmpty
-                >
-                  <MenuItem value="">Estado</MenuItem>
-                  {estadosBrasil.map((estado) => (
-                    <MenuItem key={estado.sigla} value={estado.sigla}>
-                      {estado.nome}
-                    </MenuItem>
-                  ))}
-                </Select>
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      fullWidth
+                      displayEmpty
+                      error={!!errors.state}
+                    >
+                      <MenuItem value="">Estado</MenuItem>
+                      {estadosBrasil.map((estado) => (
+                        <MenuItem key={estado.sigla} value={estado.sigla}>
+                          {estado.nome}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
               </Grid>
               <Grid item xs={12} sm={2}>
-                <TextField
-                  label="CEP"
+                <Controller
                   name="zip"
-                  value={formData.zip}
-                  onChange={handleTextChange}
-                  fullWidth
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="CEP"
+                      fullWidth
+                      error={!!errors.zip}
+                      helperText={errors.zip?.message}
+                    />
+                  )}
                 />
               </Grid>
             </Grid>
@@ -262,7 +350,7 @@ export default function UserPage() {
             <Button
               variant="contained"
               color="primary"
-              onClick={handleSave}
+              onClick={handleSubmit(onSubmit)}
               sx={{ mt: 3 }}
             >
               Salvar Dados
@@ -297,20 +385,22 @@ export default function UserPage() {
                   }}
                 />
               ) : (
-                formData.firstName?.charAt(0).toUpperCase() || "U"
+                watch("firstName")?.charAt(0).toUpperCase() || "U"
               )}
             </Avatar>
 
             <Typography variant="h6" mt={2}>
-              {formData.firstName && formData.lastName
-                ? `${formData.firstName} ${formData.lastName}`
+              {watch("firstName") && watch("lastName")
+                ? `${watch("firstName")} ${watch("lastName")}`
                 : "Usuário"}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Desenvolvedor Front-end "treinee"
+              {watch("occupation") || "Ocupação não definida"}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Minas Gerais, Brasil
+              {watch("city") && watch("state")
+                ? `${watch("city")}, ${watch("state")}`
+                : "Localização não definida"}
             </Typography>
           </Paper>
 

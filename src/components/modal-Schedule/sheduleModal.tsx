@@ -33,6 +33,8 @@ interface ScheduleModalProps {
     data: string;
     titulo: string;
     name: string;
+    startTime: string;
+    endTime: string;
   }) => void;
 }
 
@@ -66,6 +68,8 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
       data: dayjs(date).format("YYYY-MM-DD"),
       titulo: service,
       name: client.name,
+      startTime,
+      endTime,
     };
 
     onSave(novaSessao);
@@ -180,7 +184,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
         <Button
           onClick={handleSave}
           variant="contained"
-          disabled={!client || !date || !startTime || !endTime}
+          disabled={!client || !date || !startTime || !endTime || !service}
         >
           Salvar
         </Button>

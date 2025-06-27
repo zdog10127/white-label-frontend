@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
 interface User {
   email: string;
@@ -11,6 +17,7 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   updateUserAvatar: (avatar: string) => void;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -19,6 +26,7 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
   isAuthenticated: false,
   updateUserAvatar: () => {},
+  loading: true,
 });
 
 interface AuthProviderProps {
@@ -27,6 +35,15 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false);
+  }, []);
 
   const login = (email: string, password: string): boolean => {
     const usersDB = [
@@ -51,6 +68,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (matchedUser) {
       const { password: _, ...userData } = matchedUser;
       setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
       return true;
     }
 
@@ -59,17 +77,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem("user");
   };
 
   const updateUserAvatar = (avatar: string) => {
     if (user) {
-      setUser({ ...user, avatar });
+      const updatedUser = { ...user, avatar };
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
     }
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, isAuthenticated: !!user, updateUserAvatar }}
+      value={{
+        user,
+        login,
+        logout,
+        isAuthenticated: !!user,
+        updateUserAvatar,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>

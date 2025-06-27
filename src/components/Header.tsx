@@ -68,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({
             </IconButton>
           )}
           <Typography variant="h6" noWrap component="div">
-            {title} 
+            {title}
           </Typography>
         </Box>
 

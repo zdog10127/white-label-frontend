@@ -1,23 +1,36 @@
-import React, { useState, MouseEvent } from "react";
+import React, { useState } from "react";
 import {
   Box,
-  Button,
-  Select,
-  MenuItem,
   Typography,
+  Button,
   ToggleButton,
   ToggleButtonGroup,
-  Menu,
-  MenuItem as MenuItemDropdown,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  useTheme,
 } from "@mui/material";
 import ScheduleModal from "../components/modal-Schedule/sheduleModal";
 import rawClientsData from "../components/data/clients.json";
 import { getBrazilianHolidays } from "../utils/holidays";
-import DataGridPage from "./dataGrid";
 
 interface ClientType {
   id: string;
   name: string;
+}
+
+interface AgendamentoType {
+  id: string;
+  cpf: string;
+  data: string;
+  titulo: string;
+  name: string;
+  startTime: string;
+  endTime: string;
 }
 
 const clients: ClientType[] = rawClientsData.map((client, index) => ({
@@ -40,41 +53,28 @@ const months = [
   "Dezembro",
 ];
 
-const weekDays = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
-
-const extraOptions = ["Exportar agenda", "Configurações", "Ajuda"];
-
-const sectionLabels = {
-  agendaGeneral: "Agenda Geral",
-  sessionsByDay: "Sessões por Dia",
-  roomAgenda: "Agenda de Salas",
-  bookingRequests: "Solicitações de Agendamento",
-};
+const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const weekDaysFull = [
+  "Domingo",
+  "Segunda",
+  "Terça",
+  "Quarta",
+  "Quinta",
+  "Sexta",
+  "Sábado",
+];
 
 const Schedule: React.FC = () => {
+  const theme = useTheme();
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const holidays = getBrazilianHolidays(currentYear);
-  const [filter, setFilter] = useState("todos");
   const [view, setView] = useState<"mes" | "semana" | "dia">("mes");
-  const [selectedSection, setSelectedSection] = useState("agendaGeneral");
   const [selectedWeek, setSelectedWeek] = useState(1);
   const [selectedDay, setSelectedDay] = useState(today.getDate());
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const openMenu = Boolean(anchorEl);
   const [openDialog, setOpenDialog] = useState(false);
-
-  const handleMenuClick = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-  const handleOptionClick = (option: string) => {
-    alert(`Selecionou: ${option}`);
-    handleMenuClose();
-  };
+  const [agendamentos, setAgendamentos] = useState<AgendamentoType[]>([]);
 
   const nextMonth = () => {
     if (currentMonth === 11) {
@@ -98,10 +98,34 @@ const Schedule: React.FC = () => {
     setSelectedDay(1);
   };
 
-  const generateDaysOfMonth = () => {
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const getDaysInMonth = (year: number, month: number) =>
+    new Date(year, month + 1, 0).getDate();
+
+  const getFirstWeekdayOfMonth = (year: number, month: number) =>
+    new Date(year, month, 1).getDay();
+
+  const getCalendarMatrix = () => {
+    const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+    const firstWeekday = getFirstWeekdayOfMonth(currentYear, currentMonth);
+    const weeks: (number | null)[][] = [];
+    let currentDay = 1 - firstWeekday;
+
+    while (currentDay <= daysInMonth) {
+      const week: (number | null)[] = [];
+      for (let i = 0; i < 7; i++) {
+        if (currentDay > 0 && currentDay <= daysInMonth) {
+          week.push(currentDay);
+        } else {
+          week.push(null);
+        }
+        currentDay++;
+      }
+      weeks.push(week);
+    }
+    return weeks;
   };
+
+  const weeks = getCalendarMatrix();
 
   const isHoliday = (day: number) => {
     const dateStr = `${currentYear}-${(currentMonth + 1)
@@ -110,243 +134,555 @@ const Schedule: React.FC = () => {
     return holidays.includes(dateStr);
   };
 
-  const getFirstDayOfWeek = (year: number, month: number) => {
-    const day = new Date(year, month, 1).getDay();
-    return day === 0 ? 7 : day;
+  const agendamentosDoDia = (day: number) => {
+    const dateStr = `${currentYear}-${(currentMonth + 1)
+      .toString()
+      .padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+    return agendamentos.filter((a) => a.data === dateStr);
   };
 
-  const getWeeksOfMonth = () => {
-    const weeks: (number | null)[][] = [];
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    const firstDayWeek = getFirstDayOfWeek(currentYear, currentMonth);
-    let startDay = 1 - (firstDayWeek - 1);
-    while (startDay <= daysInMonth) {
-      const week: (number | null)[] = [];
-      for (let i = 0; i < 7; i++) {
-        const day = startDay + i;
-        week.push(day >= 1 && day <= daysInMonth ? day : null);
-      }
-      weeks.push(week);
-      startDay += 7;
+  const agendamentosDiaSelecionado = () => {
+    const dateStr = `${currentYear}-${(currentMonth + 1)
+      .toString()
+      .padStart(2, "0")}-${selectedDay.toString().padStart(2, "0")}`;
+    return agendamentos.filter((a) => a.data === dateStr);
+  };
+
+  const nextWeek = () => {
+    if (selectedWeek < weeks.length) {
+      setSelectedWeek(selectedWeek + 1);
+    } else {
+      nextMonth();
+      setSelectedWeek(1);
     }
-    return weeks;
   };
 
-  const weeks = getWeeksOfMonth();
+  const prevWeek = () => {
+    if (selectedWeek > 1) {
+      setSelectedWeek(selectedWeek - 1);
+    } else {
+      prevMonth();
+      const prevWeeks = getCalendarMatrix();
+      setSelectedWeek(prevWeeks.length);
+    }
+  };
 
-  return (
-    <Box p={3}>
+  const getWeekDays = () => {
+    if (weeks[selectedWeek - 1]) {
+      return weeks[selectedWeek - 1].map((day, index) => ({
+        dayNumber: day,
+        dayName: weekDaysFull[index],
+        isHoliday: day ? isHoliday(day) : false,
+        agendamentos: day ? agendamentosDoDia(day) : [],
+      }));
+    }
+    return [];
+  };
+
+  const renderMonthView = () => (
+    <Box>
       <Box
         display="flex"
-        gap={2}
-        mb={3}
-        sx={{ borderBottom: "2px solid", borderColor: "divider", pb: 1 }}
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
       >
-        {Object.entries(sectionLabels).map(([id, label]) => (
-          <Button
-            key={id}
-            variant={selectedSection === id ? "contained" : "outlined"}
-            onClick={() => setSelectedSection(id)}
-          >
-            {label}
-          </Button>
+        <Button variant="outlined" onClick={prevMonth}>
+          {"<"}
+        </Button>
+        <Typography variant="h6">
+          {months[currentMonth]} {currentYear}
+        </Typography>
+        <Button variant="outlined" onClick={nextMonth}>
+          {">"}
+        </Button>
+      </Box>
+
+      <Box
+        display="grid"
+        gridTemplateColumns="repeat(7, 1fr)"
+        textAlign="center"
+        mb={1}
+      >
+        {weekDays.map((day) => (
+          <Typography key={day} fontWeight="bold">
+            {day}
+          </Typography>
         ))}
       </Box>
 
-      {selectedSection === "sessionsByDay" ? (
-        <DataGridPage />
-      ) : (
-        <>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mb={2}
-            flexWrap="wrap"
-            gap={2}
-          >
-            <Box
-              flex={1}
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              gap={2}
-            >
-              <Button onClick={prevMonth}>&lt;</Button>
-              <Typography fontWeight="bold">
-                {months[currentMonth]} {currentYear}
-              </Typography>
-              <Button onClick={nextMonth}>&gt;</Button>
+      <Box display="grid" gridTemplateColumns="repeat(7, 1fr)" gap={1}>
+        {weeks.map((week, i) =>
+          week.map((day, j) => {
+            if (!day)
+              return <Box key={`empty-${i}-${j}`} sx={{ height: 100 }} />;
+            const holiday = isHoliday(day);
+            const ags = agendamentosDoDia(day);
+            const isToday =
+              day === today.getDate() &&
+              currentMonth === today.getMonth() &&
+              currentYear === today.getFullYear();
 
-              {view === "semana" && (
-                <Select
-                  value={selectedWeek}
-                  onChange={(e) => setSelectedWeek(Number(e.target.value))}
-                  size="small"
-                >
-                  {weeks.map((_, idx) => (
-                    <MenuItem key={idx} value={idx + 1}>
-                      Semana {idx + 1}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
-
-              {view === "dia" && (
-                <Select
-                  value={selectedDay}
-                  onChange={(e) => setSelectedDay(Number(e.target.value))}
-                  size="small"
-                >
-                  {generateDaysOfMonth().map((day) => (
-                    <MenuItem key={day} value={day}>
-                      Dia {day}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
-            </Box>
-
-            <ToggleButtonGroup
-              value={view}
-              exclusive
-              onChange={(e, newView) => newView && setView(newView)}
-              size="small"
-            >
-              <ToggleButton value="dia">Dia</ToggleButton>
-              <ToggleButton value="semana">Semana</ToggleButton>
-              <ToggleButton value="mes">Mês</ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
-
-          <Box
-            display="flex"
-            alignItems="center"
-            gap={2}
-            mb={3}
-            sx={{
-              border: "1px solid",
-              borderColor: "divider",
-              borderRadius: 1,
-              p: 2,
-              backgroundColor: "background.paper",
-              flexWrap: "wrap",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
-              <Select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                size="small"
-              >
-                <MenuItem value="todos">Todos</MenuItem>
-                <MenuItem value="confirmados">Confirmados</MenuItem>
-                <MenuItem value="pendentes">Pendentes</MenuItem>
-                <MenuItem value="cancelados">Cancelados</MenuItem>
-              </Select>
-            </Box>
-
-            <Box display="flex" alignItems="center" gap={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => setOpenDialog(true)}
-              >
-                Agendar Sessão
-              </Button>
-
-              <Button
-                variant="outlined"
-                onClick={handleMenuClick}
-                aria-controls={openMenu ? "options-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={openMenu ? "true" : undefined}
-              >
-                Opções ▾
-              </Button>
-              <Menu
-                id="options-menu"
-                anchorEl={anchorEl}
-                open={openMenu}
-                onClose={handleMenuClose}
-              >
-                {extraOptions.map((option, idx) => (
-                  <MenuItemDropdown
-                    key={idx}
-                    onClick={() => handleOptionClick(option)}
-                  >
-                    {option}
-                  </MenuItemDropdown>
-                ))}
-              </Menu>
-            </Box>
-          </Box>
-
-          <ScheduleModal
-            open={openDialog}
-            onClose={() => setOpenDialog(false)}
-            clients={clients}
-            onSave={(novaSessao) => {
-              setOpenDialog(false);
-            }}
-          />
-
-          {view === "mes" && (
-            <>
+            return (
               <Box
+                key={day}
+                onClick={() => {
+                  setSelectedDay(day);
+                  setView("dia");
+                }}
                 sx={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(7, 1fr)",
-                  borderBottom: "1px solid #ccc",
-                  pb: 1,
-                  mb: 1,
+                  cursor: "pointer",
+                  borderRadius: 1,
+                  p: 1,
+                  height: 100,
+                  backgroundColor: isToday
+                    ? theme.palette.primary.main
+                    : holiday
+                    ? theme.palette.error.light
+                    : ags.length > 0
+                    ? theme.palette.info.light
+                    : theme.palette.background.default,
+                  color: isToday
+                    ? theme.palette.primary.contrastText
+                    : theme.palette.text.primary,
+                  border: `1px solid ${theme.palette.divider}`,
+                  overflow: "hidden",
+                  "&:hover": {
+                    backgroundColor: theme.palette.action.hover,
+                    color: theme.palette.text.primary,
+                  },
                 }}
               >
-                {weekDays.map((day) => (
+                <Typography fontWeight="bold" fontSize={14}>
+                  {day}
+                </Typography>
+                {ags.map((ag) => (
                   <Typography
-                    key={day}
-                    align="center"
-                    fontWeight="bold"
-                    sx={{ userSelect: "none" }}
+                    key={ag.id}
+                    fontSize={10}
+                    noWrap
+                    sx={{
+                      color: isToday
+                        ? theme.palette.primary.contrastText
+                        : theme.palette.text.secondary,
+                    }}
                   >
-                    {day}
+                    {ag.name.split(" ")[0]} - {ag.startTime}
                   </Typography>
                 ))}
               </Box>
+            );
+          })
+        )}
+      </Box>
+    </Box>
+  );
 
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(7, 1fr)",
-                  gap: 0,
-                }}
-              >
-                {generateDaysOfMonth().map((day) => {
-                  const holiday = isHoliday(day);
-                  return (
-                    <Box
-                      key={day}
-                      sx={{
-                        height: 160,
-                        border: "1px solid #eee",
-                        boxSizing: "border-box",
-                        bgcolor: holiday ? "#ffebee" : "background.paper",
-                        color: holiday ? "error.main" : "text.primary",
-                        p: 1,
-                      }}
-                    >
-                      <Typography variant="body2" fontWeight="bold">
-                        {day}
+  const renderWeekView = () => {
+    const weekDays = getWeekDays();
+
+    return (
+      <Box>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={3}
+        >
+          <Button variant="outlined" onClick={prevWeek} sx={{ minWidth: 160 }}>
+            {"< Semana Anterior"}
+          </Button>
+          <Box textAlign="center">
+            <Typography variant="h5" fontWeight="bold" color="primary">
+              {`Semana ${selectedWeek}`}
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary">
+              {`${months[currentMonth]} ${currentYear}`}
+            </Typography>
+          </Box>
+          <Button variant="outlined" onClick={nextWeek} sx={{ minWidth: 160 }}>
+            {"Próxima Semana >"}
+          </Button>
+        </Box>
+
+        <TableContainer
+          component={Paper}
+          elevation={3}
+          sx={{
+            borderRadius: 2,
+            overflow: "hidden",
+            maxHeight: "70vh",
+          }}
+        >
+          <Table size="medium" stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell
+                  sx={{
+                    backgroundColor: "primary.main",
+                    color: "primary.contrastText",
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    width: "15%",
+                    minWidth: 120,
+                  }}
+                >
+                  Dia da Semana
+                </TableCell>
+                <TableCell
+                  sx={{
+                    backgroundColor: "primary.main",
+                    color: "primary.contrastText",
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    width: "15%",
+                    minWidth: 120,
+                  }}
+                >
+                  Data
+                </TableCell>
+                <TableCell
+                  sx={{
+                    backgroundColor: "primary.main",
+                    color: "primary.contrastText",
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    width: "70%",
+                  }}
+                >
+                  Agendamentos
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {weekDays.map((day, index) => {
+                const isToday =
+                  day.dayNumber === today.getDate() &&
+                  currentMonth === today.getMonth() &&
+                  currentYear === today.getFullYear();
+
+                return (
+                  <TableRow
+                    key={index}
+                    sx={{
+                      backgroundColor: isToday
+                        ? "action.selected"
+                        : day.isHoliday
+                        ? "error.light"
+                        : index % 2 === 0
+                        ? "action.hover"
+                        : "background.paper",
+                      cursor: day.dayNumber ? "pointer" : "default",
+                      height: 80,
+                      "&:hover": {
+                        backgroundColor: day.dayNumber
+                          ? isToday
+                            ? "action.selected"
+                            : "action.focus"
+                          : "inherit",
+                        transform: day.dayNumber ? "scale(1.001)" : "none",
+                        transition: "all 0.2s ease-in-out",
+                      },
+                      border: isToday ? 2 : 0,
+                      borderColor: isToday ? "primary.main" : "transparent",
+                      borderStyle: "solid",
+                    }}
+                    onClick={() => {
+                      if (day.dayNumber) {
+                        setSelectedDay(day.dayNumber);
+                        setView("dia");
+                      }
+                    }}
+                  >
+                    <TableCell sx={{ verticalAlign: "top", py: 2 }}>
+                      <Typography
+                        variant="body1"
+                        fontWeight={
+                          isToday ? "bold" : day.isHoliday ? "bold" : "normal"
+                        }
+                        color={
+                          isToday
+                            ? "primary"
+                            : day.isHoliday
+                            ? "error"
+                            : "text.primary"
+                        }
+                        sx={{ fontSize: "0.95rem" }}
+                      >
+                        {day.dayName}
                       </Typography>
-                    </Box>
-                  );
-                })}
-              </Box>
-            </>
-          )}
-        </>
-      )}
+                      {isToday && (
+                        <Typography
+                          variant="caption"
+                          color="primary"
+                          fontWeight="bold"
+                        >
+                          (Hoje)
+                        </Typography>
+                      )}
+                      {day.isHoliday && (
+                        <Typography variant="caption" color="error">
+                          (Feriado)
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell sx={{ verticalAlign: "top", py: 2 }}>
+                      <Typography
+                        variant="body1"
+                        fontWeight={isToday ? "bold" : "normal"}
+                        color={isToday ? "primary" : "text.primary"}
+                        sx={{ fontSize: "0.95rem" }}
+                      >
+                        {day.dayNumber
+                          ? `${day.dayNumber.toString().padStart(2, "0")}/${(
+                              currentMonth + 1
+                            )
+                              .toString()
+                              .padStart(2, "0")}/${currentYear}`
+                          : ""}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ verticalAlign: "top", py: 2 }}>
+                      {day.agendamentos.length === 0 ? (
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                          sx={{
+                            height: "40px",
+                            backgroundColor: "action.hover",
+                            borderRadius: 1,
+                            border: 1,
+                            borderColor: "divider",
+                            borderStyle: "dashed",
+                          }}
+                        >
+                          <Typography
+                            color="text.secondary"
+                            fontStyle="italic"
+                            variant="body2"
+                          >
+                            Nenhum agendamento
+                          </Typography>
+                          {day.dayNumber && (
+                            <Button
+                              size="small"
+                              variant="text"
+                              sx={{ ml: 1, fontSize: "0.7rem" }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedDay(day.dayNumber!);
+                                setOpenDialog(true);
+                              }}
+                            >
+                              + Agendar
+                            </Button>
+                          )}
+                        </Box>
+                      ) : (
+                        <Box>
+                          {day.agendamentos.map((ag, agIndex) => (
+                            <Box
+                              key={ag.id}
+                              sx={{
+                                mb:
+                                  agIndex < day.agendamentos.length - 1
+                                    ? 1.5
+                                    : 0,
+                                p: 1.5,
+                                backgroundColor: "success.light",
+                                borderRadius: 1,
+                                border: 1,
+                                borderColor: "success.main",
+                                boxShadow: 1,
+                                "&:hover": {
+                                  backgroundColor: "success.dark",
+                                  transform: "translateX(2px)",
+                                  transition: "all 0.2s ease-in-out",
+                                },
+                              }}
+                            >
+                              <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                color="text.primary"
+                                sx={{ fontSize: "0.9rem" }}
+                              >
+                                {ag.titulo}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{
+                                  display: "block",
+                                  mt: 0.5,
+                                  fontSize: "0.8rem",
+                                }}
+                              >
+                                👤 {ag.name}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{
+                                  display: "block",
+                                  fontSize: "0.8rem",
+                                  fontWeight: "medium",
+                                }}
+                              >
+                                🕒 {ag.startTime} às {ag.endTime}
+                              </Typography>
+                            </Box>
+                          ))}
+                          {day.dayNumber && (
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              color="primary"
+                              sx={{
+                                mt: 1,
+                                fontSize: "0.7rem",
+                                minHeight: 28,
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedDay(day.dayNumber!);
+                                setOpenDialog(true);
+                              }}
+                            >
+                              + Novo Agendamento
+                            </Button>
+                          )}
+                        </Box>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Box
+          sx={{
+            position: "fixed",
+            bottom: 20,
+            right: 20,
+            zIndex: 1000,
+          }}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            sx={{
+              borderRadius: 50,
+              minWidth: 56,
+              height: 56,
+              fontSize: "1.2rem",
+              boxShadow: 3,
+              "&:hover": {
+                boxShadow: 6,
+                transform: "scale(1.05)",
+              },
+            }}
+            onClick={() => setOpenDialog(true)}
+          >
+            +
+          </Button>
+        </Box>
+      </Box>
+    );
+  };
+
+  const renderDayView = () => {
+    const agendamentosDoDiaSelecionado = agendamentosDiaSelecionado();
+
+    return (
+      <Box>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+        >
+          <Button variant="outlined" onClick={() => setView("mes")}>
+            {"< Voltar ao mês"}
+          </Button>
+          <Typography variant="h6">
+            {`Agenda do dia ${selectedDay} de ${months[currentMonth]} de ${currentYear}`}
+          </Typography>
+          <Box width={100} />
+        </Box>
+
+        {agendamentosDoDiaSelecionado.length === 0 ? (
+          <Typography>Nenhum agendamento para este dia.</Typography>
+        ) : (
+          agendamentosDoDiaSelecionado.map((ag) => (
+            <Box
+              key={ag.id}
+              sx={{
+                border: `1px solid ${theme.palette.divider}`,
+                borderRadius: 1,
+                p: 2,
+                mb: 1,
+                backgroundColor: theme.palette.info.light,
+              }}
+            >
+              <Typography variant="subtitle1" fontWeight="bold">
+                {ag.titulo}
+              </Typography>
+              <Typography>
+                Cliente: {ag.name} - CPF: {ag.cpf}
+              </Typography>
+              <Typography>
+                Horário: {ag.startTime} - {ag.endTime}
+              </Typography>
+            </Box>
+          ))
+        )}
+      </Box>
+    );
+  };
+
+  return (
+    <Box p={3}>
+      <ScheduleModal
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        clients={clients}
+        onSave={(novaSessao) => {
+          setAgendamentos((prev) => [...prev, novaSessao]);
+          setOpenDialog(false);
+        }}
+      />
+
+      <Box display="flex" justifyContent="flex-end" mb={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setOpenDialog(true)}
+        >
+          Agendar Sessão
+        </Button>
+      </Box>
+
+      <ToggleButtonGroup
+        value={view}
+        exclusive
+        onChange={(_, newView) => {
+          if (newView) setView(newView);
+        }}
+        sx={{ mb: 3 }}
+      >
+        <ToggleButton value="mes">Mês</ToggleButton>
+        <ToggleButton value="semana">Semana</ToggleButton>
+        <ToggleButton value="dia">Dia</ToggleButton>
+      </ToggleButtonGroup>
+
+      {view === "mes" && renderMonthView()}
+      {view === "semana" && renderWeekView()}
+      {view === "dia" && renderDayView()}
     </Box>
   );
 };
