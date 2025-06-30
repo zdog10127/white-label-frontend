@@ -1,22 +1,7 @@
 import React, { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 
-interface ClientData {
-  name: string;
-  email: string;
-  phone: string;
-  birthdate: string;
-}
-
-interface FormInputProps {
-  id: string;
-  label: string;
-  name: string;
-  type?: string;
-  value: string;
-  placeholder?: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-}
+import { ClientData, FormInputProps } from "../types/clientForm";
 
 const FormInput: React.FC<FormInputProps> = ({
   id,

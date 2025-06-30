@@ -12,11 +12,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../shared/contexts/AuthContext";
-
-interface HeaderProps {
-  onMenuClick?: () => void;
-  title?: string;
-}
+import { HeaderProps } from "../types/header";
 
 const Header: React.FC<HeaderProps> = ({
   onMenuClick,

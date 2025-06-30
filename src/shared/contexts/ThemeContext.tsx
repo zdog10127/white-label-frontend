@@ -8,19 +8,14 @@ import {
 import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/system";
 import { DarkTheme, lightTheme } from "../themes";
-
-interface IThemeContextData {
-  themeName: "light" | "dark";
-  toggleTheme: () => void;
-}
+import {
+  IThemeContextData,
+  IAppThemeProviderProps,
+} from "../../types/themeContext";
 
 const ThemeContext = createContext({} as IThemeContextData);
 
 export const useAppThemeContext = () => useContext(ThemeContext);
-
-interface IAppThemeProviderProps {
-  children: React.ReactNode;
-}
 
 export const AppThemeProvider: React.FC<IAppThemeProviderProps> = ({
   children,

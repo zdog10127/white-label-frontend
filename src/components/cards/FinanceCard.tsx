@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -17,19 +17,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import axios from "axios";
-
-interface FinanceData {
-  financialSummary: {
-    currentBalance: number;
-    availableForWithdrawal: number;
-  };
-  financialGraphData: {
-    date: string;
-    income: number;
-    expenses: number;
-  }[];
-}
+import { fetchFinanceData } from "../../services/financeService";
 
 export default function FinanceCard() {
   const theme = useTheme();
@@ -47,11 +35,9 @@ export default function FinanceCard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const loadFinanceData = async () => {
       try {
-        const response = await axios.get<FinanceData>("/data/financeData.json");
-        const data = response.data;
-
+        const data = await fetchFinanceData();
         setFinancialSummary(data.financialSummary);
         setFinancialGraphData(data.financialGraphData);
         setLoading(false);
@@ -62,7 +48,7 @@ export default function FinanceCard() {
       }
     };
 
-    fetchData();
+    loadFinanceData();
   }, []);
 
   if (loading) {
@@ -122,12 +108,7 @@ export default function FinanceCard() {
         </Grid>
       </Grid>
 
-      <Box
-        sx={{
-          overflowX: "auto",
-          padding: 1,
-        }}
-      >
+      <Box sx={{ overflowX: "auto", padding: 1 }}>
         <LineChart
           width={600}
           height={200}

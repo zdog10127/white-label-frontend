@@ -1,23 +1,12 @@
-import React from "react";
 import {
   Card,
   CardHeader,
   CardContent,
   Typography,
   CardProps,
-  SxProps,
-  Theme,
 } from "@mui/material";
 
-interface CustomCardBaseProps {
-  title?: React.ReactNode;
-  subheader?: string;
-  avatar?: React.ReactNode;
-  actions?: React.ReactNode;
-  children: React.ReactNode;
-  centerContent?: boolean;
-  sx?: SxProps<Theme>;
-}
+import { CustomCardBaseProps } from "../../types/cardBase";
 
 type CardBaseProps = Omit<CardProps, "title" | "sx"> & CustomCardBaseProps;
 

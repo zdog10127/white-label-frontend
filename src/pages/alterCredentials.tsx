@@ -1,25 +1,14 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Paper,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AlterCredentials = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
 
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -28,37 +17,21 @@ const AlterCredentials = () => {
     e.preventDefault();
 
     if (!isValidEmail(email)) {
-      setSnackbar({
-        open: true,
-        message: "E-mail inválido.",
-        severity: "error",
-      });
+      toast.error("E-mail inválido.");
       return;
     }
 
     if (newPassword.length < 6) {
-      setSnackbar({
-        open: true,
-        message: "A senha deve ter pelo menos 6 caracteres.",
-        severity: "error",
-      });
+      toast.error("A senha deve ter pelo menos 6 caracteres.");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setSnackbar({
-        open: true,
-        message: "As senhas não coincidem.",
-        severity: "error",
-      });
+      toast.error("As senhas não coincidem.");
       return;
     }
 
-    setSnackbar({
-      open: true,
-      message: "Credenciais atualizadas com sucesso!",
-      severity: "success",
-    });
+    toast.success("Credenciais atualizadas com sucesso!");
 
     setTimeout(() => {
       navigate("/perfil");
@@ -111,16 +84,17 @@ const AlterCredentials = () => {
         </form>
       </Paper>
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert severity={snackbar.severity as any} sx={{ width: "100%" }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Box>
   );
 };

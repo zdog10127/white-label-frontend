@@ -2,12 +2,7 @@ import React from "react";
 import { Box, Typography, useTheme, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useDrawerContext } from "../contexts/DrawerContext";
-
-interface LayoutBasePageProps {
-  title: string;
-  children: React.ReactNode;
-  toolsBar?: React.ReactNode;
-}
+import { LayoutBasePageProps } from "../../types/layoutBasePage";
 
 export const LayoutBasePage: React.FC<LayoutBasePageProps> = ({
   title,

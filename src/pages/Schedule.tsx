@@ -17,21 +17,7 @@ import {
 import ScheduleModal from "../components/modal-Schedule/sheduleModal";
 import rawClientsData from "../components/data/clients.json";
 import { getBrazilianHolidays } from "../utils/holidays";
-
-interface ClientType {
-  id: string;
-  name: string;
-}
-
-interface AgendamentoType {
-  id: string;
-  cpf: string;
-  data: string;
-  titulo: string;
-  name: string;
-  startTime: string;
-  endTime: string;
-}
+import { ClientType, AgendamentoType } from "../types/schedule";
 
 const clients: ClientType[] = rawClientsData.map((client, index) => ({
   id: String(index + 1),

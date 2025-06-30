@@ -18,12 +18,7 @@ import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import CardBase from "./CardBase";
 import clientData from "../data/clients.json";
 import dayjs from "dayjs";
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
+import { TabPanelProps } from "../../types/tabsCard";
 
 function TabPanel({ children, value, index }: TabPanelProps) {
   return (

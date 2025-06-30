@@ -17,26 +17,7 @@ import {
 } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import dayjs from "dayjs";
-
-interface ClientType {
-  id: string;
-  name: string;
-}
-
-interface ScheduleModalProps {
-  open: boolean;
-  onClose: () => void;
-  clients: ClientType[];
-  onSave: (novaSessao: {
-    id: string;
-    cpf: string;
-    data: string;
-    titulo: string;
-    name: string;
-    startTime: string;
-    endTime: string;
-  }) => void;
-}
+import { ClientType, ScheduleModalProps } from "../../types/sheduleModal";
 
 const ScheduleModal: React.FC<ScheduleModalProps> = ({
   open,

@@ -1,13 +1,5 @@
 import { Box, Button, Icon, Paper, TextField, useTheme } from "@mui/material";
-
-interface IListingToolsProps {
-  searchText?: string;
-  showSearchInput?: boolean;
-  onSearchTextChange?: (newText: string) => void;
-  newButtonText?: string;
-  showNewButton?: boolean;
-  onNewClick?: () => void;
-}
+import { IListingToolsProps } from "../../../types/toolsList";
 
 export const ListingTools: React.FC<IListingToolsProps> = ({
   searchText = "",

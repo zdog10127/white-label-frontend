@@ -1,33 +1,13 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useCallback,
-  CSSProperties,
-} from "react";
-
-interface IDrawerOptions {
-  icon: ReactNode;
-  path: string;
-  label: string;
-  flexDirection?: CSSProperties["flexDirection"];
-}
-
-interface IDrawerContextData {
-  isDrawerOpen: boolean;
-  toggleDrawerOpen: () => void;
-  drawerOptions: IDrawerOptions[];
-  setDrawerOptions: (newDrawerOptions: IDrawerOptions[]) => void;
-}
+import React, { createContext, useContext, useState, useCallback } from "react";
+import {
+  IDrawerOptions,
+  IDrawerContextData,
+  DrawerProviderProps,
+} from "../../types/drawerContext";
 
 const DrawerContext = createContext({} as IDrawerContextData);
 
 export const useDrawerContext = () => useContext(DrawerContext);
-
-interface DrawerProviderProps {
-  children: ReactNode;
-}
 
 export const DrawerProvider: React.FC<DrawerProviderProps> = ({ children }) => {
   const [isDrawerOpen, setDrawerOpen] = useState(true);

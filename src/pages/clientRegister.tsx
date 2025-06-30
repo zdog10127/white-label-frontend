@@ -35,15 +35,10 @@ import {
   ONDE_NOS_CONHECEU_OPTIONS,
   ENCAMINHADO_POR_OPTIONS,
 } from "../constants/inputSelectOptions";
+import { ClientFormData, FormErrors } from "../types/clientRegister";
 import { clientSchema } from "../schemas/clientSchemas";
 
 dayjs.locale("pt-br");
-
-type ClientFormData = z.infer<typeof clientSchema>;
-
-interface FormErrors {
-  [key: string]: string;
-}
 
 const ClientRegister: React.FC = () => {
   const [activePage, setActivePage] = useState("cadastro");

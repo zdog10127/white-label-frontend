@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Typography,
   Button,
@@ -11,12 +11,7 @@ import {
 import ChecklistIcon from "@mui/icons-material/Checklist";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CardBase from "./CardBase";
-
-interface Task {
-  id: number;
-  title: string;
-  completed: boolean;
-}
+import { Task } from "../../types/taskCard";
 
 export default function TasksCard() {
   const theme = useTheme();

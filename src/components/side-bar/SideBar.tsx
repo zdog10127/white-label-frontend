@@ -15,13 +15,7 @@ import {
 } from "../../shared/contexts/IndexContexts";
 import { useNavigate, useResolvedPath, useMatch } from "react-router-dom";
 import MaterialUISwitch from "../ThemeSwitch";
-
-interface IListItemLinkProps {
-  label: string;
-  icon: React.ReactNode;
-  to: string;
-  onClick?: () => void;
-}
+import { IListItemLinkProps, SideBarProps } from "../../types/sideBar";
 
 const ListItemLink: React.FC<IListItemLinkProps> = ({
   to,
@@ -69,10 +63,6 @@ const ListItemLink: React.FC<IListItemLinkProps> = ({
     </ListItemButton>
   );
 };
-
-interface SideBarProps {
-  children: React.ReactNode;
-}
 
 export const SideBar: React.FC<SideBarProps> = ({ children }) => {
   const theme = useTheme();
