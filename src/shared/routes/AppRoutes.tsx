@@ -13,13 +13,19 @@ import {
 } from "@mui/icons-material";
 
 import ProtectedRoute from "./PrivateRoute";
-
+import UserProfile from "../../pages/userPage";
 import Login from "../../pages/Login";
 import Home from "../../pages/Home";
 import ClientList from "../../components/ClientList";
 import ClientRegister from "../../pages/clientRegister";
 import PrivateLayout from "../layouts/PrivateLayout";
 import Agenda from "../../pages/Schedule";
+import AlterCredentials from "../../pages/alterCredentials";
+import FinancialPage from "../../pages/financialPage";
+import ReportPage from "../../pages/reportPage";
+import MarketingPage from "../../pages/marketingPage";
+import SettingsPage from "../../pages/settingsPage";
+import MyClinicPage from "../../pages/myClinicPage";
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();
@@ -80,6 +86,13 @@ export const AppRoutes = () => {
           <Route path="/clientes" element={<ClientList />} />
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/cadastro-usuario" element={<ClientRegister />} />
+          <Route path="/perfil" element={<UserProfile />} />
+          <Route path="/alterar-credenciais" element={<AlterCredentials />} />
+          <Route path="/financeiro" element={<FinancialPage />} />
+          <Route path="/relatorios" element={<ReportPage />} />
+          <Route path="/marketing" element={<MarketingPage />} />
+          <Route path="/configuracao" element={<SettingsPage />} />
+          <Route path="/minhaclinica" element={<MyClinicPage />} />
         </Route>
       </Route>
 

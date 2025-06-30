@@ -17,24 +17,7 @@ import {
 } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import dayjs from "dayjs";
-
-interface ClientType {
-  id: string;
-  name: string;
-}
-
-interface ScheduleModalProps {
-  open: boolean;
-  onClose: () => void;
-  clients: ClientType[];
-  onSave: (novaSessao: {
-    id: string;
-    cpf: string;
-    data: string;
-    titulo: string;
-    name: string;
-  }) => void;
-}
+import { ClientType, ScheduleModalProps } from "../../types/sheduleModal";
 
 const ScheduleModal: React.FC<ScheduleModalProps> = ({
   open,
@@ -66,6 +49,8 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
       data: dayjs(date).format("YYYY-MM-DD"),
       titulo: service,
       name: client.name,
+      startTime,
+      endTime,
     };
 
     onSave(novaSessao);
@@ -180,7 +165,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
         <Button
           onClick={handleSave}
           variant="contained"
-          disabled={!client || !date || !startTime || !endTime}
+          disabled={!client || !date || !startTime || !endTime || !service}
         >
           Salvar
         </Button>

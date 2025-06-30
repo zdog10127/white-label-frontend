@@ -22,22 +22,7 @@ import {
 } from "@mui/material";
 
 import clientsDataRaw from "../data/clients.json";
-
-type RawClient = {
-  NomeCompleto: string;
-  Email?: string;
-  Telefone?: string;
-};
-
-interface ExtendedClient {
-  id: number;
-  name: string;
-  status: "Ativo" | "Inativo" | "Lista de Espera";
-  registrationDate: string;
-  email?: string;
-  phone?: string;
-  group?: string | null;
-}
+import { RawClient, ExtendedClient } from "../../types/toolsDetails";
 
 const ClientList: React.FC = () => {
   const [clients, setClients] = useState<ExtendedClient[]>([]);

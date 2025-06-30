@@ -2,31 +2,21 @@ import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { AppRoutes } from "./shared/routes/AppRoutes";
 import { AppThemeProvider } from "./shared/contexts/ThemeContext";
-import { SideBar } from "./components/side-bar/SideBar";
-import {
-  DrawerProvider,
-  useDrawerContext,
-} from "./shared/contexts/IndexContexts";
+import { DrawerProvider } from "./shared/contexts/IndexContexts";
 import { AuthProvider, useAuth } from "./shared/contexts/AuthContext";
-import Header from "./components/Header";
-import { CircularProgress } from "@mui/material";
+import Loading from "./shared/loading/loading";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 const AppContent: React.FC = () => {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) {
-    return <CircularProgress />;
+    return <Loading />;
   }
 
   return (
     <BrowserRouter>
-      {user ? (
-        <>
-          <AppRoutes />
-        </>
-      ) : (
-        <AppRoutes />
-      )}
+      <AppRoutes />
     </BrowserRouter>
   );
 };
