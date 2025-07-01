@@ -1,103 +1,142 @@
 import React from "react";
-import { LayoutBaseDePagina } from "../../shared/layouts";
-import { FerramentasDeDetalhe } from "../../componentes/Index";
+import { LayoutBasePage } from "../../shared/layouts";
+import ToolsDetails from "../../components/tools-details/ToolsDetails";
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
+  Divider,
+  useTheme,
+} from "@mui/material";
+import CardBase from "../../components/cards/CardBase";
 
-
-
-export const Dashboard= () => {
+export const Dashboard = () => {
   return (
-    <LayoutBaseDePagina 
-    titulo="White Label" 
-    barradeferramentas={(
-      <FerramentasDeDetalhe
-    
-      />
-    )}>
-       teste
-    </LayoutBaseDePagina>
-
+    <LayoutBasePage title="White Label" toolsBar={<ToolsDetails />}>
+      <DashboardPanel />
+    </LayoutBasePage>
   );
 };
 
 const DashboardPanel: React.FC = () => {
   return (
-    <div className="dashboard-container">
-    
-      <div className="left-column">
-      
-        <div className="card">
-          <h2> Próximas sessões</h2>
-          <div className="card-content center">
-            <div>
-           <p className="bold">Você ainda não cadastrou nenhuma sessão.</p>
-              <p>No momento, não há nenhuma sessão agendada. Registre uma sessão acessando o módulo Agenda.</p>
-            </div>
-          </div>
-        </div>
+    <Box
+      display="flex"
+      flexDirection={{ xs: "column", md: "row" }}
+      gap={3}
+      px={{ xs: 1, md: 2 }}
+      width="100%"
+      boxSizing="border-box"
+    >
+      <Box flex={1.5} display="flex" flexDirection="column" gap={3}>
+        <Paper sx={{ p: 1, width: "100%", boxSizing: "border-box" }}>
+          <CardBase title="Próximas sessões" centerContent={false}>
+            <Box mt={3} textAlign="center">
+              <Typography fontWeight="bold">
+                Você ainda não cadastrou nenhuma sessão.
+              </Typography>
+              <Typography>
+                No momento, não há nenhuma sessão agendada. Registre uma sessão
+                acessando o módulo Agenda.
+              </Typography>
+            </Box>
+          </CardBase>
+        </Paper>
 
-       
-        <div className="card">
-          <div className="tabs">
-            <button className="active-tab"> Pendências (0)</button>
-            <button> Atividade de clientes (0)</button>
-            <button> Aniversariantes do mês</button>
-          </div>
-          <div className="card-content center">
-            <div>
-              <img src="/robot-placeholder.svg" alt="Placeholder" className="placeholder-img" />
-              <p className="bold">Opss! Ainda não existem registros para mostrar aqui.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+        <Paper sx={{ p: 1, width: "100%", boxSizing: "border-box" }}>
+          <CardBase title="Pendências e Atividades" centerContent={false}>
+            <Box display="flex" gap={2} flexWrap="wrap" mb={3}>
+              <Button variant="outlined">Pendências (0)</Button>
+              <Button variant="text">Atividade de clientes (0)</Button>
+              <Button variant="text">Aniversariantes do mês</Button>
+            </Box>
+            <Box textAlign="center">
+              <img
+                src="/robot-placeholder.svg"
+                alt="Placeholder"
+                width={100}
+                style={{ marginBottom: 16 }}
+              />
+              <Typography fontWeight="bold">
+                Opss! Ainda não existem registros para mostrar aqui.
+              </Typography>
+            </Box>
+          </CardBase>
+        </Paper>
+      </Box>
 
-      
-      <div className="right-column">
-      
-        <div className="card">
-          <div className="tabs">
-            <button className="active-tab"> Relatório financeiro</button>
-            <button> Psicobank</button>
-          </div>
-          <div className="finance-box">
-            <div className="finance-row">
-              <span>Saldo bloqueado</span>
-              <span className="yellow">R$ 0,00</span>
-            </div>
-            <div className="finance-row">
-              <span>Saldo disponível para saque</span>
-              <span className="blue">R$ 0,00</span>
-            </div>
-            <button className="withdraw-btn">Sacar</button>
-            <hr />
-            <div className="finance-details">
-              <h3>Recebimentos do mês</h3>
-              <ul>
-                <li><span>Cartão de crédito</span><span>R$ 0,00</span></li>
-                <li><span>Boleto bancário</span><span>R$ 0,00</span></li>
-                <li><span>Pix</span><span>R$ 0,00</span></li>
-              </ul>
-              <div className="total">
-                <span>Total</span>
-                <span>R$ 0,00</span>
-              </div>
-            </div>
-          </div>
-        </div>
+      <Box flex={1} display="flex" flexDirection="column" gap={3}>
+        <Paper sx={{ p: 1, width: "100%", boxSizing: "border-box" }}>
+          <CardBase title="Relatório financeiro" centerContent={false}>
+            <Box display="flex" gap={2} flexWrap="wrap" mb={3}>
+              <Button variant="outlined">Relatório financeiro</Button>
+              <Button variant="text">Psicobank</Button>
+            </Box>
 
-        <div className="card">
-          <h2> Tarefas</h2>
-          <button className="new-task">+ Criar uma nova tarefa</button>
-          <div className="card-content center">
-            <div>
-              <img src="/robot-placeholder.svg" alt="Placeholder" className="placeholder-img" />
-              <p className="bold">Opss! Ainda não existe nenhuma tarefa cadastrada.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            <Box>
+              <Box display="flex" justifyContent="space-between" mb={1}>
+                <Typography>Saldo bloqueado</Typography>
+                <Typography color="warning.main">R$ 0,00</Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between" mb={2}>
+                <Typography>Saldo disponível para saque</Typography>
+                <Typography color="primary">R$ 0,00</Typography>
+              </Box>
+
+              <Button variant="contained" fullWidth sx={{ mb: 2 }}>
+                Sacar
+              </Button>
+
+              <Divider sx={{ mb: 2 }} />
+
+              <Typography variant="subtitle1" fontWeight="bold">
+                Recebimentos do mês
+              </Typography>
+
+              <Box mt={1}>
+                {["Cartão de crédito", "Boleto bancário", "Pix"].map(
+                  (label) => (
+                    <Box
+                      key={label}
+                      display="flex"
+                      justifyContent="space-between"
+                      mb={1}
+                    >
+                      <Typography>{label}</Typography>
+                      <Typography>R$ 0,00</Typography>
+                    </Box>
+                  )
+                )}
+                <Divider sx={{ my: 1 }} />
+                <Box display="flex" justifyContent="space-between">
+                  <Typography fontWeight="bold">Total</Typography>
+                  <Typography fontWeight="bold">R$ 0,00</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </CardBase>
+        </Paper>
+
+        <Paper sx={{ p: 1, width: "100%", boxSizing: "border-box" }}>
+          <CardBase title="Tarefas" centerContent={false}>
+            <Button sx={{ mt: 2, mb: 3 }} variant="outlined">
+              + Criar uma nova tarefa
+            </Button>
+            <Box textAlign="center">
+              <img
+                src="/robot-placeholder.svg"
+                alt="Placeholder"
+                width={100}
+                style={{ marginBottom: 16 }}
+              />
+              <Typography fontWeight="bold">
+                Opss! Ainda não existe nenhuma tarefa cadastrada.
+              </Typography>
+            </Box>
+          </CardBase>
+        </Paper>
+      </Box>
+    </Box>
   );
 };
-
-

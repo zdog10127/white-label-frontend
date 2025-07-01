@@ -1,0 +1,43 @@
+{
+  "financialSummary": {
+    "currentBalance": 5000,
+    "availableForWithdrawal": 2800
+  },
+  "financialGraphData": [
+    { "date": "01/10", "income": 400, "expenses": -300 },
+    { "date": "02/10", "income": 350, "expenses": -250 },
+    { "date": "03/10", "income": 600, "expenses": -400 },
+    { "date": "04/10", "income": 500, "expenses": -350 },
+    { "date": "05/10", "income": 700, "expenses": -500 },
+    { "date": "06/10", "income": 650, "expenses": -450 },
+    { "date": "07/10", "income": 900, "expenses": -600 }
+  ],
+  "clients": [
+    {
+      "NomeCompleto": "João da Silva",
+      "CPF": "123.456.789-00",
+      "DataNascimento": "1990-05-14",
+      "Telefone": "(11) 91234-5678",
+      "Email": "joao.silva@email.com",
+      "Sessao": {
+        "Data": "25/10/23",
+        "Horario": "11:30",
+        "Status": "Pago",
+        "Frequencia": "Semanal"
+      }
+    },
+    {
+      "NomeCompleto": "Maria Oliveira",
+      "CPF": "987.654.321-00",
+      "DataNascimento": "1985-10-25",
+      "Telefone": "(21) 99876-5432",
+      "Email": "maria.oliveira@email.com",
+      "Sessao": {
+        "Data": "25/10/23",
+        "Horario": "14:00",
+        "Status": "Pagar",
+        "Frequencia": "Quinzenal"
+      }
+    }
+  ]
+}
