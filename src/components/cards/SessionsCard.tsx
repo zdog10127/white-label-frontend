@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Table,
@@ -15,33 +16,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import CardBase from "./CardBase";
 import EditSessionModal from "../mod/editSessionModal";
+import ClientInfoModal, { ClientType } from "../mod/clientModalInfo";
+
 import clientDataJson from "../../components/data/clients.json";
-import { useState } from "react";
-
-type SessaoType = {
-  Data: string;
-  Horario: string;
-  Status: string;
-  Frequencia: string;
-};
-
-type ClientType = {
-  NomeCompleto: string;
-  CPF: string;
-  DataNascimento: string;
-  Telefone: string;
-  Email: string;
-  Genero: string;
-  Endereco: string;
-  Plano: string;
-  Convenio: string;
-  Sessao: SessaoType | null;
-};
 
 export default function SessionsCard() {
   const [clients, setClients] = useState<ClientType[]>(clientDataJson);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<ClientType | null>(null);
+
+
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [infoClient, setInfoClient] = useState<ClientType | null>(null);
 
   const handleEdit = (client: ClientType) => {
     setSelectedClient(client);
@@ -49,10 +35,7 @@ export default function SessionsCard() {
   };
 
   const handleDelete = (client: ClientType) => {
-    const confirmDelete = window.confirm(
-      `Deseja excluir a próxima sessão de ${client.NomeCompleto}?`
-    );
-    if (confirmDelete) {
+    if (window.confirm(`Deseja excluir a próxima sessão de ${client.NomeCompleto}?`)) {
       const updatedClients = clients.map((c) =>
         c.CPF === client.CPF ? { ...c, Sessao: null } : c
       );
@@ -61,14 +44,8 @@ export default function SessionsCard() {
   };
 
   const handleMoreOptions = (client: ClientType) => {
-    alert(`Cliente: ${client.NomeCompleto}
-CPF: ${client.CPF}
-Telefone: ${client.Telefone}
-E-mail: ${client.Email}
-Plano: ${client.Plano}
-Convenio: ${client.Convenio}
-Gênero: ${client.Genero}
-Endereço: ${client.Endereco}`);
+    setInfoClient(client);
+    setInfoModalOpen(true);
   };
 
   const handleCloseEditModal = () => {
@@ -76,12 +53,10 @@ Endereço: ${client.Endereco}`);
     setSelectedClient(null);
   };
 
-  const handleSaveSession = (updatedSession: SessaoType) => {
+  const handleSaveSession = (updatedSession: any) => {
     if (!selectedClient) return;
     const updatedClients = clients.map((c) =>
-      c.CPF === selectedClient.CPF
-        ? { ...c, Sessao: updatedSession }
-        : c
+      c.CPF === selectedClient.CPF ? { ...c, Sessao: updatedSession } : c
     );
     setClients(updatedClients);
     handleCloseEditModal();
@@ -135,9 +110,7 @@ Endereço: ${client.Endereco}`);
                             alt={client.NomeCompleto}
                             sx={{ width: 32, height: 32 }}
                           />
-                          <Typography variant="body2">
-                            {client.NomeCompleto}
-                          </Typography>
+                          <Typography variant="body2">{client.NomeCompleto}</Typography>
                         </Box>
                       </TableCell>
                       <TableCell>{session.Data}</TableCell>
@@ -145,10 +118,7 @@ Endereço: ${client.Endereco}`);
                       <TableCell>
                         <Typography
                           variant="body2"
-                          sx={{
-                            fontWeight: "bold",
-                            color: getStatusColor(session.Status),
-                          }}
+                          sx={{ fontWeight: "bold", color: getStatusColor(session.Status) }}
                         >
                           {session.Status}
                         </Typography>
@@ -156,18 +126,10 @@ Endereço: ${client.Endereco}`);
                       <TableCell>{session.Frequencia}</TableCell>
                       <TableCell>
                         <Box sx={{ display: "flex", gap: 1 }}>
-                          <IconButton
-                            color="primary"
-                            size="small"
-                            onClick={() => handleEdit(client)}
-                          >
+                          <IconButton color="primary" size="small" onClick={() => handleEdit(client)}>
                             <EditIcon fontSize="inherit" />
                           </IconButton>
-                          <IconButton
-                            color="error"
-                            size="small"
-                            onClick={() => handleDelete(client)}
-                          >
+                          <IconButton color="error" size="small" onClick={() => handleDelete(client)}>
                             <DeleteIcon fontSize="inherit" />
                           </IconButton>
                           <IconButton
@@ -201,6 +163,15 @@ Endereço: ${client.Endereco}`);
         onClose={handleCloseEditModal}
         session={selectedClient?.Sessao}
         onSave={handleSaveSession}
+      />
+
+      <ClientInfoModal
+        open={infoModalOpen}
+        client={infoClient}
+        onClose={() => {
+          setInfoModalOpen(false);
+          setInfoClient(null);
+        }}
       />
     </>
   );
