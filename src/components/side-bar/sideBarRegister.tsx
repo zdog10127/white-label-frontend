@@ -21,9 +21,16 @@ import { useTheme } from "@mui/material/styles";
 type Props = {
   onSelect: (section: string) => void;
   activeSection: string;
+  clientName?: string;
+  clientImageUrl?: string;
 };
 
-const SideBarRegister: React.FC<Props> = ({ onSelect, activeSection }) => {
+const SideBarRegister: React.FC<Props> = ({
+  onSelect,
+  activeSection,
+  clientName,
+  clientImageUrl,
+}) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
 
@@ -56,11 +63,17 @@ const SideBarRegister: React.FC<Props> = ({ onSelect, activeSection }) => {
       }}
     >
       <Box>
+
         <Box px={2} py={3} textAlign="center">
-          <Tooltip title="Foto do usuário">
+          <Tooltip title="Foto do cliente">
             <Avatar
-              alt="Usuário"
-              src="/path/to/user-image.jpg"
+              alt={clientName || "Cliente"}
+              src={
+                clientImageUrl
+                  ? clientImageUrl
+                  : "https://ui-avatars.com/api/?name=" +
+                  encodeURIComponent(clientName || "Cliente")
+              }
               sx={{
                 width: 120,
                 height: 120,
@@ -72,7 +85,7 @@ const SideBarRegister: React.FC<Props> = ({ onSelect, activeSection }) => {
           </Tooltip>
 
           <Typography variant="h6" gutterBottom>
-            João Silva
+            {clientName || "Cliente"}
           </Typography>
           <Typography variant="caption" color="text.secondary">
             Cliente
@@ -80,6 +93,7 @@ const SideBarRegister: React.FC<Props> = ({ onSelect, activeSection }) => {
         </Box>
 
         <Divider sx={{ borderColor: theme.palette.divider }} />
+
 
         <List>
           {menuItems.map((item) => (
@@ -99,8 +113,8 @@ const SideBarRegister: React.FC<Props> = ({ onSelect, activeSection }) => {
                     ? "rgba(255,255,255,0.08)"
                     : "transparent"
                   : activeSection === item.value
-                  ? "action.selected"
-                  : "transparent",
+                    ? "action.selected"
+                    : "transparent",
                 "&:hover": {
                   bgcolor: isDarkMode
                     ? "rgba(255,255,255,0.05)"
