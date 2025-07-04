@@ -21,49 +21,8 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import clientsDataRaw from "./data/clients.json";
-
-
-type Sessao = {
-  Data: string;
-  Horario: string;
-  Status: string;
-  Frequencia: string;
-};
-
-type RawClient = {
-  NomeCompleto: string;
-  CPF: string;
-  RG?: string;
-  Telefone?: string;
-  Email?: string;
-  DataNascimento?: string;
-  Genero?: string;
-  Endereco?: string;
-  Plano?: string;
-  Convenio?: string;
-  Sessao?: Sessao;
-};
-
-type ClientWithExtras = {
-  id: number;
-  status: "Ativo" | "Inativo" | "Lista de Espera";
-  registrationDate: string;
-  group: string | null;
-
-  name: string;
-  cpf: string;
-  rg?: string;
-  email?: string;
-  cellphone?: string;
-  birth?: string;
-  gender?: string;
-  endereco?: string;
-  plano?: string;
-  convenio?: string;
-
-  sessao?: Sessao;
-};
+import clientsDataRaw from "../components/data/clients.json";
+import { adaptClient, ClientWithExtras, RawClient } from "../utils/adaptClient";
 
 const ClientList: React.FC = () => {
   const navigate = useNavigate();
@@ -77,35 +36,11 @@ const ClientList: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
-    const adaptedClients: ClientWithExtras[] = (clientsDataRaw as RawClient[]).map(
-      (raw, index) => ({
-        id: index + 1,
-        status:
-          index % 3 === 0
-            ? "Ativo"
-            : index % 3 === 1
-              ? "Inativo"
-              : "Lista de Espera",
-        registrationDate: new Date().toISOString().split("T")[0],
-        group: index % 2 === 0 ? "Grupo A" : null,
-
-        name: raw.NomeCompleto,
-        cpf: raw.CPF,
-        rg: raw.RG ?? "",
-        email: raw.Email ?? "",
-        cellphone: raw.Telefone ?? "",
-        birth: raw.DataNascimento ?? "",
-        gender: raw.Genero ?? "",
-        endereco: raw.Endereco ?? "",
-        plano: raw.Plano ?? "",
-        convenio: raw.Convenio ?? "",
-
-        sessao: raw.Sessao,
-      })
-    );
+    const adaptedClients: ClientWithExtras[] = (
+      clientsDataRaw as RawClient[]
+    ).map((raw, index) => adaptClient(raw, index));
     setClients(adaptedClients);
   }, []);
-
 
   const handleAddClient = () => {
     navigate("/cadastro-usuario");
@@ -258,8 +193,8 @@ const ClientList: React.FC = () => {
                         client.status === "Ativo"
                           ? "success"
                           : client.status === "Inativo"
-                            ? "default"
-                            : "warning"
+                          ? "default"
+                          : "warning"
                       }
                       size="small"
                     />

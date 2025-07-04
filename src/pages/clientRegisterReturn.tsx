@@ -44,101 +44,63 @@ dayjs.locale("pt-br");
 const ClientRegister: React.FC = () => {
   const location = useLocation();
   const clientToEdit = (location.state as { client?: any })?.client;
-
   const [activePage, setActivePage] = useState("cadastro");
   const [useSocialName, setUseSocialName] = useState(false);
+
+  const getInitialFormValues = (
+    client?: any
+  ): Omit<ClientFormData, "birth" | "age"> & {
+    birth: Dayjs | null;
+    age: string;
+  } => ({
+    name: client?.name || "",
+    cpf: client?.cpf || "",
+    rg: client?.rg || "",
+    cellphone: client?.cellphone || "",
+    birth: client?.birth ? dayjs(client.birth, "DD/MM/YYYY") : null,
+    age: client?.age || "",
+    email: client?.email || "",
+    gender: client?.gender || "",
+    group: client?.group || "",
+    naturalidade: client?.naturalidade || "",
+    observacoes: client?.observacoes || "",
+    profissao: client?.profissao || "",
+    renda: client?.renda || "",
+    pagamento: client?.pagamento || "",
+    banco: client?.banco || "",
+    agencia: client?.agencia || "",
+    conta: client?.conta || "",
+    endereco: client?.endereco || "",
+    numero: client?.numero || "",
+    complemento: client?.complemento || "",
+    bairro: client?.bairro || "",
+    cidade: client?.cidade || "",
+    estado: client?.estado || "",
+    cep: client?.cep || "",
+    escolaridade: client?.escolaridade || "",
+    nomeParente: client?.nomeParente || "",
+    parentesco: client?.parentesco || "",
+    telefoneParente: client?.telefoneParente || "",
+    ondeNosConheceu: client?.ondeNosConheceu || "",
+    encaminhadoPor: client?.encaminhadoPor || "",
+    tags: client?.tags || [],
+    corIdentificacao: client?.corIdentificacao || "#415a44",
+    nacionalidade: client?.nacionalidade || "",
+    nomeSocial: client?.nomeSocial || "",
+  });
 
   const [form, setForm] = useState<
     Omit<ClientFormData, "birth" | "age"> & {
       birth: Dayjs | null;
       age: string;
     }
-  >({
-    name: "",
-    cpf: "",
-    rg: "",
-    cellphone: "",
-    birth: null,
-    age: "",
-    email: "",
-    gender: "",
-    group: "",
-    naturalidade: "",
-    observacoes: "",
-    profissao: "",
-    renda: "",
-    pagamento: "",
-    banco: "",
-    agencia: "",
-    conta: "",
-    endereco: "",
-    numero: "",
-    complemento: "",
-    bairro: "",
-    cidade: "",
-    estado: "",
-    cep: "",
-    escolaridade: "",
-    nomeParente: "",
-    parentesco: "",
-    telefoneParente: "",
-    ondeNosConheceu: "",
-    encaminhadoPor: "",
-    tags: [],
-    corIdentificacao: "#415a44",
-    nacionalidade: "",
-    nomeSocial: "",
-  });
-
-  useEffect(() => {
-    if (clientToEdit) {
-      setForm({
-        name: clientToEdit.name || "",
-        cpf: clientToEdit.cpf || "",
-        rg: clientToEdit.rg || "",
-        cellphone: clientToEdit.cellphone || "",
-        birth: clientToEdit.birth
-          ? dayjs(clientToEdit.birth, "DD/MM/YYYY")
-          : null,
-        age: clientToEdit.age || "",
-        email: clientToEdit.email || "",
-        gender: clientToEdit.gender || "",
-        group: clientToEdit.group || "",
-        naturalidade: clientToEdit.naturalidade || "",
-        observacoes: clientToEdit.observacoes || "",
-        profissao: clientToEdit.profissao || "",
-        renda: clientToEdit.renda || "",
-        pagamento: clientToEdit.pagamento || "",
-        banco: clientToEdit.banco || "",
-        agencia: clientToEdit.agencia || "",
-        conta: clientToEdit.conta || "",
-        endereco: clientToEdit.endereco || "",
-        numero: clientToEdit.numero || "",
-        complemento: clientToEdit.complemento || "",
-        bairro: clientToEdit.bairro || "",
-        cidade: clientToEdit.cidade || "",
-        estado: clientToEdit.estado || "",
-        cep: clientToEdit.cep || "",
-        escolaridade: clientToEdit.escolaridade || "",
-        nomeParente: clientToEdit.nomeParente || "",
-        parentesco: clientToEdit.parentesco || "",
-        telefoneParente: clientToEdit.telefoneParente || "",
-        ondeNosConheceu: clientToEdit.ondeNosConheceu || "",
-        encaminhadoPor: clientToEdit.encaminhadoPor || "",
-        tags: clientToEdit.tags || [],
-        corIdentificacao: clientToEdit.corIdentificacao || "#415a44",
-        nacionalidade: clientToEdit.nacionalidade || "",
-        nomeSocial: clientToEdit.nomeSocial || "",
-      });
-    }
-  }, [clientToEdit]);
+  >(() => getInitialFormValues(clientToEdit));
 
   const [errors, setErrors] = useState<FormErrors>({});
 
   const updateFormField = useCallback(
     (field: string, value: any) => {
       setForm((prev) => ({ ...prev, [field]: value }));
-
       if (errors[field]) {
         setErrors((prev) => {
           const newErrors = { ...prev };
@@ -155,7 +117,6 @@ const ClientRegister: React.FC = () => {
       ...form,
       birth: form.birth ? form.birth.format("DD/MM/YYYY") : "",
     };
-
     try {
       clientSchema.parse(formData);
       return {};
@@ -176,9 +137,7 @@ const ClientRegister: React.FC = () => {
   const handleSubmit = useCallback(() => {
     const validationErrors = validateForm();
     setErrors(validationErrors);
-
     const hasError = Object.keys(validationErrors).length > 0;
-
     if (!hasError) {
       if (clientToEdit) {
         alert("Cliente atualizado com sucesso!");
@@ -188,7 +147,7 @@ const ClientRegister: React.FC = () => {
     } else {
       alert("Por favor, corrija os erros no formulário antes de continuar.");
     }
-  }, [validateForm, form, clientToEdit]);
+  }, [validateForm, clientToEdit]);
 
   const handleTagsChange = useCallback(
     (value: string) => {
@@ -204,19 +163,16 @@ const ClientRegister: React.FC = () => {
   const handleDateChange = useCallback((newValue: Dayjs | null) => {
     if (newValue && newValue.isValid()) {
       const formattedDate = newValue.format("DD/MM/YYYY");
-
       let calculatedAge = "";
       try {
         const age = calculateAge(formattedDate);
         calculatedAge = age !== null ? age.toString() : "";
-      } catch (error) { }
-
+      } catch (error) {}
       setForm((prev) => ({
         ...prev,
         birth: newValue,
         age: calculatedAge,
       }));
-
       setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors.birth;
@@ -318,15 +274,16 @@ const ClientRegister: React.FC = () => {
         clientName={form.name || "Cliente"}
         clientImageUrl={clientToEdit?.fotoUrl}
       />
-
-
       <Box flex={1} p={5} ml="220px" maxWidth="700px" mx="auto">
         {activePage === "cadastro" && (
           <>
-            <Typography variant="h6" gutterBottom sx={{ mb: 4, fontWeight: 600 }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ mb: 4, fontWeight: 600 }}
+            >
               1. INFORMAÇÕES PESSOAIS
             </Typography>
-
             <Box sx={{ mb: 3 }}>
               <FormControlLabel
                 control={
@@ -349,7 +306,6 @@ const ClientRegister: React.FC = () => {
                 labelPlacement="end"
               />
             </Box>
-
             <Grid container spacing={2} sx={{ mb: 10 }}>
               {useSocialName && (
                 <Grid item xs={12} md={4}>
@@ -358,14 +314,15 @@ const ClientRegister: React.FC = () => {
                     label="Nome Social"
                     fullWidth
                     value={form.nomeSocial}
-                    onChange={(e) => updateFormField("nomeSocial", e.target.value)}
+                    onChange={(e) =>
+                      updateFormField("nomeSocial", e.target.value)
+                    }
                     error={!!errors.nomeSocial}
                     helperText={errors.nomeSocial}
                     autoFocus
                   />
                 </Grid>
               )}
-
               <Grid item xs={12} md={useSocialName ? 8 : 12}>
                 <TextField
                   size="small"
@@ -377,7 +334,6 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.name}
                 />
               </Grid>
-
               <Grid item xs={12} md={8}>
                 <TextField
                   size="small"
@@ -390,9 +346,11 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.email}
                 />
               </Grid>
-
               <Grid item xs={12} md={4}>
-                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+                <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  adapterLocale="pt-br"
+                >
                   <DatePicker
                     label="Data de nascimento *"
                     value={form.birth}
@@ -409,27 +367,25 @@ const ClientRegister: React.FC = () => {
                   />
                 </LocalizationProvider>
               </Grid>
-
               <Grid item xs={12} md={3}>
                 {renderSelect("group", "Grupo", selectOptions.grupo, true)}
               </Grid>
-
               <Grid item xs={12} md={3}>
                 {renderSelect("gender", "Gênero", selectOptions.gender, true)}
               </Grid>
-
               <Grid item xs={12} md={3}>
                 <TextField
                   size="small"
                   label="Naturalidade *"
                   fullWidth
                   value={form.naturalidade}
-                  onChange={(e) => updateFormField("naturalidade", e.target.value)}
+                  onChange={(e) =>
+                    updateFormField("naturalidade", e.target.value)
+                  }
                   error={!!errors.naturalidade}
                   helperText={errors.naturalidade}
                 />
               </Grid>
-
               <Grid item xs={12} md={3}>
                 <TextField
                   size="small"
@@ -441,7 +397,6 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.age}
                 />
               </Grid>
-
               <Grid item xs={12} md={3}>
                 {renderSelect(
                   "nacionalidade",
@@ -450,11 +405,9 @@ const ClientRegister: React.FC = () => {
                   true
                 )}
               </Grid>
-
               <Grid item xs={12} md={3}>
                 {renderInputMask("999.999.999-99", "cpf", "CPF *")}
               </Grid>
-
               <Grid item xs={12} md={3}>
                 <TextField
                   size="small"
@@ -466,11 +419,9 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.rg}
                 />
               </Grid>
-
               <Grid item xs={12} md={3}>
                 {renderInputMask("(99) 99999-9999", "cellphone", "Celular *")}
               </Grid>
-
               <Grid item xs={12}>
                 <TextField
                   size="small"
@@ -479,19 +430,22 @@ const ClientRegister: React.FC = () => {
                   multiline
                   rows={2}
                   value={form.observacoes}
-                  onChange={(e) => updateFormField("observacoes", e.target.value)}
+                  onChange={(e) =>
+                    updateFormField("observacoes", e.target.value)
+                  }
                   error={!!errors.observacoes}
                   helperText={errors.observacoes}
                 />
               </Grid>
             </Grid>
-
             <Divider sx={{ my: 2 }} />
-
-            <Typography variant="h6" gutterBottom sx={{ mb: 2, fontWeight: 600 }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ mb: 2, fontWeight: 600 }}
+            >
               2. INFORMAÇÕES FINANCEIRAS
             </Typography>
-
             <Grid container spacing={2} sx={{ mb: 10 }}>
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
@@ -504,7 +458,6 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.profissao}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
@@ -517,11 +470,14 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.renda}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={4}>
-                {renderSelect("pagamento", "Forma de pagamento", selectOptions.pagamento, true)}
+                {renderSelect(
+                  "pagamento",
+                  "Forma de pagamento",
+                  selectOptions.pagamento,
+                  true
+                )}
               </Grid>
-
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
@@ -533,7 +489,6 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.banco}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
@@ -545,7 +500,6 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.agencia}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
@@ -558,13 +512,14 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
             </Grid>
-
             <Divider sx={{ my: 2 }} />
-
-            <Typography variant="h6" gutterBottom sx={{ mb: 2, fontWeight: 600 }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ mb: 2, fontWeight: 600 }}
+            >
               3. ENDEREÇO
             </Typography>
-
             <Grid container spacing={2} sx={{ mb: 10 }}>
               <Grid item xs={12} sm={6} md={6}>
                 <TextField
@@ -577,7 +532,6 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.endereco}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={2}>
                 <TextField
                   size="small"
@@ -589,19 +543,19 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.numero}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
                   label="Complemento"
                   fullWidth
                   value={form.complemento}
-                  onChange={(e) => updateFormField("complemento", e.target.value)}
+                  onChange={(e) =>
+                    updateFormField("complemento", e.target.value)
+                  }
                   error={!!errors.complemento}
                   helperText={errors.complemento}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
@@ -613,7 +567,6 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.bairro}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
@@ -625,7 +578,6 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.cidade}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={2}>
                 <FormControl fullWidth size="small" error={!!errors.estado}>
                   <InputLabel>Estado</InputLabel>
@@ -637,24 +589,28 @@ const ClientRegister: React.FC = () => {
                     {memoizedEstados}
                   </Select>
                   {errors.estado && (
-                    <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                    <Typography
+                      variant="caption"
+                      color="error"
+                      sx={{ mt: 0.5, ml: 1.5 }}
+                    >
                       {errors.estado}
                     </Typography>
                   )}
                 </FormControl>
               </Grid>
-
               <Grid item xs={12} sm={6} md={2}>
                 {renderInputMask("99999-999", "cep", "CEP")}
               </Grid>
             </Grid>
-
             <Divider sx={{ my: 2 }} />
-
-            <Typography variant="h6" gutterBottom sx={{ mb: 2, fontWeight: 600 }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ mb: 2, fontWeight: 600 }}
+            >
               4. CONTATO DE EMERGÊNCIA
             </Typography>
-
             <Grid container spacing={2} sx={{ mb: 10 }}>
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
@@ -662,58 +618,69 @@ const ClientRegister: React.FC = () => {
                   label="Nome do parente"
                   fullWidth
                   value={form.nomeParente}
-                  onChange={(e) => updateFormField("nomeParente", e.target.value)}
+                  onChange={(e) =>
+                    updateFormField("nomeParente", e.target.value)
+                  }
                   error={!!errors.nomeParente}
                   helperText={errors.nomeParente}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
                   label="Parentesco"
                   fullWidth
                   value={form.parentesco}
-                  onChange={(e) => updateFormField("parentesco", e.target.value)}
+                  onChange={(e) =>
+                    updateFormField("parentesco", e.target.value)
+                  }
                   error={!!errors.parentesco}
                   helperText={errors.parentesco}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={4}>
-                {renderInputMask("(99) 99999-9999", "telefoneParente", "Telefone do parente")}
+                {renderInputMask(
+                  "(99) 99999-9999",
+                  "telefoneParente",
+                  "Telefone do parente"
+                )}
               </Grid>
             </Grid>
-
             <Divider sx={{ my: 2 }} />
-
-            <Typography variant="h6" gutterBottom sx={{ mb: 2, fontWeight: 600 }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ mb: 2, fontWeight: 600 }}
+            >
               5. INFORMAÇÕES ADICIONAIS
             </Typography>
-
             <Grid container spacing={2} sx={{ mb: 10 }}>
               <Grid item xs={12} sm={6} md={6}>
-                {renderSelect("ondeNosConheceu", "Onde nos conheceu", selectOptions.ondeNosConheceu)}
+                {renderSelect(
+                  "ondeNosConheceu",
+                  "Onde nos conheceu",
+                  selectOptions.ondeNosConheceu
+                )}
               </Grid>
-
               <Grid item xs={12} sm={6} md={6}>
-                {renderSelect("encaminhadoPor", "Encaminhado por", selectOptions.encaminhadoPor)}
+                {renderSelect(
+                  "encaminhadoPor",
+                  "Encaminhado por",
+                  selectOptions.encaminhadoPor
+                )}
               </Grid>
-
               <Grid item xs={12}>
                 <TextField
                   size="small"
                   label="Tags (separadas por vírgula)"
                   fullWidth
-                  value={(form.tags ?? []).join(", ")}
-
+                  value={form.tags?.join(", ") ?? ""}
                   onChange={(e) => handleTagsChange(e.target.value)}
                   error={!!errors.tags}
                   helperText={errors.tags}
                 />
               </Grid>
             </Grid>
-
             <Box display="flex" justifyContent="flex-end" mt={4}>
               <Button variant="contained" onClick={handleSubmit}>
                 {clientToEdit ? "Atualizar" : "Cadastrar"}
