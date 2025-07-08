@@ -1,4 +1,3 @@
-// src/utils/adaptClient.ts
 import dayjs from "dayjs";
 
 export type Sessao = {
