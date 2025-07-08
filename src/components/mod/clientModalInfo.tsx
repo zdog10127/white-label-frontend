@@ -9,7 +9,7 @@ import {
   Grid,
 } from "@mui/material";
 
-import { ClientType, Props } from "../../types/clientModalInfo";
+import { Props } from "../../types/clientModalInfo";
 
 const ClientInfoModal: React.FC<Props> = ({ open, client, onClose }) => {
   if (!client) return null;

@@ -43,7 +43,8 @@ dayjs.locale("pt-br");
 
 const ClientRegister: React.FC = () => {
   const location = useLocation();
-  const clientToEdit = (location.state as { client?: any })?.client;
+  const clientToEdit = (location.state as { clientToEdit?: any })?.clientToEdit;
+
   const [activePage, setActivePage] = useState("cadastro");
   const [useSocialName, setUseSocialName] = useState(false);
 
@@ -52,6 +53,22 @@ const ClientRegister: React.FC = () => {
   ): Omit<ClientFormData, "birth" | "age"> & {
     birth: Dayjs | null;
     age: string;
+    sessao: {
+      Data: string;
+      Horario: string;
+      Status?: string;
+      Frequencia?: string;
+    };
+    dadosBancarios: {
+      Banco: string;
+      Agencia?: string;
+      Conta?: string;
+    };
+    parente: {
+      Nome?: string;
+      Telefone?: string;
+      Parentesco?: string;
+    };
   } => ({
     name: client?.name || "",
     cpf: client?.cpf || "",
@@ -87,14 +104,26 @@ const ClientRegister: React.FC = () => {
     corIdentificacao: client?.corIdentificacao || "#415a44",
     nacionalidade: client?.nacionalidade || "",
     nomeSocial: client?.nomeSocial || "",
+
+    sessao: {
+      Data: client?.sessao?.Data || "",
+      Horario: client?.sessao?.Horario || "",
+      Status: client?.sessao?.Status || "",
+      Frequencia: client?.sessao?.Frequencia || "",
+    },
+    dadosBancarios: {
+      Banco: client?.dadosBancarios?.Banco || client?.banco || "",
+      Agencia: client?.dadosBancarios?.Agencia || client?.agencia || "",
+      Conta: client?.dadosBancarios?.Conta || client?.conta || "",
+    },
+    parente: {
+      Nome: client?.parente?.Nome || client?.nomeParente || "",
+      Telefone: client?.parente?.Telefone || client?.telefoneParente || "",
+      Parentesco: client?.parente?.Parentesco || client?.parentesco || "",
+    },
   });
 
-  const [form, setForm] = useState<
-    Omit<ClientFormData, "birth" | "age"> & {
-      birth: Dayjs | null;
-      age: string;
-    }
-  >(() => getInitialFormValues(clientToEdit));
+  const [form, setForm] = useState(() => getInitialFormValues(clientToEdit));
 
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -110,6 +139,45 @@ const ClientRegister: React.FC = () => {
       }
     },
     [errors]
+  );
+
+  const updateSessaoField = useCallback(
+    (field: keyof typeof form.sessao, value: string) => {
+      setForm((prev) => ({
+        ...prev,
+        sessao: {
+          ...prev.sessao,
+          [field]: value,
+        },
+      }));
+    },
+    []
+  );
+
+  const updateDadosBancariosField = useCallback(
+    (field: keyof typeof form.dadosBancarios, value: string) => {
+      setForm((prev) => ({
+        ...prev,
+        dadosBancarios: {
+          ...prev.dadosBancarios,
+          [field]: value,
+        },
+      }));
+    },
+    []
+  );
+
+  const updateParenteField = useCallback(
+    (field: keyof typeof form.parente, value: string) => {
+      setForm((prev) => ({
+        ...prev,
+        parente: {
+          ...prev.parente,
+          [field]: value,
+        },
+      }));
+    },
+    []
   );
 
   const validateForm = useCallback(() => {
@@ -422,19 +490,24 @@ const ClientRegister: React.FC = () => {
               <Grid item xs={12} md={3}>
                 {renderInputMask("(99) 99999-9999", "cellphone", "Celular *")}
               </Grid>
-              <Grid item xs={12}>
+
+              <Grid item xs={12} md={3}>
                 <TextField
                   size="small"
-                  label="Observações"
+                  label="Data da Sessão"
                   fullWidth
-                  multiline
-                  rows={2}
-                  value={form.observacoes}
-                  onChange={(e) =>
-                    updateFormField("observacoes", e.target.value)
-                  }
-                  error={!!errors.observacoes}
-                  helperText={errors.observacoes}
+                  value={form.sessao?.Data || ""}
+                  onChange={(e) => updateSessaoField("Data", e.target.value)}
+                />
+              </Grid>
+
+              <Grid item xs={12} md={3}>
+                <TextField
+                  size="small"
+                  label="Horário da Sessão"
+                  fullWidth
+                  value={form.sessao?.Horario || ""}
+                  onChange={(e) => updateSessaoField("Horario", e.target.value)}
                 />
               </Grid>
             </Grid>
@@ -478,13 +551,16 @@ const ClientRegister: React.FC = () => {
                   true
                 )}
               </Grid>
+
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
                   label="Banco *"
                   fullWidth
-                  value={form.banco}
-                  onChange={(e) => updateFormField("banco", e.target.value)}
+                  value={form.dadosBancarios.Banco}
+                  onChange={(e) =>
+                    updateDadosBancariosField("Banco", e.target.value)
+                  }
                   error={!!errors.banco}
                   helperText={errors.banco}
                 />
@@ -494,8 +570,10 @@ const ClientRegister: React.FC = () => {
                   size="small"
                   label="Agência *"
                   fullWidth
-                  value={form.agencia}
-                  onChange={(e) => updateFormField("agencia", e.target.value)}
+                  value={form.dadosBancarios.Agencia}
+                  onChange={(e) =>
+                    updateDadosBancariosField("Agencia", e.target.value)
+                  }
                   error={!!errors.agencia}
                   helperText={errors.agencia}
                 />
@@ -505,8 +583,10 @@ const ClientRegister: React.FC = () => {
                   size="small"
                   label="Conta *"
                   fullWidth
-                  value={form.conta}
-                  onChange={(e) => updateFormField("conta", e.target.value)}
+                  value={form.dadosBancarios.Conta}
+                  onChange={(e) =>
+                    updateDadosBancariosField("Conta", e.target.value)
+                  }
                   error={!!errors.conta}
                   helperText={errors.conta}
                 />
@@ -617,10 +697,8 @@ const ClientRegister: React.FC = () => {
                   size="small"
                   label="Nome do parente"
                   fullWidth
-                  value={form.nomeParente}
-                  onChange={(e) =>
-                    updateFormField("nomeParente", e.target.value)
-                  }
+                  value={form.parente.Nome || ""}
+                  onChange={(e) => updateParenteField("Nome", e.target.value)}
                   error={!!errors.nomeParente}
                   helperText={errors.nomeParente}
                 />
@@ -630,9 +708,9 @@ const ClientRegister: React.FC = () => {
                   size="small"
                   label="Parentesco"
                   fullWidth
-                  value={form.parentesco}
+                  value={form.parente.Parentesco || ""}
                   onChange={(e) =>
-                    updateFormField("parentesco", e.target.value)
+                    updateParenteField("Parentesco", e.target.value)
                   }
                   error={!!errors.parentesco}
                   helperText={errors.parentesco}

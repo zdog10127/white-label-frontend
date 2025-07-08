@@ -28,18 +28,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = (email: string, password: string): boolean => {
     const usersDB = [
-      {
-        email: "admin@example.com",
-        password: "1234",
-      },
-      {
-        email: "jhonathancosta_dev@hotmail.com",
-        password: "1234567890",
-      },
-      {
-        email: "gabrielteles@example.com",
-        password: "1234567890",
-      },
+      { email: "admin@example.com", password: "1234" },
+      { email: "jhonathancosta_dev@hotmail.com", password: "1234567890" },
+      { email: "gabrielteles@example.com", password: "1234567890" },
     ];
 
     const matchedUser = usersDB.find(
@@ -47,7 +38,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     );
 
     if (matchedUser) {
-      const { password: _, ...userData } = matchedUser;
+      const profileData = localStorage.getItem(`user-profile-data-${email}`);
+      let extraFields = {};
+
+      if (profileData) {
+        const parsed = JSON.parse(profileData);
+        extraFields = {
+          firstName: parsed.firstName || "",
+          lastName: parsed.lastName || "",
+          phone: parsed.phone || "",
+          city: parsed.city || "",
+          state: parsed.state || "",
+          occupation: parsed.occupation || "",
+        };
+      }
+
+      const avatar = localStorage.getItem(`user-profile-image-${email}`);
+
+      const userData: User = {
+        email,
+        avatar: avatar || undefined,
+        ...extraFields,
+      };
+
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
       return true;

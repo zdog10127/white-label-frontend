@@ -23,6 +23,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import clientsDataRaw from "../components/data/clients.json";
 import { adaptClient, ClientWithExtras, RawClient } from "../utils/adaptClient";
+import DeleteClientModal from "../components/mod/deleteClientModal";
 
 const ClientList: React.FC = () => {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ const ClientList: React.FC = () => {
   >("Todos");
   const [showOnlyGroups, setShowOnlyGroups] = useState(false);
   const [page, setPage] = useState(0);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
@@ -47,12 +50,21 @@ const ClientList: React.FC = () => {
   };
 
   const handleEdit = (client: ClientWithExtras) => {
-    navigate("/cadastro-usuario", { state: { client } });
+    navigate("/cadastro-usuario", {
+      state: { clientToEdit: client },
+    });
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm("Tem certeza que deseja excluir este cliente?")) {
-      setClients((prev) => prev.filter((c) => c.id !== id));
+    setSelectedClientId(id);
+    setOpenDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (selectedClientId !== null) {
+      setClients((prev) => prev.filter((c) => c.id !== selectedClientId));
+      setOpenDeleteModal(false);
+      setSelectedClientId(null);
     }
   };
 
@@ -100,6 +112,8 @@ const ClientList: React.FC = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const clientToDelete = clients.find((c) => c.id === selectedClientId);
 
   return (
     <Box p={3}>
@@ -238,6 +252,13 @@ const ClientList: React.FC = () => {
         rowsPerPageOptions={[5, 10, 25]}
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelRowsPerPage="Linhas por página"
+      />
+
+      <DeleteClientModal
+        open={openDeleteModal}
+        onClose={() => setOpenDeleteModal(false)}
+        onConfirm={confirmDelete}
+        clientName={clientToDelete?.name}
       />
     </Box>
   );

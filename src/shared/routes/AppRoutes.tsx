@@ -17,7 +17,7 @@ import UserProfile from "../../pages/userPage";
 import Login from "../../pages/Login";
 import Home from "../../pages/Home";
 import ClientList from "../../components/ClientList";
-import ClientRegister from "../../pages/clientRegisterReturn";
+import ClientRegisterReturn from "../../pages/clientRegisterReturn";
 import PrivateLayout from "../layouts/PrivateLayout";
 import Agenda from "../../pages/Schedule";
 import FinancialPage from "../../pages/financialPage";
@@ -96,11 +96,11 @@ export const AppRoutes = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/clientes" element={<ClientList />} />
           <Route path="/agenda" element={<Agenda />} />
-          <Route path="/cadastro-usuario" element={<ClientRegister />} />
+          <Route path="/cadastro-usuario" element={<ClientRegisterReturn />} />
           <Route path="/perfil" element={<UserProfile />} />
           <Route path="/alterar-email" element={<ChangeEmailWrapper />} />
           <Route path="/alterar-senha" element={<ChangePasswordWrapper />} />
-          <Route path="/clientes/novo" element={<ClientRegister />} />
+          <Route path="/clientes/novo" element={<ClientRegisterReturn />} />
 
           <Route path="/financeiro" element={<FinancialPage />} />
           <Route path="/relatorios" element={<ReportPage />} />
