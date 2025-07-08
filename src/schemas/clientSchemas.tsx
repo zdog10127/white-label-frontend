@@ -9,12 +9,9 @@ export const clientSchema = z.object({
   cpf: z
     .string()
     .min(1, "CPF é obrigatório")
-    .regex(
-      /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
-      "CPF deve estar no formato 999.999.999-99"
-    )
+    .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "CPF deve estar no formato 999.999.999-99")
     .refine((cpf) => {
-      const digits = cpf.replace(/[^0-9]/g, "");
+      const digits = cpf.replace(/\D/g, "");
       return digits.length === 11;
     }, "CPF deve conter 11 dígitos"),
 
@@ -28,17 +25,18 @@ export const clientSchema = z.object({
     .min(1, "E-mail é obrigatório")
     .email("E-mail deve ter um formato válido"),
 
-  phone: z.string().optional(),
-
   cellphone: z
     .string()
     .min(1, "Celular é obrigatório")
-    .regex(
-      /^\(\d{2}\) \d{5}-\d{4}$/,
-      "Celular deve estar no formato (99) 99999-9999"
-    ),
+    .regex(/^\(\d{2}\) \d{5}-\d{4}$/, "Celular deve estar no formato (99) 99999-9999"),
 
-  birth: z.string().min(1, "Data de nascimento é obrigatória"),
+  birth: z
+    .string()
+    .min(1, "Data de nascimento é obrigatória")
+    .regex(
+      /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/\d{4}$/,
+      "Data de nascimento deve estar no formato DD/MM/YYYY"
+    ),
 
   age: z.string().min(1, "Idade é obrigatória"),
 
@@ -99,10 +97,7 @@ export const clientSchema = z.object({
   telefoneParente: z
     .string()
     .min(1, "Telefone do parente é obrigatório")
-    .regex(
-      /^\(\d{2}\) \d{5}-\d{4}$/,
-      "Telefone deve estar no formato (99) 99999-9999"
-    ),
+    .regex(/^\(\d{2}\) \d{5}-\d{4}$/, "Telefone deve estar no formato (99) 99999-9999"),
 
   tags: z.array(z.string()).optional(),
 

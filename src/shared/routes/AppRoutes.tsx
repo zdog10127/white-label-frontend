@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useDrawerContext } from "../contexts/DrawerContext";
 import { useEffect } from "react";
 import {
@@ -17,15 +17,26 @@ import UserProfile from "../../pages/userPage";
 import Login from "../../pages/Login";
 import Home from "../../pages/Home";
 import ClientList from "../../components/ClientList";
-import ClientRegister from "../../pages/clientRegister";
+import ClientRegister from "../../pages/clientRegisterReturn";
 import PrivateLayout from "../layouts/PrivateLayout";
 import Agenda from "../../pages/Schedule";
-import AlterCredentials from "../../pages/alterCredentials";
 import FinancialPage from "../../pages/financialPage";
 import ReportPage from "../../pages/reportPage";
 import MarketingPage from "../../pages/marketingPage";
 import SettingsPage from "../../pages/settingsPage";
 import MyClinicPage from "../../pages/myClinicPage";
+import ChangeEmail from "../../pages/changeEmail";
+import ChangePassword from "../../pages/changePassword";
+
+function ChangeEmailWrapper() {
+  const navigate = useNavigate();
+  return <ChangeEmail onBack={() => navigate("/perfil")} />;
+}
+
+function ChangePasswordWrapper() {
+  const navigate = useNavigate();
+  return <ChangePassword onBack={() => navigate("/perfil")} />;
+}
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();
@@ -87,7 +98,10 @@ export const AppRoutes = () => {
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/cadastro-usuario" element={<ClientRegister />} />
           <Route path="/perfil" element={<UserProfile />} />
-          <Route path="/alterar-credenciais" element={<AlterCredentials />} />
+          <Route path="/alterar-email" element={<ChangeEmailWrapper />} />
+          <Route path="/alterar-senha" element={<ChangePasswordWrapper />} />
+          <Route path="/clientes/novo" element={<ClientRegister />} />
+
           <Route path="/financeiro" element={<FinancialPage />} />
           <Route path="/relatorios" element={<ReportPage />} />
           <Route path="/marketing" element={<MarketingPage />} />

@@ -21,12 +21,12 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import clientsDataRaw from "./data/clients.json";
-import { RawClient, ExtendedClient } from "../types/clientList";
+import clientsDataRaw from "../components/data/clients.json";
+import { adaptClient, ClientWithExtras, RawClient } from "../utils/adaptClient";
 
 const ClientList: React.FC = () => {
   const navigate = useNavigate();
-  const [clients, setClients] = useState<ExtendedClient[]>([]);
+  const [clients, setClients] = useState<ClientWithExtras[]>([]);
   const [nameFilter, setNameFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "Todos" | "Ativo" | "Inativo" | "Lista de Espera"
@@ -36,47 +36,18 @@ const ClientList: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
-    const adaptedClients: ExtendedClient[] = (
+    const adaptedClients: ClientWithExtras[] = (
       clientsDataRaw as RawClient[]
-    ).map((raw, index) => ({
-      id: index + 1,
-      name: raw.NomeCompleto,
-      status:
-        index % 3 === 0
-          ? "Ativo"
-          : index % 3 === 1
-          ? "Inativo"
-          : "Lista de Espera",
-      registrationDate: new Date().toISOString().split("T")[0],
-      email: raw.Email || "",
-      phone: raw.Telefone || "",
-      group: index % 2 === 0 ? "Grupo A" : null,
-    }));
+    ).map((raw, index) => adaptClient(raw, index));
     setClients(adaptedClients);
   }, []);
 
   const handleAddClient = () => {
-    const name = prompt("Digite o nome do cliente:");
-    if (!name || name.trim() === "") {
-      alert("Nome inválido.");
-      return;
-    }
-
-    const newClient: ExtendedClient = {
-      id: clients.length ? Math.max(...clients.map((c) => c.id)) + 1 : 1,
-      name,
-      status: "Ativo",
-      registrationDate: new Date().toISOString().split("T")[0],
-      email: "",
-      phone: "",
-      group: null,
-    };
-
-    setClients((prev) => [newClient, ...prev]);
+    navigate("/cadastro-usuario");
   };
 
-  const handleEdit = (client: ExtendedClient) => {
-    alert(`Editar cliente: ${client.name}`);
+  const handleEdit = (client: ClientWithExtras) => {
+    navigate("/cadastro-usuario", { state: { client } });
   };
 
   const handleDelete = (id: number) => {
@@ -106,9 +77,8 @@ const ClientList: React.FC = () => {
   };
 
   const filteredClients = clients.filter((client) => {
-    const matchesName = client.name
-      .toLowerCase()
-      .includes(nameFilter.toLowerCase());
+    const nome = client.name || "";
+    const matchesName = nome.toLowerCase().includes(nameFilter.toLowerCase());
     const matchesStatus =
       statusFilter === "Todos" || client.status === statusFilter;
 
@@ -138,11 +108,7 @@ const ClientList: React.FC = () => {
       </Typography>
 
       <Stack direction="row" spacing={2} mb={2} flexWrap="wrap">
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => navigate("/cadastro-usuario")}
-        >
+        <Button variant="contained" color="primary" onClick={handleAddClient}>
           Adicionar Cliente
         </Button>
 
@@ -236,7 +202,7 @@ const ClientList: React.FC = () => {
                   <TableCell>{client.group || "-"}</TableCell>
                   <TableCell>{client.registrationDate}</TableCell>
                   <TableCell>{client.email || "-"}</TableCell>
-                  <TableCell>{client.phone || "-"}</TableCell>
+                  <TableCell>{client.cellphone || "-"}</TableCell>
                   <TableCell align="center">
                     <Button
                       variant="outlined"
