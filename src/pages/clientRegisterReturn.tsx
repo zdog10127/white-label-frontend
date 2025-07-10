@@ -35,7 +35,13 @@ import {
   ONDE_NOS_CONHECEU_OPTIONS,
   ENCAMINHADO_POR_OPTIONS,
 } from "../constants/inputSelectOptions";
-import { ClientFormData, FormErrors } from "../types/clientRegister";
+import { 
+  ClientFormData, 
+  FormErrors, 
+  ClientDataUnified,
+  mapClientToFormData,
+  hasNomeSocial,
+} from "../types/clientRegister";
 import { clientSchema } from "../schemas/clientSchemas";
 import { useLocation } from "react-router-dom";
 
@@ -43,13 +49,13 @@ dayjs.locale("pt-br");
 
 const ClientRegister: React.FC = () => {
   const location = useLocation();
-  const clientToEdit = (location.state as { clientToEdit?: any })?.clientToEdit;
+  const clientToEdit = (location.state as { clientToEdit?: ClientDataUnified })?.clientToEdit;
 
   const [activePage, setActivePage] = useState("cadastro");
   const [useSocialName, setUseSocialName] = useState(false);
 
   const getInitialFormValues = (
-    client?: any
+    client?: ClientDataUnified
   ): Omit<ClientFormData, "birth" | "age"> & {
     birth: Dayjs | null;
     age: string;
@@ -69,63 +75,158 @@ const ClientRegister: React.FC = () => {
       Telefone?: string;
       Parentesco?: string;
     };
-  } => ({
-    name: client?.name || "",
-    cpf: client?.cpf || "",
-    rg: client?.rg || "",
-    cellphone: client?.cellphone || "",
-    birth: client?.birth ? dayjs(client.birth, "DD/MM/YYYY") : null,
-    age: client?.age || "",
-    email: client?.email || "",
-    gender: client?.gender || "",
-    group: client?.group || "",
-    naturalidade: client?.naturalidade || "",
-    observacoes: client?.observacoes || "",
-    profissao: client?.profissao || "",
-    renda: client?.renda || "",
-    pagamento: client?.pagamento || "",
-    banco: client?.banco || "",
-    agencia: client?.agencia || "",
-    conta: client?.conta || "",
-    endereco: client?.endereco || "",
-    numero: client?.numero || "",
-    complemento: client?.complemento || "",
-    bairro: client?.bairro || "",
-    cidade: client?.cidade || "",
-    estado: client?.estado || "",
-    cep: client?.cep || "",
-    escolaridade: client?.escolaridade || "",
-    nomeParente: client?.nomeParente || "",
-    parentesco: client?.parentesco || "",
-    telefoneParente: client?.telefoneParente || "",
-    ondeNosConheceu: client?.ondeNosConheceu || "",
-    encaminhadoPor: client?.encaminhadoPor || "",
-    tags: client?.tags || [],
-    corIdentificacao: client?.corIdentificacao || "#415a44",
-    nacionalidade: client?.nacionalidade || "",
-    nomeSocial: client?.nomeSocial || "",
-
-    sessao: {
-      Data: client?.sessao?.Data || "",
-      Horario: client?.sessao?.Horario || "",
-      Status: client?.sessao?.Status || "",
-      Frequencia: client?.sessao?.Frequencia || "",
-    },
-    dadosBancarios: {
-      Banco: client?.dadosBancarios?.Banco || client?.banco || "",
-      Agencia: client?.dadosBancarios?.Agencia || client?.agencia || "",
-      Conta: client?.dadosBancarios?.Conta || client?.conta || "",
-    },
-    parente: {
-      Nome: client?.parente?.Nome || client?.nomeParente || "",
-      Telefone: client?.parente?.Telefone || client?.telefoneParente || "",
-      Parentesco: client?.parente?.Parentesco || client?.parentesco || "",
-    },
-  });
+  } => {
+    if (!client) {
+      return {
+        name: "",
+        nomeSocial: "",
+        cpf: "",
+        rg: "",
+        cellphone: "",
+        birth: null,
+        age: "",
+        email: "",
+        gender: "",
+        group: "",
+        naturalidade: "",
+        nacionalidade: "",
+        profissao: "",
+        renda: "",
+        pagamento: "",
+        escolaridade: "",
+        endereco: "",
+        numero: "",
+        complemento: "",
+        bairro: "",
+        cidade: "",
+        estado: "",
+        cep: "",
+        ondeNosConheceu: "",
+        encaminhadoPor: "",
+        observacoes: "",
+        tags: [],
+        corIdentificacao: "#415a44",
+        dadosBancarios: { Banco: "", Agencia: "", Conta: "" },
+        banco: "",
+        agencia: "",
+        conta: "",
+        parente: { Nome: "", Telefone: "", Parentesco: "" },
+        nomeParente: "",
+        telefoneParente: "",
+        parentesco: "",
+        sessao: { Data: "", Horario: "", Status: "", Frequencia: "" },
+      };
+    }
+    
+    const mappedData = mapClientToFormData(client);
+    
+    let birthValue: Dayjs | null = null;
+    if (mappedData.birth) {
+      if (typeof mappedData.birth === 'string') {
+        if (mappedData.birth.includes('-')) {
+          birthValue = dayjs(mappedData.birth, "YYYY-MM-DD");
+        } else if (mappedData.birth.includes('/')) {
+          birthValue = dayjs(mappedData.birth, "DD/MM/YYYY");
+        }
+        
+        if (birthValue && !birthValue.isValid()) {
+          birthValue = null;
+        }
+      } else if (dayjs.isDayjs(mappedData.birth)) {
+        birthValue = mappedData.birth;
+      }
+    }
+    
+    return {
+      name: mappedData.name || "",
+      nomeSocial: mappedData.nomeSocial || "",
+      cpf: mappedData.cpf || "",
+      rg: mappedData.rg || "",
+      cellphone: mappedData.cellphone || "",
+      birth: birthValue,
+      age: mappedData.age || "",
+      email: mappedData.email || "",
+      gender: mappedData.gender || "",
+      group: mappedData.group || "",
+      naturalidade: mappedData.naturalidade || "",
+      nacionalidade: mappedData.nacionalidade || "",
+      
+      profissao: mappedData.profissao || "",
+      renda: mappedData.renda || "",
+      pagamento: mappedData.pagamento || "",
+      escolaridade: mappedData.escolaridade || "",
+      
+      endereco: mappedData.endereco || "",
+      numero: mappedData.numero || "",
+      complemento: mappedData.complemento || "",
+      bairro: mappedData.bairro || "",
+      cidade: mappedData.cidade || "",
+      estado: mappedData.estado || "",
+      cep: mappedData.cep || "",
+      
+      ondeNosConheceu: mappedData.ondeNosConheceu || "",
+      encaminhadoPor: mappedData.encaminhadoPor || "",
+      observacoes: mappedData.observacoes || "",
+      tags: mappedData.tags || [],
+      corIdentificacao: mappedData.corIdentificacao || "#415a44",
+      
+      dadosBancarios: {
+        Banco: mappedData.dadosBancarios?.Banco || "",
+        Agencia: mappedData.dadosBancarios?.Agencia || "",
+        Conta: mappedData.dadosBancarios?.Conta || "",
+      },
+      banco: mappedData.banco || "",
+      agencia: mappedData.agencia || "",
+      conta: mappedData.conta || "",
+      
+      parente: {
+        Nome: mappedData.parente?.Nome || "",
+        Telefone: mappedData.parente?.Telefone || "",
+        Parentesco: mappedData.parente?.Parentesco || "",
+      },
+      nomeParente: mappedData.nomeParente || "",
+      telefoneParente: mappedData.telefoneParente || "",
+      parentesco: mappedData.parentesco || "",
+      
+      sessao: {
+        Data: mappedData.sessao?.Data || "",
+        Horario: mappedData.sessao?.Horario || "",
+        Status: mappedData.sessao?.Status || "",
+        Frequencia: mappedData.sessao?.Frequencia || "",
+      },
+    } as any;
+  }
 
   const [form, setForm] = useState(() => getInitialFormValues(clientToEdit));
-
   const [errors, setErrors] = useState<FormErrors>({});
+
+  useEffect(() => {
+    if (clientToEdit) {      
+      if (hasNomeSocial(clientToEdit)) {
+        setUseSocialName(true);
+      }
+
+      const newFormData = getInitialFormValues(clientToEdit);
+      setForm(newFormData);
+    }
+  }, [clientToEdit]);
+
+  useEffect(() => {
+    if (form.birth && form.birth.isValid()) {
+      try {
+        const formattedDate = form.birth.format("DD/MM/YYYY");
+        const calculatedAge = calculateAge(formattedDate);
+        if (calculatedAge !== null && calculatedAge.toString() !== form.age) {
+          setForm(prev => ({
+            ...prev,
+            age: calculatedAge.toString()
+          }));
+        }
+      } catch (error) {
+        console.warn("Erro ao calcular idade:", error);
+      }
+    }
+  }, [form.birth]);
 
   const updateFormField = useCallback(
     (field: string, value: any) => {
@@ -162,6 +263,9 @@ const ClientRegister: React.FC = () => {
           ...prev.dadosBancarios,
           [field]: value,
         },
+        ...(field === 'Banco' && { banco: value }),
+        ...(field === 'Agencia' && { agencia: value }),
+        ...(field === 'Conta' && { conta: value }),
       }));
     },
     []
@@ -175,6 +279,9 @@ const ClientRegister: React.FC = () => {
           ...prev.parente,
           [field]: value,
         },
+        ...(field === 'Nome' && { nomeParente: value }),
+        ...(field === 'Telefone' && { telefoneParente: value }),
+        ...(field === 'Parentesco' && { parentesco: value }),
       }));
     },
     []
@@ -236,7 +343,7 @@ const ClientRegister: React.FC = () => {
         const age = calculateAge(formattedDate);
         calculatedAge = age !== null ? age.toString() : "";
       } catch (error) {}
-      setForm((prev) => ({
+      setForm((prev: any) => ({
         ...prev,
         birth: newValue,
         age: calculatedAge,
@@ -248,7 +355,7 @@ const ClientRegister: React.FC = () => {
         return newErrors;
       });
     } else {
-      setForm((prev) => ({
+      setForm((prev: any) => ({
         ...prev,
         birth: null,
         age: "",
@@ -334,13 +441,36 @@ const ClientRegister: React.FC = () => {
     [form, updateFormField, errors]
   );
 
+  const renderInputMaskParente = useCallback(
+    (mask: string, field: string, label: string, placeholder?: string) => (
+      <InputMask
+        mask={mask}
+        value={form.parente[field as keyof typeof form.parente] as string || ""}
+        onChange={(e) => updateParenteField(field as keyof typeof form.parente, e.target.value)}
+      >
+        {(inputProps: any) => (
+          <TextField
+            {...inputProps}
+            label={label}
+            fullWidth
+            size="small"
+            placeholder={placeholder}
+            error={!!errors[field]}
+            helperText={errors[field]}
+          />
+        )}
+      </InputMask>
+    ),
+    [form.parente, updateParenteField, errors]
+  );
+
   return (
     <Box display="flex">
       <SideBarRegister
         onSelect={setActivePage}
         activeSection={activePage}
         clientName={form.name || "Cliente"}
-        clientImageUrl={clientToEdit?.fotoUrl}
+        clientImageUrl={undefined}
       />
       <Box flex={1} p={5} ml="220px" maxWidth="700px" mx="auto">
         {activePage === "cadastro" && (
@@ -490,7 +620,6 @@ const ClientRegister: React.FC = () => {
               <Grid item xs={12} md={3}>
                 {renderInputMask("(99) 99999-9999", "cellphone", "Celular *")}
               </Grid>
-
               <Grid item xs={12} md={3}>
                 <TextField
                   size="small"
@@ -551,7 +680,6 @@ const ClientRegister: React.FC = () => {
                   true
                 )}
               </Grid>
-
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   size="small"
@@ -717,9 +845,9 @@ const ClientRegister: React.FC = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                {renderInputMask(
+                {renderInputMaskParente(
                   "(99) 99999-9999",
-                  "telefoneParente",
+                  "Telefone",
                   "Telefone do parente"
                 )}
               </Grid>
@@ -758,8 +886,21 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.tags}
                 />
               </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  size="small"
+                  label="Observações"
+                  fullWidth
+                  multiline
+                  rows={3}
+                  value={form.observacoes}
+                  onChange={(e) => updateFormField("observacoes", e.target.value)}
+                  error={!!errors.observacoes}
+                  helperText={errors.observacoes}
+                />
+              </Grid>
             </Grid>
-            <Box display="flex" justifyContent="flex-end" mt={4}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mt={4}>              
               <Button variant="contained" onClick={handleSubmit}>
                 {clientToEdit ? "Atualizar" : "Cadastrar"}
               </Button>
