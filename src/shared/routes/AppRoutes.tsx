@@ -12,14 +12,16 @@ import {
   Settings,
 } from "@mui/icons-material";
 
+import { useAuth } from "../contexts/AuthContext";
+
 import ProtectedRoute from "./PrivateRoute";
-import UserProfile from "../../pages/userPage";
+import UserProfile from "../../pages/userPage/userPage";
 import Login from "../../pages/Login";
 import Home from "../../pages/Home";
-import ClientList from "../../components/ClientList";
+import ClientList from "../../pages/clientList";
 import ClientRegisterReturn from "../../pages/clientRegisterReturn";
 import PrivateLayout from "../layouts/PrivateLayout";
-import Agenda from "../../pages/Schedule";
+import Agenda from "../../pages/schedule";
 import FinancialPage from "../../pages/financialPage";
 import ReportPage from "../../pages/reportPage";
 import MarketingPage from "../../pages/marketingPage";
@@ -30,7 +32,14 @@ import ChangePassword from "../../pages/changePassword";
 
 function ChangeEmailWrapper() {
   const navigate = useNavigate();
-  return <ChangeEmail onBack={() => navigate("/perfil")} />;
+  const { user } = useAuth();
+
+  return (
+    <ChangeEmail
+      clientEmail={user?.email ?? ""}
+      onBack={() => navigate("/perfil")}
+    />
+  );
 }
 
 function ChangePasswordWrapper() {

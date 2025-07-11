@@ -21,9 +21,24 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import clientsDataRaw from "../components/data/clients.json";
-import { adaptClient, ClientWithExtras, RawClient } from "../utils/adaptClient";
-import DeleteClientModal from "../components/mod/deleteClientModal";
+import clientsDataRaw from "../../components/data/clients.json";
+import {
+  adaptClient,
+  ClientWithExtras,
+  RawClient,
+} from "../../utils/adaptClient";
+import DeleteClientModal from "../../components/mod/deleteClientModal";
+
+import {
+  Container,
+  HeaderTitle,
+  ButtonsStack,
+  FiltersBox,
+  StyledFormControl,
+  StyledTextField,
+  ActionsButton,
+  ActionsButtonDelete,
+} from "./styles";
 
 const ClientList: React.FC = () => {
   const navigate = useNavigate();
@@ -116,12 +131,12 @@ const ClientList: React.FC = () => {
   const clientToDelete = clients.find((c) => c.id === selectedClientId);
 
   return (
-    <Box p={3}>
-      <Typography variant="h5" gutterBottom>
+    <Container>
+      <HeaderTitle variant="h5" gutterBottom>
         Listagem de Clientes
-      </Typography>
+      </HeaderTitle>
 
-      <Stack direction="row" spacing={2} mb={2} flexWrap="wrap">
+      <ButtonsStack direction="row" spacing={2} mb={2} flexWrap="wrap">
         <Button variant="contained" color="primary" onClick={handleAddClient}>
           Adicionar Cliente
         </Button>
@@ -147,10 +162,16 @@ const ClientList: React.FC = () => {
         >
           Grupos
         </Button>
-      </Stack>
+      </ButtonsStack>
 
-      <Box display="flex" gap={2} flexWrap="wrap" mb={2} alignItems="center">
-        <FormControl size="small" sx={{ minWidth: 150 }}>
+      <FiltersBox
+        display="flex"
+        gap={2}
+        flexWrap="wrap"
+        mb={2}
+        alignItems="center"
+      >
+        <StyledFormControl size="small">
           <InputLabel>Status</InputLabel>
           <Select
             value={statusFilter}
@@ -163,18 +184,17 @@ const ClientList: React.FC = () => {
             <MenuItem value="Inativo">Inativo</MenuItem>
             <MenuItem value="Lista de Espera">Lista de Espera</MenuItem>
           </Select>
-        </FormControl>
+        </StyledFormControl>
 
-        <TextField
+        <StyledTextField
           label="Pesquisar cliente"
           variant="outlined"
           size="small"
-          sx={{ flexGrow: 1, minWidth: 250 }}
           value={nameFilter}
           onChange={(e) => setNameFilter(e.target.value)}
           disabled={showOnlyGroups}
         />
-      </Box>
+      </FiltersBox>
 
       <TableContainer component={Paper}>
         <Table>
@@ -218,23 +238,22 @@ const ClientList: React.FC = () => {
                   <TableCell>{client.email || "-"}</TableCell>
                   <TableCell>{client.cellphone || "-"}</TableCell>
                   <TableCell align="center">
-                    <Button
+                    <ActionsButton
                       variant="outlined"
                       size="small"
                       color="primary"
-                      sx={{ mr: 1 }}
                       onClick={() => handleEdit(client)}
                     >
                       Editar
-                    </Button>
-                    <Button
+                    </ActionsButton>
+                    <ActionsButtonDelete
                       variant="outlined"
                       size="small"
                       color="error"
                       onClick={() => handleDelete(client.id)}
                     >
                       Excluir
-                    </Button>
+                    </ActionsButtonDelete>
                   </TableCell>
                 </TableRow>
               ))
@@ -260,7 +279,7 @@ const ClientList: React.FC = () => {
         onConfirm={confirmDelete}
         clientName={clientToDelete?.name}
       />
-    </Box>
+    </Container>
   );
 };
 

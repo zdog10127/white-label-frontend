@@ -11,20 +11,20 @@ import {
   Paper,
   Divider,
 } from "@mui/material";
-import { useAuth } from "../shared/contexts/AuthContext";
+import { useAuth } from "../../shared/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { estadosBrasil } from "../utils/estados";
-import { occupationOptions } from "../constants/occupationOptions";
+import { estadosBrasil } from "../../utils/estados";
+import { occupationOptions } from "../../constants/occupationOptions";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   userProfileSchema,
   UserProfileFormData,
-} from "../schemas/userPageSchemas";
+} from "../../schemas/userPageSchemas";
 
-import ChangeEmail from "../pages/changeEmail";
-import ChangePassword from "../pages/changePassword";
+import ChangeEmail from "../changeEmail";
+import ChangePassword from "../changePassword";
 
 export default function UserPage() {
   const { user, logout, updateUserAvatar } = useAuth();

@@ -34,31 +34,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     ];
 
     const matchedUser = usersDB.find(
-      (user) => user.email === email && user.password === password
+      (u) => u.email === email && u.password === password
     );
 
     if (matchedUser) {
       const profileData = localStorage.getItem(`user-profile-data-${email}`);
-      let extraFields = {};
-
-      if (profileData) {
-        const parsed = JSON.parse(profileData);
-        extraFields = {
-          firstName: parsed.firstName || "",
-          lastName: parsed.lastName || "",
-          phone: parsed.phone || "",
-          city: parsed.city || "",
-          state: parsed.state || "",
-          occupation: parsed.occupation || "",
-        };
-      }
-
       const avatar = localStorage.getItem(`user-profile-image-${email}`);
+
+      const extraFields: Partial<Omit<User, "email" | "avatar">> = profileData
+        ? JSON.parse(profileData)
+        : {};
 
       const userData: User = {
         email,
         avatar: avatar || undefined,
-        ...extraFields,
+        firstName: extraFields.firstName || "",
+        lastName: extraFields.lastName || "",
+        phone: extraFields.phone || "",
+        city: extraFields.city || "",
+        state: extraFields.state || "",
+        occupation: extraFields.occupation || "",
       };
 
       setUser(userData);

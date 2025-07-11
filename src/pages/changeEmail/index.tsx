@@ -1,8 +1,6 @@
 import React from "react";
 import {
-  Box,
   Button,
-  Paper,
   TextField,
   Typography,
   Divider,
@@ -10,6 +8,12 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import {
+  Container,
+  StyledPaper,
+  StyledDivider,
+  ButtonsBox,
+} from "./styles"; 
 
 export interface ChangeEmailProps {
   onBack: () => void;
@@ -46,12 +50,12 @@ export default function ChangeEmail({ onBack, clientEmail }: ChangeEmailProps) {
   };
 
   return (
-    <Box maxWidth={480} mx="auto" mt={4}>
-      <Paper sx={{ p: 4 }}>
+    <Container>
+      <StyledPaper>
         <Typography variant="h5" gutterBottom>
           Alterar E-mail
         </Typography>
-        <Divider sx={{ mb: 3 }} />
+        <StyledDivider />
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <TextField
@@ -97,7 +101,7 @@ export default function ChangeEmail({ onBack, clientEmail }: ChangeEmailProps) {
             )}
           />
 
-          <Box display="flex" justifyContent="space-between" mt={3}>
+          <ButtonsBox>
             <Button variant="outlined" onClick={onBack}>
               Voltar
             </Button>
@@ -109,9 +113,9 @@ export default function ChangeEmail({ onBack, clientEmail }: ChangeEmailProps) {
             >
               Salvar
             </Button>
-          </Box>
+          </ButtonsBox>
         </form>
-      </Paper>
-    </Box>
+      </StyledPaper>
+    </Container>
   );
 }
