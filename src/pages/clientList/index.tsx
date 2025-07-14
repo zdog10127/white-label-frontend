@@ -21,8 +21,24 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import clientsDataRaw from "../components/data/clients.json";
-import { adaptClient, ClientWithExtras, RawClient } from "../utils/adaptClient";
+import clientsDataRaw from "../../components/data/clients.json";
+import {
+  adaptClient,
+  ClientWithExtras,
+  RawClient,
+} from "../../utils/adaptClient";
+import DeleteClientModal from "../../components/mod/deleteClientModal";
+
+import {
+  Container,
+  HeaderTitle,
+  ButtonsStack,
+  FiltersBox,
+  StyledFormControl,
+  StyledTextField,
+  ActionsButton,
+  ActionsButtonDelete,
+} from "./styles";
 
 const ClientList: React.FC = () => {
   const navigate = useNavigate();
@@ -33,6 +49,8 @@ const ClientList: React.FC = () => {
   >("Todos");
   const [showOnlyGroups, setShowOnlyGroups] = useState(false);
   const [page, setPage] = useState(0);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
@@ -47,12 +65,21 @@ const ClientList: React.FC = () => {
   };
 
   const handleEdit = (client: ClientWithExtras) => {
-    navigate("/cadastro-usuario", { state: { client } });
+    navigate("/cadastro-usuario", {
+      state: { clientToEdit: client },
+    });
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm("Tem certeza que deseja excluir este cliente?")) {
-      setClients((prev) => prev.filter((c) => c.id !== id));
+    setSelectedClientId(id);
+    setOpenDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (selectedClientId !== null) {
+      setClients((prev) => prev.filter((c) => c.id !== selectedClientId));
+      setOpenDeleteModal(false);
+      setSelectedClientId(null);
     }
   };
 
@@ -101,13 +128,15 @@ const ClientList: React.FC = () => {
     setPage(0);
   };
 
-  return (
-    <Box p={3}>
-      <Typography variant="h5" gutterBottom>
-        Listagem de Clientes
-      </Typography>
+  const clientToDelete = clients.find((c) => c.id === selectedClientId);
 
-      <Stack direction="row" spacing={2} mb={2} flexWrap="wrap">
+  return (
+    <Container>
+      <HeaderTitle variant="h5" gutterBottom>
+        Listagem de Clientes
+      </HeaderTitle>
+
+      <ButtonsStack direction="row" spacing={2} mb={2} flexWrap="wrap">
         <Button variant="contained" color="primary" onClick={handleAddClient}>
           Adicionar Cliente
         </Button>
@@ -133,10 +162,16 @@ const ClientList: React.FC = () => {
         >
           Grupos
         </Button>
-      </Stack>
+      </ButtonsStack>
 
-      <Box display="flex" gap={2} flexWrap="wrap" mb={2} alignItems="center">
-        <FormControl size="small" sx={{ minWidth: 150 }}>
+      <FiltersBox
+        display="flex"
+        gap={2}
+        flexWrap="wrap"
+        mb={2}
+        alignItems="center"
+      >
+        <StyledFormControl size="small">
           <InputLabel>Status</InputLabel>
           <Select
             value={statusFilter}
@@ -149,18 +184,17 @@ const ClientList: React.FC = () => {
             <MenuItem value="Inativo">Inativo</MenuItem>
             <MenuItem value="Lista de Espera">Lista de Espera</MenuItem>
           </Select>
-        </FormControl>
+        </StyledFormControl>
 
-        <TextField
+        <StyledTextField
           label="Pesquisar cliente"
           variant="outlined"
           size="small"
-          sx={{ flexGrow: 1, minWidth: 250 }}
           value={nameFilter}
           onChange={(e) => setNameFilter(e.target.value)}
           disabled={showOnlyGroups}
         />
-      </Box>
+      </FiltersBox>
 
       <TableContainer component={Paper}>
         <Table>
@@ -204,23 +238,22 @@ const ClientList: React.FC = () => {
                   <TableCell>{client.email || "-"}</TableCell>
                   <TableCell>{client.cellphone || "-"}</TableCell>
                   <TableCell align="center">
-                    <Button
+                    <ActionsButton
                       variant="outlined"
                       size="small"
                       color="primary"
-                      sx={{ mr: 1 }}
                       onClick={() => handleEdit(client)}
                     >
                       Editar
-                    </Button>
-                    <Button
+                    </ActionsButton>
+                    <ActionsButtonDelete
                       variant="outlined"
                       size="small"
                       color="error"
                       onClick={() => handleDelete(client.id)}
                     >
                       Excluir
-                    </Button>
+                    </ActionsButtonDelete>
                   </TableCell>
                 </TableRow>
               ))
@@ -239,7 +272,14 @@ const ClientList: React.FC = () => {
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelRowsPerPage="Linhas por página"
       />
-    </Box>
+
+      <DeleteClientModal
+        open={openDeleteModal}
+        onClose={() => setOpenDeleteModal(false)}
+        onConfirm={confirmDelete}
+        clientName={clientToDelete?.name}
+      />
+    </Container>
   );
 };
 

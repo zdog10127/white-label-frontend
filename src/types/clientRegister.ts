@@ -1,49 +1,52 @@
-import { z } from "zod";
-import { clientSchema } from "../schemas/clientSchemas";
-
-export type ClientFormData = z.infer<typeof clientSchema>;
+import type { Dayjs } from "dayjs";
 
 export interface FormErrors {
   [key: string]: string;
 }
 
-export interface ClientDataFromAPI {
-  NomeCompleto?: string;
-  CPF?: string;
-  RG?: string;
-  Telefone?: string;
-  DataNascimento?: string;
-  Idade?: string;
-  Email?: string;
-  Genero?: string;
-  Grupo?: string;
-  Naturalidade?: string;
-  Observacoes?: string;
-  Profissao?: string;
-  Renda?: string;
-  Pagamento?: string;
-  DadosBancarios?: {
-    Banco?: string;
-    Agencia?: string;
-    Conta?: string;
+export interface NewClientFormData {
+  name: string;
+  nomeSocial: string;
+  cpf: string;
+  rg: string;
+  cellphone: string;
+  birth: Dayjs | null;
+  age: string;
+  email: string;
+  gender: string;
+  group: string;
+  naturalidade: string;
+  nacionalidade: string;
+  profissao: string;
+  renda: string;
+  pagamento: string;
+  escolaridade: string;
+  endereco: string;
+  numero: string;
+  complemento: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  ondeNosConheceu: string;
+  encaminhadoPor: string;
+  observacoes: string;
+  tags: string[];
+  corIdentificacao: string;
+  dadosBancarios: {
+    Banco: string;
+    Agencia: string;
+    Conta: string;
   };
-  Endereco?: string;
-  Numero?: string;
-  Complemento?: string;
-  Bairro?: string;
-  Cidade?: string;
-  Estado?: string;
-  CEP?: string;
-  Escolaridade?: string;
-  Parente?: {
-    Nome?: string;
-    Parentesco?: string;
-    Telefone?: string;
+  parente: {
+    Nome: string;
+    Telefone: string;
+    Parentesco: string;
   };
-  OndeNosConheceu?: string;
-  EncaminhadoPor?: string;
-  Tags?: string[];
-  CorIdentificacao?: string;
-  Nacionalidade?: string;
-  NomeSocial?: string;
+  sessao: {
+    Data: string;
+    Horario: string;
+    Status: string;
+    Frequencia: string;
+  };
 }

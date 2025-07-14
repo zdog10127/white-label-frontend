@@ -1,15 +1,18 @@
 import React from "react";
 import { LayoutBasePage } from "../../shared/layouts";
 import ToolsDetails from "../../components/tools-details/ToolsDetails";
-import {
-  Box,
-  Typography,
-  Paper,
-  Button,
-  Divider,
-  useTheme,
-} from "@mui/material";
+import { Box, Typography, Paper, Button, Divider } from "@mui/material";
 import CardBase from "../../components/cards/CardBase";
+
+import {
+  Container,
+  LeftPanel,
+  RightPanel,
+  PaperStyled,
+  ButtonGroupBox,
+  CenterTextBox,
+  CenteredImage,
+} from "./styles";
 
 export const Dashboard = () => {
   return (
@@ -21,18 +24,11 @@ export const Dashboard = () => {
 
 const DashboardPanel: React.FC = () => {
   return (
-    <Box
-      display="flex"
-      flexDirection={{ xs: "column", md: "row" }}
-      gap={3}
-      px={{ xs: 1, md: 2 }}
-      width="100%"
-      boxSizing="border-box"
-    >
-      <Box flex={1.5} display="flex" flexDirection="column" gap={3}>
-        <Paper sx={{ p: 1, width: "100%", boxSizing: "border-box" }}>
+    <Container>
+      <LeftPanel>
+        <PaperStyled>
           <CardBase title="Próximas sessões" centerContent={false}>
-            <Box mt={3} textAlign="center">
+            <CenterTextBox mt={3}>
               <Typography fontWeight="bold">
                 Você ainda não cadastrou nenhuma sessão.
               </Typography>
@@ -40,39 +36,38 @@ const DashboardPanel: React.FC = () => {
                 No momento, não há nenhuma sessão agendada. Registre uma sessão
                 acessando o módulo Agenda.
               </Typography>
-            </Box>
+            </CenterTextBox>
           </CardBase>
-        </Paper>
+        </PaperStyled>
 
-        <Paper sx={{ p: 1, width: "100%", boxSizing: "border-box" }}>
+        <PaperStyled>
           <CardBase title="Pendências e Atividades" centerContent={false}>
-            <Box display="flex" gap={2} flexWrap="wrap" mb={3}>
+            <ButtonGroupBox mb={3}>
               <Button variant="outlined">Pendências (0)</Button>
               <Button variant="text">Atividade de clientes (0)</Button>
               <Button variant="text">Aniversariantes do mês</Button>
-            </Box>
-            <Box textAlign="center">
-              <img
+            </ButtonGroupBox>
+            <CenterTextBox>
+              <CenteredImage
                 src="/robot-placeholder.svg"
                 alt="Placeholder"
                 width={100}
-                style={{ marginBottom: 16 }}
               />
               <Typography fontWeight="bold">
                 Opss! Ainda não existem registros para mostrar aqui.
               </Typography>
-            </Box>
+            </CenterTextBox>
           </CardBase>
-        </Paper>
-      </Box>
+        </PaperStyled>
+      </LeftPanel>
 
-      <Box flex={1} display="flex" flexDirection="column" gap={3}>
-        <Paper sx={{ p: 1, width: "100%", boxSizing: "border-box" }}>
+      <RightPanel>
+        <PaperStyled>
           <CardBase title="Relatório financeiro" centerContent={false}>
-            <Box display="flex" gap={2} flexWrap="wrap" mb={3}>
+            <ButtonGroupBox mb={3}>
               <Button variant="outlined">Relatório financeiro</Button>
               <Button variant="text">Psicobank</Button>
-            </Box>
+            </ButtonGroupBox>
 
             <Box>
               <Box display="flex" justifyContent="space-between" mb={1}>
@@ -116,27 +111,26 @@ const DashboardPanel: React.FC = () => {
               </Box>
             </Box>
           </CardBase>
-        </Paper>
+        </PaperStyled>
 
-        <Paper sx={{ p: 1, width: "100%", boxSizing: "border-box" }}>
+        <PaperStyled>
           <CardBase title="Tarefas" centerContent={false}>
             <Button sx={{ mt: 2, mb: 3 }} variant="outlined">
               + Criar uma nova tarefa
             </Button>
-            <Box textAlign="center">
-              <img
+            <CenterTextBox>
+              <CenteredImage
                 src="/robot-placeholder.svg"
                 alt="Placeholder"
                 width={100}
-                style={{ marginBottom: 16 }}
               />
               <Typography fontWeight="bold">
                 Opss! Ainda não existe nenhuma tarefa cadastrada.
               </Typography>
-            </Box>
+            </CenterTextBox>
           </CardBase>
-        </Paper>
-      </Box>
-    </Box>
+        </PaperStyled>
+      </RightPanel>
+    </Container>
   );
 };

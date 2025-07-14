@@ -17,9 +17,9 @@ import {
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import InputMask from "react-input-mask";
-import SideBarRegister from "../components/side-bar/sideBarRegister";
-import { estadosBrasil } from "../utils/estados";
-import { calculateAge } from "../utils/calculateAge";
+import SideBarRegister from "../../components/side-bar/sideBarRegister";
+import { estadosBrasil } from "../../utils/estados";
+import { calculateAge } from "../../utils/calculateAge";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -34,69 +34,78 @@ import {
   NACIONALIDADE_OPTIONS,
   ONDE_NOS_CONHECEU_OPTIONS,
   ENCAMINHADO_POR_OPTIONS,
-} from "../constants/inputSelectOptions";
-import { ClientFormData, FormErrors } from "../types/clientRegister";
-import { clientSchema } from "../schemas/clientSchemas";
-import { useLocation } from "react-router-dom";
+} from "../../constants/inputSelectOptions";
+import { FormErrors } from "../../types/clientRegisterReturn";
+import { clientSchema } from "../../schemas/clientSchemas";
+import { NewClientFormData } from "../../types/clientRegister";
+import {
+  Container,
+  ContentBox,
+  Title,
+  SectionTitle,
+  SectionDivider,
+  PersonalInfoSwitchWrapper,
+  GridWithMarginBottom,
+  ErrorText,
+} from "./styles";
 
-dayjs.locale("pt-br");
-
-const ClientRegister: React.FC = () => {
-  const location = useLocation();
-  const clientToEdit = (location.state as { client?: any })?.client;
+const NewClientRegister: React.FC = () => {
   const [activePage, setActivePage] = useState("cadastro");
   const [useSocialName, setUseSocialName] = useState(false);
 
-  const getInitialFormValues = (
-    client?: any
-  ): Omit<ClientFormData, "birth" | "age"> & {
-    birth: Dayjs | null;
-    age: string;
-  } => ({
-    name: client?.name || "",
-    cpf: client?.cpf || "",
-    rg: client?.rg || "",
-    cellphone: client?.cellphone || "",
-    birth: client?.birth ? dayjs(client.birth, "DD/MM/YYYY") : null,
-    age: client?.age || "",
-    email: client?.email || "",
-    gender: client?.gender || "",
-    group: client?.group || "",
-    naturalidade: client?.naturalidade || "",
-    observacoes: client?.observacoes || "",
-    profissao: client?.profissao || "",
-    renda: client?.renda || "",
-    pagamento: client?.pagamento || "",
-    banco: client?.banco || "",
-    agencia: client?.agencia || "",
-    conta: client?.conta || "",
-    endereco: client?.endereco || "",
-    numero: client?.numero || "",
-    complemento: client?.complemento || "",
-    bairro: client?.bairro || "",
-    cidade: client?.cidade || "",
-    estado: client?.estado || "",
-    cep: client?.cep || "",
-    escolaridade: client?.escolaridade || "",
-    nomeParente: client?.nomeParente || "",
-    parentesco: client?.parentesco || "",
-    telefoneParente: client?.telefoneParente || "",
-    ondeNosConheceu: client?.ondeNosConheceu || "",
-    encaminhadoPor: client?.encaminhadoPor || "",
-    tags: client?.tags || [],
-    corIdentificacao: client?.corIdentificacao || "#415a44",
-    nacionalidade: client?.nacionalidade || "",
-    nomeSocial: client?.nomeSocial || "",
-  });
+  const initialFormValues: NewClientFormData = {
+    name: "",
+    nomeSocial: "",
+    cpf: "",
+    rg: "",
+    cellphone: "",
+    birth: null,
+    age: "",
+    email: "",
+    gender: "",
+    group: "",
+    naturalidade: "",
+    nacionalidade: "",
+    profissao: "",
+    renda: "",
+    pagamento: "",
+    escolaridade: "",
+    endereco: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
+    cidade: "",
+    estado: "",
+    cep: "",
+    ondeNosConheceu: "",
+    encaminhadoPor: "",
+    observacoes: "",
+    tags: [],
+    corIdentificacao: "#415a44",
+    dadosBancarios: { Banco: "", Agencia: "", Conta: "" },
+    parente: { Nome: "", Telefone: "", Parentesco: "" },
+    sessao: { Data: "", Horario: "", Status: "", Frequencia: "" },
+  };
 
-  const [form, setForm] = useState<
-    Omit<ClientFormData, "birth" | "age"> & {
-      birth: Dayjs | null;
-      age: string;
-    }
-  >(() => getInitialFormValues(clientToEdit));
-
+  const [form, setForm] = useState<NewClientFormData>(initialFormValues);
   const [errors, setErrors] = useState<FormErrors>({});
+
+  useEffect(() => {
+    if (form.birth && form.birth.isValid()) {
+      try {
+        const formattedDate = form.birth.format("DD/MM/YYYY");
+        const calculatedAge = calculateAge(formattedDate);
+        if (calculatedAge !== null && calculatedAge.toString() !== form.age) {
+          setForm((prev) => ({
+            ...prev,
+            age: calculatedAge.toString(),
+          }));
+        }
+      } catch (error) {
+        console.warn("Erro ao calcular idade:", error);
+      }
+    }
+  }, [form.birth]);
 
   const updateFormField = useCallback(
     (field: string, value: any) => {
@@ -110,6 +119,45 @@ const ClientRegister: React.FC = () => {
       }
     },
     [errors]
+  );
+
+  const updateSessaoField = useCallback(
+    (field: keyof typeof form.sessao, value: string) => {
+      setForm((prev) => ({
+        ...prev,
+        sessao: {
+          ...prev.sessao,
+          [field]: value,
+        },
+      }));
+    },
+    []
+  );
+
+  const updateDadosBancariosField = useCallback(
+    (field: keyof typeof form.dadosBancarios, value: string) => {
+      setForm((prev) => ({
+        ...prev,
+        dadosBancarios: {
+          ...prev.dadosBancarios,
+          [field]: value,
+        },
+      }));
+    },
+    []
+  );
+
+  const updateParenteField = useCallback(
+    (field: keyof typeof form.parente, value: string) => {
+      setForm((prev) => ({
+        ...prev,
+        parente: {
+          ...prev.parente,
+          [field]: value,
+        },
+      }));
+    },
+    []
   );
 
   const validateForm = useCallback(() => {
@@ -139,15 +187,21 @@ const ClientRegister: React.FC = () => {
     setErrors(validationErrors);
     const hasError = Object.keys(validationErrors).length > 0;
     if (!hasError) {
-      if (clientToEdit) {
-        alert("Cliente atualizado com sucesso!");
-      } else {
-        alert("Cadastro enviado com sucesso!");
-      }
+      console.log("Dados do novo cliente:", form);
+      alert("Cliente cadastrado com sucesso!");
+
+      setForm(initialFormValues);
+      setUseSocialName(false);
     } else {
       alert("Por favor, corrija os erros no formulário antes de continuar.");
     }
-  }, [validateForm, clientToEdit]);
+  }, [validateForm, form, initialFormValues]);
+
+  const handleClearForm = useCallback(() => {
+    setForm(initialFormValues);
+    setUseSocialName(false);
+    setErrors({});
+  }, [initialFormValues]);
 
   const handleTagsChange = useCallback(
     (value: string) => {
@@ -234,9 +288,9 @@ const ClientRegister: React.FC = () => {
           ))}
         </Select>
         {errors[field] && (
-          <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+          <ErrorText variant="caption" color="error">
             {errors[field]}
-          </Typography>
+          </ErrorText>
         )}
       </FormControl>
     ),
@@ -266,25 +320,50 @@ const ClientRegister: React.FC = () => {
     [form, updateFormField, errors]
   );
 
+  const renderInputMaskParente = useCallback(
+    (mask: string, field: string, label: string, placeholder?: string) => (
+      <InputMask
+        mask={mask}
+        value={form.parente[field as keyof typeof form.parente] as string}
+        onChange={(e) =>
+          updateParenteField(field as keyof typeof form.parente, e.target.value)
+        }
+      >
+        {(inputProps: any) => (
+          <TextField
+            {...inputProps}
+            label={label}
+            fullWidth
+            size="small"
+            placeholder={placeholder}
+            error={!!errors[field]}
+            helperText={errors[field]}
+          />
+        )}
+      </InputMask>
+    ),
+    [form.parente, updateParenteField, errors]
+  );
+
   return (
-    <Box display="flex">
+    <Container>
       <SideBarRegister
         onSelect={setActivePage}
         activeSection={activePage}
-        clientName={form.name || "Cliente"}
-        clientImageUrl={clientToEdit?.fotoUrl}
+        clientName="Novo Cliente"
+        clientImageUrl={undefined}
       />
-      <Box flex={1} p={5} ml="220px" maxWidth="700px" mx="auto">
+      <ContentBox>
         {activePage === "cadastro" && (
           <>
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{ mb: 4, fontWeight: 600 }}
-            >
+            <Title variant="h6" gutterBottom>
+              CADASTRO DE NOVO CLIENTE
+            </Title>
+
+            <SectionTitle variant="h6" gutterBottom>
               1. INFORMAÇÕES PESSOAIS
-            </Typography>
-            <Box sx={{ mb: 3 }}>
+            </SectionTitle>
+            <PersonalInfoSwitchWrapper>
               <FormControlLabel
                 control={
                   <Switch
@@ -305,7 +384,7 @@ const ClientRegister: React.FC = () => {
                 }
                 labelPlacement="end"
               />
-            </Box>
+            </PersonalInfoSwitchWrapper>
             <Grid container spacing={2} sx={{ mb: 10 }}>
               {useSocialName && (
                 <Grid item xs={12} md={4}>
@@ -422,30 +501,29 @@ const ClientRegister: React.FC = () => {
               <Grid item xs={12} md={3}>
                 {renderInputMask("(99) 99999-9999", "cellphone", "Celular *")}
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} md={3}>
                 <TextField
                   size="small"
-                  label="Observações"
+                  label="Data da Sessão"
                   fullWidth
-                  multiline
-                  rows={2}
-                  value={form.observacoes}
-                  onChange={(e) =>
-                    updateFormField("observacoes", e.target.value)
-                  }
-                  error={!!errors.observacoes}
-                  helperText={errors.observacoes}
+                  value={form.sessao.Data}
+                  onChange={(e) => updateSessaoField("Data", e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <TextField
+                  size="small"
+                  label="Horário da Sessão"
+                  fullWidth
+                  value={form.sessao.Horario}
+                  onChange={(e) => updateSessaoField("Horario", e.target.value)}
                 />
               </Grid>
             </Grid>
-            <Divider sx={{ my: 2 }} />
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{ mb: 2, fontWeight: 600 }}
-            >
+            <SectionDivider />
+            <SectionTitle variant="h6" gutterBottom>
               2. INFORMAÇÕES FINANCEIRAS
-            </Typography>
+            </SectionTitle>
             <Grid container spacing={2} sx={{ mb: 10 }}>
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
@@ -483,10 +561,12 @@ const ClientRegister: React.FC = () => {
                   size="small"
                   label="Banco *"
                   fullWidth
-                  value={form.banco}
-                  onChange={(e) => updateFormField("banco", e.target.value)}
-                  error={!!errors.banco}
-                  helperText={errors.banco}
+                  value={form.dadosBancarios.Banco}
+                  onChange={(e) =>
+                    updateDadosBancariosField("Banco", e.target.value)
+                  }
+                  error={!!errors.Banco}
+                  helperText={errors.Banco}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -494,10 +574,12 @@ const ClientRegister: React.FC = () => {
                   size="small"
                   label="Agência *"
                   fullWidth
-                  value={form.agencia}
-                  onChange={(e) => updateFormField("agencia", e.target.value)}
-                  error={!!errors.agencia}
-                  helperText={errors.agencia}
+                  value={form.dadosBancarios.Agencia}
+                  onChange={(e) =>
+                    updateDadosBancariosField("Agencia", e.target.value)
+                  }
+                  error={!!errors.Agencia}
+                  helperText={errors.Agencia}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -505,26 +587,24 @@ const ClientRegister: React.FC = () => {
                   size="small"
                   label="Conta *"
                   fullWidth
-                  value={form.conta}
-                  onChange={(e) => updateFormField("conta", e.target.value)}
-                  error={!!errors.conta}
-                  helperText={errors.conta}
+                  value={form.dadosBancarios.Conta}
+                  onChange={(e) =>
+                    updateDadosBancariosField("Conta", e.target.value)
+                  }
+                  error={!!errors.Conta}
+                  helperText={errors.Conta}
                 />
               </Grid>
             </Grid>
-            <Divider sx={{ my: 2 }} />
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{ mb: 2, fontWeight: 600 }}
-            >
+            <SectionDivider />
+            <SectionTitle variant="h6" gutterBottom>
               3. ENDEREÇO
-            </Typography>
+            </SectionTitle>
             <Grid container spacing={2} sx={{ mb: 10 }}>
-              <Grid item xs={12} sm={6} md={6}>
+              <Grid item xs={12} md={8}>
                 <TextField
                   size="small"
-                  label="Endereço *"
+                  label="Endereço"
                   fullWidth
                   value={form.endereco}
                   onChange={(e) => updateFormField("endereco", e.target.value)}
@@ -532,7 +612,7 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.endereco}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={2}>
+              <Grid item xs={12} md={4}>
                 <TextField
                   size="small"
                   label="Número"
@@ -543,7 +623,7 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.numero}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   size="small"
                   label="Complemento"
@@ -556,7 +636,7 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.complemento}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   size="small"
                   label="Bairro"
@@ -567,7 +647,7 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.bairro}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   size="small"
                   label="Cidade"
@@ -578,7 +658,7 @@ const ClientRegister: React.FC = () => {
                   helperText={errors.cidade}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={2}>
+              <Grid item xs={12} md={3}>
                 <FormControl fullWidth size="small" error={!!errors.estado}>
                   <InputLabel>Estado</InputLabel>
                   <Select
@@ -589,108 +669,110 @@ const ClientRegister: React.FC = () => {
                     {memoizedEstados}
                   </Select>
                   {errors.estado && (
-                    <Typography
-                      variant="caption"
-                      color="error"
-                      sx={{ mt: 0.5, ml: 1.5 }}
-                    >
+                    <ErrorText variant="caption" color="error">
                       {errors.estado}
-                    </Typography>
+                    </ErrorText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6} md={2}>
+              <Grid item xs={12} md={3}>
                 {renderInputMask("99999-999", "cep", "CEP")}
               </Grid>
             </Grid>
-            <Divider sx={{ my: 2 }} />
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{ mb: 2, fontWeight: 600 }}
-            >
-              4. CONTATO DE EMERGÊNCIA
-            </Typography>
+            <SectionDivider />
+            <SectionTitle variant="h6" gutterBottom>
+              4. PARENTE / CONTATO DE EMERGÊNCIA
+            </SectionTitle>
             <Grid container spacing={2} sx={{ mb: 10 }}>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} md={4}>
                 <TextField
                   size="small"
                   label="Nome do parente"
                   fullWidth
-                  value={form.nomeParente}
-                  onChange={(e) =>
-                    updateFormField("nomeParente", e.target.value)
-                  }
-                  error={!!errors.nomeParente}
-                  helperText={errors.nomeParente}
+                  value={form.parente.Nome}
+                  onChange={(e) => updateParenteField("Nome", e.target.value)}
+                  error={!!errors.Nome}
+                  helperText={errors.Nome}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} md={4}>
+                {renderInputMaskParente(
+                  "(99) 99999-9999",
+                  "Telefone",
+                  "Telefone do parente"
+                )}
+              </Grid>
+              <Grid item xs={12} md={4}>
                 <TextField
                   size="small"
                   label="Parentesco"
                   fullWidth
-                  value={form.parentesco}
+                  value={form.parente.Parentesco}
                   onChange={(e) =>
-                    updateFormField("parentesco", e.target.value)
+                    updateParenteField("Parentesco", e.target.value)
                   }
-                  error={!!errors.parentesco}
-                  helperText={errors.parentesco}
+                  error={!!errors.Parentesco}
+                  helperText={errors.Parentesco}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                {renderInputMask(
-                  "(99) 99999-9999",
-                  "telefoneParente",
-                  "Telefone do parente"
-                )}
-              </Grid>
             </Grid>
-            <Divider sx={{ my: 2 }} />
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{ mb: 2, fontWeight: 600 }}
-            >
+            <SectionDivider />
+            <SectionTitle variant="h6" gutterBottom>
               5. INFORMAÇÕES ADICIONAIS
-            </Typography>
+            </SectionTitle>
             <Grid container spacing={2} sx={{ mb: 10 }}>
-              <Grid item xs={12} sm={6} md={6}>
-                {renderSelect(
-                  "ondeNosConheceu",
-                  "Onde nos conheceu",
-                  selectOptions.ondeNosConheceu
-                )}
-              </Grid>
-              <Grid item xs={12} sm={6} md={6}>
-                {renderSelect(
-                  "encaminhadoPor",
-                  "Encaminhado por",
-                  selectOptions.encaminhadoPor
-                )}
-              </Grid>
               <Grid item xs={12}>
                 <TextField
                   size="small"
-                  label="Tags (separadas por vírgula)"
+                  label="Observações"
+                  multiline
+                  rows={4}
                   fullWidth
-                  value={form.tags?.join(", ") ?? ""}
+                  value={form.observacoes}
+                  onChange={(e) =>
+                    updateFormField("observacoes", e.target.value)
+                  }
+                  error={!!errors.observacoes}
+                  helperText={errors.observacoes}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  size="small"
+                  label="Tags (separe por vírgulas)"
+                  fullWidth
+                  value={form.tags.join(", ")}
                   onChange={(e) => handleTagsChange(e.target.value)}
-                  error={!!errors.tags}
-                  helperText={errors.tags}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  size="small"
+                  label="Cor de identificação"
+                  type="color"
+                  fullWidth
+                  value={form.corIdentificacao}
+                  onChange={(e) =>
+                    updateFormField("corIdentificacao", e.target.value)
+                  }
+                  InputLabelProps={{ shrink: true }}
                 />
               </Grid>
             </Grid>
-            <Box display="flex" justifyContent="flex-end" mt={4}>
+
+            <Box display="flex" justifyContent="flex-end" gap={2}>
+              <Button variant="outlined" onClick={handleClearForm}>
+                Limpar
+              </Button>
               <Button variant="contained" onClick={handleSubmit}>
-                {clientToEdit ? "Atualizar" : "Cadastrar"}
+                Salvar
               </Button>
             </Box>
           </>
         )}
-      </Box>
-    </Box>
+      </ContentBox>
+    </Container>
   );
 };
 
-export default ClientRegister;
+export default NewClientRegister;

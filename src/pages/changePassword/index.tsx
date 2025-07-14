@@ -1,11 +1,10 @@
 import {
-  Box,
   Button,
-  Paper,
   TextField,
   Typography,
   Divider,
 } from "@mui/material";
+import { BoxContainer, StyledPaper, StyledDivider, ButtonsBox } from "./styles";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -50,12 +49,12 @@ export default function ChangePassword({ onBack }: ChangePasswordProps) {
   };
 
   return (
-    <Box maxWidth={480} mx="auto" mt={4}>
-      <Paper sx={{ p: 4 }}>
+    <BoxContainer>
+      <StyledPaper>
         <Typography variant="h5" gutterBottom>
           Alterar Senha
         </Typography>
-        <Divider sx={{ mb: 3 }} />
+        <StyledDivider />
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <Controller
@@ -92,7 +91,7 @@ export default function ChangePassword({ onBack }: ChangePasswordProps) {
             )}
           />
 
-          <Box display="flex" justifyContent="space-between" mt={3}>
+          <ButtonsBox>
             <Button variant="outlined" onClick={onBack}>
               Voltar
             </Button>
@@ -104,9 +103,9 @@ export default function ChangePassword({ onBack }: ChangePasswordProps) {
             >
               Salvar
             </Button>
-          </Box>
+          </ButtonsBox>
         </form>
-      </Paper>
-    </Box>
+      </StyledPaper>
+    </BoxContainer>
   );
 }

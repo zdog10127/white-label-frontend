@@ -7,8 +7,19 @@ import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import AddIcon from "@mui/icons-material/Add";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import ScheduleModal from "../components/modal-Schedule/sheduleModal";
-import clients from "../components/data/clients.json";
+import ScheduleModal from "../../components/mod/modal-Schedule/sheduleModal";
+import clients from "../../components/data/clients.json";
+
+import {
+  PageContainer,
+  CalendarPaper,
+  SessionsPaper,
+  HeaderBox,
+  ButtonsBox,
+  EmptyStateBox,
+  EmptyIcon,
+  SessionPaper,
+} from "./styles";
 
 const DataGridPage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
@@ -48,35 +59,30 @@ const DataGridPage: React.FC = () => {
   };
 
   return (
-    <Box p={3}>
+    <PageContainer p={3}>
       <Divider sx={{ my: 2 }} />
 
       <Box display="flex" gap={4}>
-        <Paper sx={{ p: 2, minWidth: 280 }}>
+        <CalendarPaper>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar
               value={selectedDate}
               onChange={(newDate) => setSelectedDate(newDate)}
             />
           </LocalizationProvider>
-        </Paper>
+        </CalendarPaper>
 
         <Box flex={1}>
-          <Paper sx={{ p: 3 }}>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-            >
+          <SessionsPaper>
+            <HeaderBox>
               <Typography variant="h6">
                 Sessões do dia {selectedDate?.format("DD/MM/YYYY")}
               </Typography>
-              <Box>
+              <ButtonsBox>
                 <Button
                   variant="contained"
                   color="primary"
                   startIcon={<AddIcon />}
-                  sx={{ mr: 1 }}
                   onClick={() => setOpenDialog(true)}
                 >
                   Agendar sessão
@@ -91,19 +97,14 @@ const DataGridPage: React.FC = () => {
                 >
                   Atualizar
                 </Button>
-              </Box>
-            </Box>
+              </ButtonsBox>
+            </HeaderBox>
 
             {!sessoesDoDia.length ? (
-              <Box textAlign="center" mt={6}>
-                <Typography
-                  variant="h1"
-                  fontSize={60}
-                  color="text.secondary"
-                  sx={{ opacity: 0.3 }}
-                >
+              <EmptyStateBox>
+                <EmptyIcon variant="h1" fontSize={60} color="text.secondary">
                   📅
-                </Typography>
+                </EmptyIcon>
                 <Typography variant="subtitle1" fontWeight="bold">
                   Você ainda não cadastrou nenhuma sessão para esse dia.
                 </Typography>
@@ -111,21 +112,21 @@ const DataGridPage: React.FC = () => {
                   Para adicionar um novo agendamento, clique em "Agendar sessão"
                   acima.
                 </Typography>
-              </Box>
+              </EmptyStateBox>
             ) : (
               <Box mt={4}>
                 {sessoesDoDia.map((sessao) => (
-                  <Paper key={sessao.id} sx={{ p: 2, mb: 20 }}>
+                  <SessionPaper key={sessao.id}>
                     <Typography fontWeight="bold">{sessao.titulo}</Typography>
                     <Typography variant="body2">{sessao.name}</Typography>
                     <Typography variant="body2" color="text.secondary">
                       {dayjs(sessao.data).format("DD/MM/YYYY")}
                     </Typography>
-                  </Paper>
+                  </SessionPaper>
                 ))}
               </Box>
             )}
-          </Paper>
+          </SessionsPaper>
         </Box>
       </Box>
 
@@ -135,7 +136,7 @@ const DataGridPage: React.FC = () => {
         clients={mappedClients}
         onSave={handleAddSessao}
       />
-    </Box>
+    </PageContainer>
   );
 };
 

@@ -11,4 +11,6 @@ export interface AgendamentoType {
   name: string;
   startTime: string;
   endTime: string;
+  frequencia: string;
+  status: string;
 }

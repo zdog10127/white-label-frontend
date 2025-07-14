@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import dayjs from "dayjs";
-import { ClientType, ScheduleModalProps } from "../../types/sheduleModal";
+import { ClientType, ScheduleModalProps } from "../../../types/sheduleModal";
 
 const ScheduleModal: React.FC<ScheduleModalProps> = ({
   open,
@@ -39,6 +39,9 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
     "presencial"
   );
   const [service, setService] = React.useState<string>("");
+  const [status, setStatus] = React.useState<"Confirmado" | "Pendente">(
+    "Confirmado"
+  );
 
   const handleSave = () => {
     if (!client || !date || !startTime || !endTime || !service) return;
@@ -51,6 +54,8 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
       name: client.name,
       startTime,
       endTime,
+      frequencia: recurrence,
+      status: status,
     };
 
     onSave(novaSessao);
@@ -156,6 +161,21 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
               Terapia Cognitivo Comportamental
             </MenuItem>
             <MenuItem value="psicanalise">Psicanálise</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel id="status-label">Status da sessão</InputLabel>
+          <Select
+            labelId="status-label"
+            value={status}
+            onChange={(e) =>
+              setStatus(e.target.value as "Confirmado" | "Pendente")
+            }
+            label="Status da sessão"
+          >
+            <MenuItem value="Confirmado">Confirmado</MenuItem>
+            <MenuItem value="Pendente">Pendente</MenuItem>
           </Select>
         </FormControl>
       </DialogContent>

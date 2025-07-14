@@ -1,17 +1,17 @@
 import React, { useState, FormEvent } from "react";
 import {
-  Container,
-  Box,
   Typography,
   TextField,
   Button,
-  Paper,
   Alert,
+  Box,
+  Link as MuiLink,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../shared/contexts/AuthContext";
+import { useAuth } from "../../shared/contexts/AuthContext";
 import { Link as RouterLink } from "react-router-dom";
-import Link from "@mui/material/Link";
+
+import { BackgroundContainer, LoginPaper, LinksBox } from "./styles";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -42,37 +42,13 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Container
-      maxWidth={false}
-      disableGutters
-      sx={{
-        height: "100vh",
-        width: "100vw",
-        backgroundImage: `url('assets/fundo3dbranco.jpg')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Paper
-        elevation={15}
-        sx={{
-          padding: 10,
-          mt: 10,
-          width: 350,
-          border: 3,
-          borderColor: "GrayText",
-          borderRadius: 8,
-        }}
-      >
+    <BackgroundContainer>
+      <LoginPaper elevation={15}>
         <Typography variant="h4" align="center" gutterBottom>
           White Label
         </Typography>
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" onSubmit={handleSubmit} mt={3}>
           <TextField
             fullWidth
             label="Digite seu e-mail"
@@ -101,29 +77,23 @@ const Login: React.FC = () => {
             fullWidth
             variant="contained"
             type="submit"
-            sx={{ mt: 2 }}
             size="large"
+            sx={{ mt: 2 }}
           >
             Entrar
           </Button>
 
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            width={"100%"}
-            mt={10}
-          >
-            <Link component={RouterLink} to="/esqueci-senha" variant="body2">
+          <LinksBox>
+            <MuiLink component={RouterLink} to="/esqueci-senha" variant="body2">
               Esqueceu sua senha?
-            </Link>
-            <Link component={RouterLink} to="/criar-conta" variant="body2">
+            </MuiLink>
+            <MuiLink component={RouterLink} to="/criar-conta" variant="body2">
               Criar conta
-            </Link>
-          </Box>
+            </MuiLink>
+          </LinksBox>
         </Box>
-      </Paper>
-    </Container>
+      </LoginPaper>
+    </BackgroundContainer>
   );
 };
 

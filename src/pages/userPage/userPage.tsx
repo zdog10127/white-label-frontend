@@ -11,27 +11,26 @@ import {
   Paper,
   Divider,
 } from "@mui/material";
-import { useAuth } from "../shared/contexts/AuthContext";
+import { useAuth } from "../../shared/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { estadosBrasil } from "../utils/estados";
-import { occupationOptions } from "../constants/occupationOptions";
+import { estadosBrasil } from "../../utils/estados";
+import { occupationOptions } from "../../constants/occupationOptions";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   userProfileSchema,
   UserProfileFormData,
-} from "../schemas/userPageSchemas";
+} from "../../schemas/userPageSchemas";
 
-import ChangeEmail from "../pages/changeEmail";
-import ChangePassword from "../pages/changePassword";
+import ChangeEmail from "../changeEmail";
+import ChangePassword from "../changePassword";
 
 export default function UserPage() {
   const { user, logout, updateUserAvatar } = useAuth();
   const navigate = useNavigate();
 
   const [view, setView] = useState<"main" | "email" | "password">("main");
-
   const [preview, setPreview] = useState<string | null>(null);
 
   const {
@@ -73,6 +72,20 @@ export default function UserPage() {
         Object.keys(parsed).forEach((key) => {
           setValue(key as keyof UserProfileFormData, parsed[key]);
         });
+      } else {
+        setValue("firstName", user.firstName || "");
+        setValue("lastName", user.lastName || "");
+        setValue("birthDate", user.birthDate || "");
+        setValue("gender", user.gender || "");
+        setValue("email", user.email || "");
+        setValue("phone", user.phone || "");
+        setValue("occupation", user.occupation || "");
+        setValue("street", user.street || "");
+        setValue("number", user.number || "");
+        setValue("neighborhood", user.neighborhood || "");
+        setValue("city", user.city || "");
+        setValue("state", user.state || "");
+        setValue("zip", user.zip || "");
       }
     }
   }, [user, setValue]);
@@ -112,7 +125,6 @@ export default function UserPage() {
     navigate("/login");
   };
 
-
   const handleBackToMain = () => setView("main");
 
   return (
@@ -132,7 +144,6 @@ export default function UserPage() {
               </Typography>
 
               <Grid container spacing={2}>
-
                 <Grid item xs={12} sm={6}>
                   <Controller
                     name="firstName"
@@ -369,8 +380,13 @@ export default function UserPage() {
 
               <Divider sx={{ my: 4 }} />
 
-
-              <Box display="flex" gap={2} mt={3} justifyContent="center" flexWrap="wrap">
+              <Box
+                display="flex"
+                gap={2}
+                mt={3}
+                justifyContent="center"
+                flexWrap="wrap"
+              >
                 <Button
                   variant="outlined"
                   color="primary"
@@ -479,7 +495,9 @@ export default function UserPage() {
         </Grid>
       )}
 
-      {view === "email" && <ChangeEmail onBack={handleBackToMain} />}
+      {view === "email" && user?.email && (
+        <ChangeEmail onBack={handleBackToMain} clientEmail={user.email} />
+      )}
 
       {view === "password" && <ChangePassword onBack={handleBackToMain} />}
     </Box>

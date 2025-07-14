@@ -16,7 +16,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import CardBase from "./CardBase";
 import EditSessionModal from "../mod/editSessionModal";
-import ClientInfoModal, { ClientType } from "../mod/clientModalInfo";
+import ClientInfoModal from "../mod/clientModalInfo";
+import { ClientType } from "../../types/clientModalInfo";
 
 import clientDataJson from "../../components/data/clients.json";
 
@@ -24,7 +25,6 @@ export default function SessionsCard() {
   const [clients, setClients] = useState<ClientType[]>(clientDataJson);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<ClientType | null>(null);
-
 
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [infoClient, setInfoClient] = useState<ClientType | null>(null);
@@ -35,7 +35,11 @@ export default function SessionsCard() {
   };
 
   const handleDelete = (client: ClientType) => {
-    if (window.confirm(`Deseja excluir a próxima sessão de ${client.NomeCompleto}?`)) {
+    if (
+      window.confirm(
+        `Deseja excluir a próxima sessão de ${client.NomeCompleto}?`
+      )
+    ) {
       const updatedClients = clients.map((c) =>
         c.CPF === client.CPF ? { ...c, Sessao: null } : c
       );
@@ -104,13 +108,17 @@ export default function SessionsCard() {
                   return (
                     <TableRow key={index}>
                       <TableCell>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
                           <Avatar
                             src="https://via.placeholder.com/32"
                             alt={client.NomeCompleto}
                             sx={{ width: 32, height: 32 }}
                           />
-                          <Typography variant="body2">{client.NomeCompleto}</Typography>
+                          <Typography variant="body2">
+                            {client.NomeCompleto}
+                          </Typography>
                         </Box>
                       </TableCell>
                       <TableCell>{session.Data}</TableCell>
@@ -118,7 +126,10 @@ export default function SessionsCard() {
                       <TableCell>
                         <Typography
                           variant="body2"
-                          sx={{ fontWeight: "bold", color: getStatusColor(session.Status) }}
+                          sx={{
+                            fontWeight: "bold",
+                            color: getStatusColor(session.Status),
+                          }}
                         >
                           {session.Status}
                         </Typography>
@@ -126,10 +137,18 @@ export default function SessionsCard() {
                       <TableCell>{session.Frequencia}</TableCell>
                       <TableCell>
                         <Box sx={{ display: "flex", gap: 1 }}>
-                          <IconButton color="primary" size="small" onClick={() => handleEdit(client)}>
+                          <IconButton
+                            color="primary"
+                            size="small"
+                            onClick={() => handleEdit(client)}
+                          >
                             <EditIcon fontSize="inherit" />
                           </IconButton>
-                          <IconButton color="error" size="small" onClick={() => handleDelete(client)}>
+                          <IconButton
+                            color="error"
+                            size="small"
+                            onClick={() => handleDelete(client)}
+                          >
                             <DeleteIcon fontSize="inherit" />
                           </IconButton>
                           <IconButton

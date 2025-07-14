@@ -15,5 +15,7 @@ export interface ScheduleModalProps {
     name: string;
     startTime: string;
     endTime: string;
+    frequencia: string;
+    status: string;
   }) => void;
 }
