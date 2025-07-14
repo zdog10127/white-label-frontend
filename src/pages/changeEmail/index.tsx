@@ -1,19 +1,9 @@
 import React from "react";
-import {
-  Button,
-  TextField,
-  Typography,
-  Divider,
-} from "@mui/material";
+import { Button, TextField, Typography, Divider } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {
-  Container,
-  StyledPaper,
-  StyledDivider,
-  ButtonsBox,
-} from "./styles"; 
+import { Container, StyledPaper, StyledDivider, ButtonsBox } from "./styles";
 
 export interface ChangeEmailProps {
   onBack: () => void;

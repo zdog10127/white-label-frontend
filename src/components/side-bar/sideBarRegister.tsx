@@ -63,7 +63,6 @@ const SideBarRegister: React.FC<Props> = ({
       }}
     >
       <Box>
-
         <Box px={2} py={3} textAlign="center">
           <Tooltip title="Foto do cliente">
             <Avatar
@@ -72,7 +71,7 @@ const SideBarRegister: React.FC<Props> = ({
                 clientImageUrl
                   ? clientImageUrl
                   : "https://ui-avatars.com/api/?name=" +
-                  encodeURIComponent(clientName || "Cliente")
+                    encodeURIComponent(clientName || "Cliente")
               }
               sx={{
                 width: 120,
@@ -94,7 +93,6 @@ const SideBarRegister: React.FC<Props> = ({
 
         <Divider sx={{ borderColor: theme.palette.divider }} />
 
-
         <List>
           {menuItems.map((item) => (
             <ListItemButton
@@ -113,8 +111,8 @@ const SideBarRegister: React.FC<Props> = ({
                     ? "rgba(255,255,255,0.08)"
                     : "transparent"
                   : activeSection === item.value
-                    ? "action.selected"
-                    : "transparent",
+                  ? "action.selected"
+                  : "transparent",
                 "&:hover": {
                   bgcolor: isDarkMode
                     ? "rgba(255,255,255,0.05)"
