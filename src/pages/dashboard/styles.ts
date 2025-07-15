@@ -1,80 +1,79 @@
-import { styled } from "@mui/material/styles";
-import { Box, Paper } from "@mui/material";
+import styled from "styled-components";
 import { device, max, min } from "../../constants/responsiveClient";
 
-export const Container = styled(Box)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: 24,
-  paddingLeft: 8,
-  paddingRight: 16,
-  width: "100%",
-  boxSizing: "border-box",
+export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-left: 8px;
+  padding-right: 16px;
+  width: 100%;
+  box-sizing: border-box;
 
-  [`@media ${min("900px")}`]: {
-    flexDirection: "row",
-  },
-}));
+  @media ${min("900px")} {
+    flex-direction: row;
+  }
+`;
 
-export const LeftPanel = styled(Box)(({ theme }) => ({
-  flex: 1.5,
-  display: "flex",
-  flexDirection: "column",
-  gap: 24,
+export const LeftPanel = styled.div`
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 
-  [`@media ${max(device.mobile)}`]: {
-    gap: 16,
-  },
-}));
+  @media ${max(device.mobile)} {
+    gap: 16px;
+  }
+`;
 
-export const RightPanel = styled(Box)(({ theme }) => ({
-  flex: 1,
-  display: "flex",
-  flexDirection: "column",
-  gap: 24,
+export const RightPanel = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 
-  [`@media ${max(device.mobile)}`]: {
-    gap: 16,
-  },
-}));
+  @media ${max(device.mobile)} {
+    gap: 16px;
+  }
+`;
 
-export const PaperStyled = styled(Paper)(({ theme }) => ({
-  padding: 8,
-  width: "100%",
-  boxSizing: "border-box",
+export const PaperStyled = styled.div`
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
 
-  [`@media ${max(device.mobile)}`]: {
-    padding: 4,
-  },
-}));
+  @media ${max(device.mobile)} {
+    padding: 4px;
+  }
+`;
 
-export const ButtonGroupBox = styled(Box)(({ theme }) => ({
-  display: "flex",
-  gap: 16,
-  flexWrap: "wrap",
-  marginBottom: 24,
+export const ButtonGroupBox = styled.div`
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
 
-  [`@media ${max(device.mobile)}`]: {
-    gap: 8,
-    marginBottom: 16,
-  },
-}));
+  @media ${max(device.mobile)} {
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+`;
 
-export const CenterTextBox = styled(Box)(({ theme }) => ({
-  marginTop: 24,
-  textAlign: "center",
+export const CenterTextBox = styled.div`
+  margin-top: 24px;
+  text-align: center;
 
-  [`@media ${max(device.mobile)}`]: {
-    marginTop: 16,
-  },
-}));
+  @media ${max(device.mobile)} {
+    margin-top: 16px;
+  }
+`;
 
-export const CenteredImage = styled("img")(({ theme }) => ({
-  marginBottom: 16,
+export const CenteredImage = styled.img`
+  margin-bottom: 16px;
 
-  [`@media ${max(device.mobile)}`]: {
-    marginBottom: 8,
-    width: "100%",
-    height: "auto",
-  },
-}));
+  @media ${max(device.mobile)} {
+    margin-bottom: 8px;
+    width: 100%;
+    height: auto;
+  }
+`;

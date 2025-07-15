@@ -1,28 +1,28 @@
-import { styled } from "@mui/material/styles";
+import styled from "styled-components";
 import { device, max } from "../../constants/responsiveClient";
 
-export const Container = styled("div")(({ theme }) => ({
-  padding: "2rem",
-  textAlign: "center",
+export const Container = styled.div`
+  padding: 2rem;
+  text-align: center;
 
-  [`@media ${max(device.mobile)}`]: {
-    padding: "1rem",
-  },
-}));
+  @media ${max(device.mobile)} {
+    padding: 1rem;
+  }
+`;
 
-export const Title = styled("h1")(({ theme }) => ({
-  marginBottom: "1rem",
+export const Title = styled.h1`
+  margin-bottom: 1rem;
 
-  [`@media ${max(device.mobile)}`]: {
-    fontSize: "1.5rem",
-  },
-}));
+  @media ${max(device.mobile)} {
+    font-size: 1.5rem;
+  }
+`;
 
-export const Paragraph = styled("p")(({ theme }) => ({
-  fontSize: "1.1rem",
-  color: "#555",
+export const Paragraph = styled.p`
+  font-size: 1.1rem;
+  color: #555;
 
-  [`@media ${max(device.mobile)}`]: {
-    fontSize: "1rem",
-  },
-}));
+  @media ${max(device.mobile)} {
+    font-size: 1rem;
+  }
+`;

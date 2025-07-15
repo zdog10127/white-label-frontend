@@ -1,45 +1,45 @@
-import { styled } from "@mui/material/styles";
+import styled from "styled-components";
 import { Container, Paper, Box } from "@mui/material";
 import { device, max } from "../../constants/responsiveClient";
 
-export const BackgroundContainer = styled(Container)(({ theme }) => ({
-  height: "100vh",
-  width: "100vw",
-  backgroundImage: `url('assets/fundo3dbranco.jpg')`,
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  backgroundRepeat: "no-repeat",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  padding: "0 16px",
-}));
+export const BackgroundContainer = styled(Container)`
+  height: 100vh;
+  width: 100vw;
+  background-image: url("assets/fundo3dbranco.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 16px;
+`;
 
-export const LoginPaper = styled(Paper)(({ theme }) => ({
-  padding: "80px",
-  marginTop: "80px",
-  width: 350,
-  border: "3px solid",
-  borderColor: "gray",
-  borderRadius: "16px",
+export const LoginPaper = styled(Paper)`
+  padding: 80px;
+  margin-top: 80px;
+  width: 350px;
+  border: 3px solid;
+  border-color: gray;
+  border-radius: 16px;
 
-  [`@media ${max(device.mobile)}`]: {
-    width: "100%",
-    padding: "40px 24px",
-    marginTop: "40px",
-  },
-}));
+  @media ${max(device.mobile)} {
+    width: 100%;
+    padding: 40px 24px;
+    margin-top: 40px;
+  }
+`;
 
-export const LinksBox = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
-  marginTop: "80px",
+export const LinksBox = styled(Box)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 80px;
 
-  [`@media ${max(device.mobile)}`]: {
-    flexDirection: "column",
-    gap: 16,
-    marginTop: "40px",
-  },
-}));
+  @media ${max(device.mobile)} {
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 40px;
+  }
+`;

@@ -1,50 +1,42 @@
-import { styled } from "@mui/material/styles";
-import { Box } from "@mui/material";
+import styled from "styled-components";
+import { device } from "../../constants/responsiveClient";
 
-export const device = {
-  mobile: "480px",
-  tablet: "820px",
-  desktop: "1024px",
-};
+export const Container = styled.div`
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding-left: 40px;
+  padding-right: 40px;
 
-export const Container = styled(Box)({
-  marginTop: 16,
-  marginBottom: 16,
-  paddingLeft: 40,
-  paddingRight: 40,
+  @media (max-width: ${device.tablet}) {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 
-  [`@media (max-width: ${device.tablet})`]: {
-    paddingLeft: 20,
-    paddingRight: 20,
-  },
+  @media (max-width: ${device.mobile}) {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+`;
 
-  [`@media (max-width: ${device.mobile})`]: {
-    paddingLeft: 12,
-    paddingRight: 12,
-  },
-});
-
-export const GridLayout = styled(Box)({
-  display: "grid",
-  gap: 32,
-  gridTemplateColumns: "1fr",
-  gridAutoRows: "min-content",
-  gridTemplateAreas: `
+export const GridLayout = styled.div`
+  display: grid;
+  gap: 32px;
+  grid-template-columns: 1fr;
+  grid-auto-rows: min-content;
+  grid-template-areas:
     "sessions"
     "finance"
     "tabs"
-    "tasks"
-  `,
+    "tasks";
 
-  [`@media (min-width: ${device.tablet})`]: {
-    gridTemplateColumns: "2fr 1fr",
-    gridTemplateAreas: `
+  @media (min-width: ${device.tablet}) {
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas:
       "sessions finance"
-      "tabs    tasks"
-    `,
-  },
-});
+      "tabs    tasks";
+  }
+`;
 
-export const Area = styled(Box)<{ area: string }>(({ area }) => ({
-  gridArea: area,
-}));
+export const Area = styled.div<{ area: string }>`
+  grid-area: ${({ area }) => area};
+`;

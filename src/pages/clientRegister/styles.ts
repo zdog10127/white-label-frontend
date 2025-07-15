@@ -1,4 +1,4 @@
-import { styled } from "@mui/material/styles";
+import styled from "styled-components";
 import { Box, Typography, Divider } from "@mui/material";
 import { device, max } from "../../constants/responsiveClient";
 
