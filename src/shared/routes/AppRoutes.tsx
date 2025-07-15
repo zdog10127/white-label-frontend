@@ -15,7 +15,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 
 import ProtectedRoute from "./PrivateRoute";
-import UserProfile from "../../pages/userPage/userPage";
+import UserProfile from "../../pages/userPage";
 import Login from "../../pages/Login";
 import Home from "../../pages/Home";
 import ClientList from "../../pages/clientList";

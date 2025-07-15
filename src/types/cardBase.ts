@@ -1,5 +1,4 @@
-import { SxProps, Theme } from '@mui/system';
-
+import { SxProps, Theme } from "@mui/system";
 
 export interface CustomCardBaseProps {
   title?: React.ReactNode;

@@ -1,5 +1,5 @@
-declare module 'react-input-mask' {
-  import * as React from 'react';
+declare module "react-input-mask" {
+  import * as React from "react";
 
   interface InputMaskProps extends React.InputHTMLAttributes<HTMLInputElement> {
     mask: string;
@@ -20,7 +20,9 @@ declare module 'react-input-mask' {
       value: string;
       selection: { start: number; end: number };
     };
-    children?: (props: React.InputHTMLAttributes<HTMLInputElement>) => React.ReactElement;
+    children?: (
+      props: React.InputHTMLAttributes<HTMLInputElement>
+    ) => React.ReactElement;
   }
 
   const InputMask: React.FC<InputMaskProps>;

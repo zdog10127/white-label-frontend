@@ -59,7 +59,7 @@ const DataGridPage: React.FC = () => {
   };
 
   return (
-    <PageContainer p={3}>
+    <PageContainer>
       <Divider sx={{ my: 2 }} />
 
       <Box display="flex" gap={4}>
@@ -102,9 +102,7 @@ const DataGridPage: React.FC = () => {
 
             {!sessoesDoDia.length ? (
               <EmptyStateBox>
-                <EmptyIcon variant="h1" fontSize={60} color="text.secondary">
-                  📅
-                </EmptyIcon>
+                <EmptyIcon color="text.secondary">📅</EmptyIcon>
                 <Typography variant="subtitle1" fontWeight="bold">
                   Você ainda não cadastrou nenhuma sessão para esse dia.
                 </Typography>
