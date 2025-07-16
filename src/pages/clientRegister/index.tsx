@@ -23,7 +23,7 @@ import { calculateAge } from "../../utils/calculateAge";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import "dayjs/locale/pt-br";
 import { z } from "zod";
 import {
@@ -287,11 +287,7 @@ const NewClientRegister: React.FC = () => {
             </MenuItem>
           ))}
         </Select>
-        {errors[field] && (
-          <ErrorText variant="caption" color="error">
-            {errors[field]}
-          </ErrorText>
-        )}
+        {errors[field] && <ErrorText color="error">{errors[field]}</ErrorText>}
       </FormControl>
     ),
     [form, updateFormField, errors]
@@ -356,13 +352,9 @@ const NewClientRegister: React.FC = () => {
       <ContentBox>
         {activePage === "cadastro" && (
           <>
-            <Title variant="h6" gutterBottom>
-              CADASTRO DE NOVO CLIENTE
-            </Title>
+            <Title>CADASTRO DE NOVO CLIENTE</Title>
 
-            <SectionTitle variant="h6" gutterBottom>
-              1. INFORMAÇÕES PESSOAIS
-            </SectionTitle>
+            <SectionTitle>1. INFORMAÇÕES PESSOAIS</SectionTitle>
             <PersonalInfoSwitchWrapper>
               <FormControlLabel
                 control={
@@ -521,9 +513,7 @@ const NewClientRegister: React.FC = () => {
               </Grid>
             </Grid>
             <SectionDivider />
-            <SectionTitle variant="h6" gutterBottom>
-              2. INFORMAÇÕES FINANCEIRAS
-            </SectionTitle>
+            <SectionTitle>2. INFORMAÇÕES FINANCEIRAS</SectionTitle>
             <Grid container spacing={2} sx={{ mb: 10 }}>
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
@@ -597,9 +587,7 @@ const NewClientRegister: React.FC = () => {
               </Grid>
             </Grid>
             <SectionDivider />
-            <SectionTitle variant="h6" gutterBottom>
-              3. ENDEREÇO
-            </SectionTitle>
+            <SectionTitle>3. ENDEREÇO</SectionTitle>
             <Grid container spacing={2} sx={{ mb: 10 }}>
               <Grid item xs={12} md={8}>
                 <TextField
@@ -669,9 +657,7 @@ const NewClientRegister: React.FC = () => {
                     {memoizedEstados}
                   </Select>
                   {errors.estado && (
-                    <ErrorText variant="caption" color="error">
-                      {errors.estado}
-                    </ErrorText>
+                    <ErrorText color="error">{errors.estado}</ErrorText>
                   )}
                 </FormControl>
               </Grid>
@@ -680,9 +666,7 @@ const NewClientRegister: React.FC = () => {
               </Grid>
             </Grid>
             <SectionDivider />
-            <SectionTitle variant="h6" gutterBottom>
-              4. PARENTE / CONTATO DE EMERGÊNCIA
-            </SectionTitle>
+            <SectionTitle>4. PARENTE / CONTATO DE EMERGÊNCIA</SectionTitle>
             <Grid container spacing={2} sx={{ mb: 10 }}>
               <Grid item xs={12} md={4}>
                 <TextField
@@ -717,9 +701,7 @@ const NewClientRegister: React.FC = () => {
               </Grid>
             </Grid>
             <SectionDivider />
-            <SectionTitle variant="h6" gutterBottom>
-              5. INFORMAÇÕES ADICIONAIS
-            </SectionTitle>
+            <SectionTitle>5. INFORMAÇÕES ADICIONAIS</SectionTitle>
             <Grid container spacing={2} sx={{ mb: 10 }}>
               <Grid item xs={12}>
                 <TextField

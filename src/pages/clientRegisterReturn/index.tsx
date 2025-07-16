@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
-  Box,
   Button,
   Divider,
   FormControl,
@@ -46,15 +45,15 @@ import { clientSchema } from "../../schemas/clientSchemas";
 import { useLocation } from "react-router-dom";
 
 import {
-  boxContainer,
-  boxFormContainer,
-  typographySectionTitle,
-  typographySubTitle,
-  formControlLabelWrapper,
-  formHelperText,
-  gridMarginBottom10,
-  dividerMarginY2,
-  boxButtonContainer,
+  BoxContainer,
+  BoxFormContainer,
+  TypographySectionTitle,
+  TypographySubTitle,
+  FormControlLabelWrapper,
+  FormHelperText,
+  GridMarginBottom10,
+  DividerMarginY2,
+  BoxButtonContainer,
 } from "./styles";
 
 dayjs.locale("pt-br");
@@ -422,7 +421,7 @@ const ClientRegister: React.FC = () => {
           ))}
         </Select>
         {errors[field] && (
-          <Typography variant="caption" color="error" sx={formHelperText}>
+          <Typography variant="caption" color="error" sx={FormHelperText}>
             {errors[field]}
           </Typography>
         )}
@@ -455,21 +454,21 @@ const ClientRegister: React.FC = () => {
   );
 
   return (
-    <Box sx={boxContainer}>
+    <BoxContainer>
       <SideBarRegister
         onSelect={setActivePage}
         activeSection={activePage}
         clientName={form.name || "Cliente"}
         clientImageUrl={undefined}
       />
-      <Box sx={boxFormContainer}>
+      <BoxFormContainer>
         {activePage === "cadastro" && (
           <>
-            <Typography variant="h6" gutterBottom sx={typographySectionTitle}>
+            <TypographySectionTitle>
               1. INFORMAÇÕES PESSOAIS
-            </Typography>
+            </TypographySectionTitle>
 
-            <Box sx={formControlLabelWrapper}>
+            <FormControlLabelWrapper>
               <FormControlLabel
                 control={
                   <Switch
@@ -479,436 +478,462 @@ const ClientRegister: React.FC = () => {
                   />
                 }
                 label={
-                  <Box display="flex" alignItems="center" gap={0.5}>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 4 }}
+                  >
                     <Typography variant="body2">Usar nome social</Typography>
                     <Tooltip title="Você pode optar por usar um nome social">
                       <IconButton size="small" color="primary">
                         <InfoIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                  </Box>
+                  </div>
                 }
                 labelPlacement="end"
               />
-            </Box>
+            </FormControlLabelWrapper>
 
-            <Grid container spacing={2} sx={gridMarginBottom10}>
-              <Grid item xs={12} sm={useSocialName ? 6 : 12}>
-                <TextField
-                  label="Nome completo"
-                  fullWidth
-                  size="small"
-                  value={form.name}
-                  onChange={(e) => updateFormField("name", e.target.value)}
-                  error={!!errors.name}
-                  helperText={errors.name}
-                />
-              </Grid>
-
-              {useSocialName && (
-                <Grid item xs={12} sm={6}>
+            <GridMarginBottom10>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={useSocialName ? 6 : 12}>
                   <TextField
-                    label="Nome social"
+                    label="Nome completo"
                     fullWidth
                     size="small"
-                    value={form.nomeSocial}
-                    onChange={(e) =>
-                      updateFormField("nomeSocial", e.target.value)
-                    }
-                    error={!!errors.nomeSocial}
-                    helperText={errors.nomeSocial}
+                    value={form.name}
+                    onChange={(e) => updateFormField("name", e.target.value)}
+                    error={!!errors.name}
+                    helperText={errors.name}
                   />
                 </Grid>
-              )}
 
-              <Grid item xs={12} sm={6}>
-                {renderInputMask("999.999.999-99", "cpf", "CPF")}
-              </Grid>
+                {useSocialName && (
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="Nome social"
+                      fullWidth
+                      size="small"
+                      value={form.nomeSocial}
+                      onChange={(e) =>
+                        updateFormField("nomeSocial", e.target.value)
+                      }
+                      error={!!errors.nomeSocial}
+                      helperText={errors.nomeSocial}
+                    />
+                  </Grid>
+                )}
 
-              <Grid item xs={12} sm={6}>
-                {renderInputMask("99.999.999-9", "rg", "RG")}
-              </Grid>
+                <Grid item xs={12} sm={6}>
+                  {renderInputMask("999.999.999-99", "cpf", "CPF")}
+                </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Telefone celular"
-                  fullWidth
-                  size="small"
-                  value={form.cellphone}
-                  onChange={(e) => updateFormField("cellphone", e.target.value)}
-                  error={!!errors.cellphone}
-                  helperText={errors.cellphone}
-                />
-              </Grid>
+                <Grid item xs={12} sm={6}>
+                  {renderInputMask("99.999.999-9", "rg", "RG")}
+                </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <LocalizationProvider
-                  dateAdapter={AdapterDayjs}
-                  adapterLocale="pt-br"
-                >
-                  <DatePicker
-                    label="Data de nascimento"
-                    value={form.birth}
-                    onChange={handleDateChange}
-                    slotProps={{
-                      textField: {
-                        size: "small",
-                        fullWidth: true,
-                        error: !!errors.birth,
-                        helperText: errors.birth,
-                      },
-                    }}
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Telefone celular"
+                    fullWidth
+                    size="small"
+                    value={form.cellphone}
+                    onChange={(e) =>
+                      updateFormField("cellphone", e.target.value)
+                    }
+                    error={!!errors.cellphone}
+                    helperText={errors.cellphone}
                   />
-                </LocalizationProvider>
-              </Grid>
+                </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Idade"
-                  fullWidth
-                  size="small"
-                  value={form.age}
-                  InputProps={{ readOnly: true }}
-                  error={!!errors.age}
-                  helperText={errors.age}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="E-mail"
-                  fullWidth
-                  size="small"
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => updateFormField("email", e.target.value)}
-                  error={!!errors.email}
-                  helperText={errors.email}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                {renderSelect("gender", "Gênero", selectOptions.gender)}
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                {renderSelect("group", "Grupo", selectOptions.grupo)}
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Naturalidade"
-                  fullWidth
-                  size="small"
-                  value={form.naturalidade}
-                  onChange={(e) =>
-                    updateFormField("naturalidade", e.target.value)
-                  }
-                  error={!!errors.naturalidade}
-                  helperText={errors.naturalidade}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                {renderSelect(
-                  "nacionalidade",
-                  "Nacionalidade",
-                  selectOptions.nacionalidade
-                )}
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Profissão"
-                  fullWidth
-                  size="small"
-                  value={form.profissao}
-                  onChange={(e) => updateFormField("profissao", e.target.value)}
-                  error={!!errors.profissao}
-                  helperText={errors.profissao}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Renda"
-                  fullWidth
-                  size="small"
-                  value={form.renda}
-                  onChange={(e) => updateFormField("renda", e.target.value)}
-                  error={!!errors.renda}
-                  helperText={errors.renda}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                {renderSelect(
-                  "pagamento",
-                  "Forma de pagamento",
-                  selectOptions.pagamento
-                )}
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                {renderSelect(
-                  "escolaridade",
-                  "Escolaridade",
-                  selectOptions.escolaridade
-                )}
-              </Grid>
-            </Grid>
-
-            <Divider sx={dividerMarginY2} />
-
-            <Typography variant="h6" gutterBottom sx={typographySubTitle}>
-              2. INFORMAÇÕES FINANCEIRAS
-            </Typography>
-
-            <Grid container spacing={2} sx={gridMarginBottom10}>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Banco"
-                  fullWidth
-                  size="small"
-                  value={form.dadosBancarios.Banco}
-                  onChange={(e) =>
-                    updateDadosBancariosField("Banco", e.target.value)
-                  }
-                  error={!!errors.banco}
-                  helperText={errors.banco}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Agência"
-                  fullWidth
-                  size="small"
-                  value={form.dadosBancarios.Agencia}
-                  onChange={(e) =>
-                    updateDadosBancariosField("Agencia", e.target.value)
-                  }
-                  error={!!errors.agencia}
-                  helperText={errors.agencia}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Conta"
-                  fullWidth
-                  size="small"
-                  value={form.dadosBancarios.Conta}
-                  onChange={(e) =>
-                    updateDadosBancariosField("Conta", e.target.value)
-                  }
-                  error={!!errors.conta}
-                  helperText={errors.conta}
-                />
-              </Grid>
-            </Grid>
-
-            <Divider sx={dividerMarginY2} />
-
-            <Typography variant="h6" gutterBottom sx={typographySubTitle}>
-              3. ENDEREÇO
-            </Typography>
-
-            <Grid container spacing={2} sx={gridMarginBottom10}>
-              <Grid item xs={12} sm={8}>
-                <TextField
-                  label="Endereço"
-                  fullWidth
-                  size="small"
-                  value={form.endereco}
-                  onChange={(e) => updateFormField("endereco", e.target.value)}
-                  error={!!errors.endereco}
-                  helperText={errors.endereco}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Número"
-                  fullWidth
-                  size="small"
-                  value={form.numero}
-                  onChange={(e) => updateFormField("numero", e.target.value)}
-                  error={!!errors.numero}
-                  helperText={errors.numero}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Complemento"
-                  fullWidth
-                  size="small"
-                  value={form.complemento}
-                  onChange={(e) =>
-                    updateFormField("complemento", e.target.value)
-                  }
-                  error={!!errors.complemento}
-                  helperText={errors.complemento}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Bairro"
-                  fullWidth
-                  size="small"
-                  value={form.bairro}
-                  onChange={(e) => updateFormField("bairro", e.target.value)}
-                  error={!!errors.bairro}
-                  helperText={errors.bairro}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Cidade"
-                  fullWidth
-                  size="small"
-                  value={form.cidade}
-                  onChange={(e) => updateFormField("cidade", e.target.value)}
-                  error={!!errors.cidade}
-                  helperText={errors.cidade}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={3}>
-                <FormControl fullWidth size="small" error={!!errors.estado}>
-                  <InputLabel>Estado</InputLabel>
-                  <Select
-                    value={form.estado}
-                    label="Estado"
-                    onChange={(e) => updateFormField("estado", e.target.value)}
+                <Grid item xs={12} sm={6}>
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="pt-br"
                   >
-                    {memoizedEstados}
-                  </Select>
-                  {errors.estado && (
-                    <Typography
-                      variant="caption"
-                      color="error"
-                      sx={formHelperText}
-                    >
-                      {errors.estado}
-                    </Typography>
+                    <DatePicker
+                      label="Data de nascimento"
+                      value={form.birth}
+                      onChange={handleDateChange}
+                      slotProps={{
+                        textField: {
+                          size: "small",
+                          fullWidth: true,
+                          error: !!errors.birth,
+                          helperText: errors.birth,
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Idade"
+                    fullWidth
+                    size="small"
+                    value={form.age}
+                    InputProps={{ readOnly: true }}
+                    error={!!errors.age}
+                    helperText={errors.age}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="E-mail"
+                    fullWidth
+                    size="small"
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => updateFormField("email", e.target.value)}
+                    error={!!errors.email}
+                    helperText={errors.email}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  {renderSelect("gender", "Gênero", selectOptions.gender)}
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  {renderSelect("group", "Grupo", selectOptions.grupo)}
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Naturalidade"
+                    fullWidth
+                    size="small"
+                    value={form.naturalidade}
+                    onChange={(e) =>
+                      updateFormField("naturalidade", e.target.value)
+                    }
+                    error={!!errors.naturalidade}
+                    helperText={errors.naturalidade}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  {renderSelect(
+                    "nacionalidade",
+                    "Nacionalidade",
+                    selectOptions.nacionalidade
                   )}
-                </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Profissão"
+                    fullWidth
+                    size="small"
+                    value={form.profissao}
+                    onChange={(e) =>
+                      updateFormField("profissao", e.target.value)
+                    }
+                    error={!!errors.profissao}
+                    helperText={errors.profissao}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Renda"
+                    fullWidth
+                    size="small"
+                    value={form.renda}
+                    onChange={(e) => updateFormField("renda", e.target.value)}
+                    error={!!errors.renda}
+                    helperText={errors.renda}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  {renderSelect(
+                    "pagamento",
+                    "Forma de pagamento",
+                    selectOptions.pagamento
+                  )}
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  {renderSelect(
+                    "escolaridade",
+                    "Escolaridade",
+                    selectOptions.escolaridade
+                  )}
+                </Grid>
               </Grid>
+            </GridMarginBottom10>
 
-              <Grid item xs={12} sm={3}>
-                {renderInputMask("99999-999", "cep", "CEP")}
+            <DividerMarginY2 />
+
+            <TypographySubTitle>2. INFORMAÇÕES FINANCEIRAS</TypographySubTitle>
+
+            <GridMarginBottom10>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Banco"
+                    fullWidth
+                    size="small"
+                    value={form.dadosBancarios.Banco}
+                    onChange={(e) =>
+                      updateDadosBancariosField("Banco", e.target.value)
+                    }
+                    error={!!errors.banco}
+                    helperText={<FormHelperText>{errors.banco}</FormHelperText>}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Agência"
+                    fullWidth
+                    size="small"
+                    value={form.dadosBancarios.Agencia}
+                    onChange={(e) =>
+                      updateDadosBancariosField("Agencia", e.target.value)
+                    }
+                    error={!!errors.agencia}
+                    helperText={
+                      <FormHelperText>{errors.agencia}</FormHelperText>
+                    }
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Conta"
+                    fullWidth
+                    size="small"
+                    value={form.dadosBancarios.Conta}
+                    onChange={(e) =>
+                      updateDadosBancariosField("Conta", e.target.value)
+                    }
+                    error={!!errors.conta}
+                    helperText={<FormHelperText>{errors.conta}</FormHelperText>}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
+            </GridMarginBottom10>
 
-            <Divider sx={dividerMarginY2} />
+            <DividerMarginY2 />
 
-            <Typography variant="h6" gutterBottom sx={typographySubTitle}>
-              4. CONTATO DE EMERGÊNCIA
-            </Typography>
+            <TypographySubTitle>3. ENDEREÇO</TypographySubTitle>
 
-            <Grid container spacing={2} sx={gridMarginBottom10}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Nome do contato"
-                  fullWidth
-                  size="small"
-                  value={form.parente.Nome}
-                  onChange={(e) => updateParenteField("Nome", e.target.value)}
-                  error={!!errors.nomeParente}
-                  helperText={errors.nomeParente}
-                />
+            <GridMarginBottom10>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={8}>
+                  <TextField
+                    label="Endereço"
+                    fullWidth
+                    size="small"
+                    value={form.endereco}
+                    onChange={(e) =>
+                      updateFormField("endereco", e.target.value)
+                    }
+                    error={!!errors.endereco}
+                    helperText={
+                      <FormHelperText>{errors.endereco}</FormHelperText>
+                    }
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Número"
+                    fullWidth
+                    size="small"
+                    value={form.numero}
+                    onChange={(e) => updateFormField("numero", e.target.value)}
+                    error={!!errors.numero}
+                    helperText={
+                      <FormHelperText>{errors.numero}</FormHelperText>
+                    }
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Complemento"
+                    fullWidth
+                    size="small"
+                    value={form.complemento}
+                    onChange={(e) =>
+                      updateFormField("complemento", e.target.value)
+                    }
+                    error={!!errors.complemento}
+                    helperText={
+                      <FormHelperText>{errors.complemento}</FormHelperText>
+                    }
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Bairro"
+                    fullWidth
+                    size="small"
+                    value={form.bairro}
+                    onChange={(e) => updateFormField("bairro", e.target.value)}
+                    error={!!errors.bairro}
+                    helperText={
+                      <FormHelperText>{errors.bairro}</FormHelperText>
+                    }
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Cidade"
+                    fullWidth
+                    size="small"
+                    value={form.cidade}
+                    onChange={(e) => updateFormField("cidade", e.target.value)}
+                    error={!!errors.cidade}
+                    helperText={
+                      <FormHelperText>{errors.cidade}</FormHelperText>
+                    }
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={3}>
+                  <FormControl fullWidth size="small" error={!!errors.estado}>
+                    <InputLabel>Estado</InputLabel>
+                    <Select
+                      value={form.estado}
+                      label="Estado"
+                      onChange={(e) =>
+                        updateFormField("estado", e.target.value)
+                      }
+                    >
+                      {memoizedEstados}
+                    </Select>
+                    {errors.estado && (
+                      <FormHelperText>{errors.estado}</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={3}>
+                  {renderInputMask("99999-999", "cep", "CEP")}
+                </Grid>
               </Grid>
+            </GridMarginBottom10>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Telefone do contato"
-                  fullWidth
-                  size="small"
-                  value={form.parente.Telefone}
-                  onChange={(e) =>
-                    updateParenteField("Telefone", e.target.value)
-                  }
-                  error={!!errors.telefoneParente}
-                  helperText={errors.telefoneParente}
-                />
+            <DividerMarginY2 />
+
+            <TypographySubTitle>4. CONTATO DE EMERGÊNCIA</TypographySubTitle>
+
+            <GridMarginBottom10>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Nome do contato"
+                    fullWidth
+                    size="small"
+                    value={form.parente.Nome}
+                    onChange={(e) => updateParenteField("Nome", e.target.value)}
+                    error={!!errors.nomeParente}
+                    helperText={
+                      <FormHelperText>{errors.nomeParente}</FormHelperText>
+                    }
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Telefone do contato"
+                    fullWidth
+                    size="small"
+                    value={form.parente.Telefone}
+                    onChange={(e) =>
+                      updateParenteField("Telefone", e.target.value)
+                    }
+                    error={!!errors.telefoneParente}
+                    helperText={
+                      <FormHelperText>{errors.telefoneParente}</FormHelperText>
+                    }
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Parentesco"
+                    fullWidth
+                    size="small"
+                    value={form.parente.Parentesco}
+                    onChange={(e) =>
+                      updateParenteField("Parentesco", e.target.value)
+                    }
+                    error={!!errors.parentesco}
+                    helperText={
+                      <FormHelperText>{errors.parentesco}</FormHelperText>
+                    }
+                  />
+                </Grid>
               </Grid>
+            </GridMarginBottom10>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Parentesco"
-                  fullWidth
-                  size="small"
-                  value={form.parente.Parentesco}
-                  onChange={(e) =>
-                    updateParenteField("Parentesco", e.target.value)
-                  }
-                  error={!!errors.parentesco}
-                  helperText={errors.parentesco}
-                />
+            <DividerMarginY2 />
+
+            <TypographySubTitle>5. INFORMAÇÕES ADICIONAIS</TypographySubTitle>
+
+            <GridMarginBottom10>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  {renderSelect(
+                    "ondeNosConheceu",
+                    "Onde nos conheceu",
+                    selectOptions.ondeNosConheceu
+                  )}
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  {renderSelect(
+                    "encaminhadoPor",
+                    "Encaminhado por",
+                    selectOptions.encaminhadoPor
+                  )}
+                </Grid>
+
+                <Grid item xs={12}>
+                  <TextField
+                    label="Observações"
+                    fullWidth
+                    multiline
+                    minRows={3}
+                    value={form.observacoes}
+                    onChange={(e) =>
+                      updateFormField("observacoes", e.target.value)
+                    }
+                    error={!!errors.observacoes}
+                    helperText={
+                      <FormHelperText>{errors.observacoes}</FormHelperText>
+                    }
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <TextField
+                    label="Tags (separadas por vírgula)"
+                    fullWidth
+                    value={(form.tags || []).join(", ")}
+                    onChange={(e) => handleTagsChange(e.target.value)}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
+            </GridMarginBottom10>
 
-            <Divider sx={dividerMarginY2} />
-
-            <Typography variant="h6" gutterBottom sx={typographySubTitle}>
-              5. INFORMAÇÕES ADICIONAIS
-            </Typography>
-
-            <Grid container spacing={2} sx={gridMarginBottom10}>
-              <Grid item xs={12} sm={6}>
-                {renderSelect(
-                  "ondeNosConheceu",
-                  "Onde nos conheceu",
-                  selectOptions.ondeNosConheceu
-                )}
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                {renderSelect(
-                  "encaminhadoPor",
-                  "Encaminhado por",
-                  selectOptions.encaminhadoPor
-                )}
-              </Grid>
-
-              <Grid item xs={12}>
-                <TextField
-                  label="Observações"
-                  fullWidth
-                  multiline
-                  minRows={3}
-                  value={form.observacoes}
-                  onChange={(e) =>
-                    updateFormField("observacoes", e.target.value)
-                  }
-                  error={!!errors.observacoes}
-                  helperText={errors.observacoes}
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <TextField
-                  label="Tags (separadas por vírgula)"
-                  fullWidth
-                  value={(form.tags || []).join(", ")}
-                  onChange={(e) => handleTagsChange(e.target.value)}
-                />
-              </Grid>
-            </Grid>
-
-            <Box sx={boxButtonContainer}>
+            <BoxButtonContainer>
               <Button variant="contained" onClick={handleSubmit}>
                 {clientToEdit ? "Atualizar" : "Cadastrar"}
               </Button>
-            </Box>
+            </BoxButtonContainer>
           </>
         )}
-      </Box>
-    </Box>
+      </BoxFormContainer>
+    </BoxContainer>
   );
 };
 

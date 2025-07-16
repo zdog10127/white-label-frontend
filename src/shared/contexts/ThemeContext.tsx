@@ -5,7 +5,8 @@ import {
   useMemo,
   useContext,
 } from "react";
-import { ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider as MUIThemeProvider } from "@mui/material/styles";
+import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import { Box } from "@mui/system";
 import { DarkTheme, lightTheme } from "../themes";
 import {
@@ -34,15 +35,17 @@ export const AppThemeProvider: React.FC<IAppThemeProviderProps> = ({
 
   return (
     <ThemeContext.Provider value={{ themeName, toggleTheme }}>
-      <ThemeProvider theme={theme}>
-        <Box
-          width="100vw"
-          height="100vh"
-          sx={{ backgroundColor: theme.palette.background.default }}
-        >
-          {children}
-        </Box>
-      </ThemeProvider>
+      <MUIThemeProvider theme={theme}>
+        <StyledThemeProvider theme={theme}>
+          <Box
+            width="100vw"
+            height="100vh"
+            sx={{ backgroundColor: theme.palette.background.default }}
+          >
+            {children}
+          </Box>
+        </StyledThemeProvider>
+      </MUIThemeProvider>
     </ThemeContext.Provider>
   );
 };

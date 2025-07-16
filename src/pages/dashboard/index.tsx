@@ -28,7 +28,7 @@ const DashboardPanel: React.FC = () => {
       <LeftPanel>
         <PaperStyled>
           <CardBase title="Próximas sessões" centerContent={false}>
-            <CenterTextBox mt={3}>
+            <CenterTextBox>
               <Typography fontWeight="bold">
                 Você ainda não cadastrou nenhuma sessão.
               </Typography>
@@ -42,7 +42,7 @@ const DashboardPanel: React.FC = () => {
 
         <PaperStyled>
           <CardBase title="Pendências e Atividades" centerContent={false}>
-            <ButtonGroupBox mb={3}>
+            <ButtonGroupBox>
               <Button variant="outlined">Pendências (0)</Button>
               <Button variant="text">Atividade de clientes (0)</Button>
               <Button variant="text">Aniversariantes do mês</Button>
@@ -64,7 +64,7 @@ const DashboardPanel: React.FC = () => {
       <RightPanel>
         <PaperStyled>
           <CardBase title="Relatório financeiro" centerContent={false}>
-            <ButtonGroupBox mb={3}>
+            <ButtonGroupBox>
               <Button variant="outlined">Relatório financeiro</Button>
               <Button variant="text">Psicobank</Button>
             </ButtonGroupBox>

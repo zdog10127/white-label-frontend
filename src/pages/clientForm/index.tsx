@@ -43,7 +43,7 @@ const ClientForm: React.FC = () => {
 
   return (
     <ClientFormContainer>
-      <Title variant="h5">Cadastro de Cliente</Title>
+      <Title>Cadastro de Cliente</Title>
       <ClientFormStyled onSubmit={handleSubmit(onSubmit)} noValidate>
         <Controller
           name="name"
@@ -105,15 +105,13 @@ const ClientForm: React.FC = () => {
           )}
         />
 
-        <SubmitButton type="submit" variant="contained" color="primary">
+        <SubmitButton type="submit" color="primary">
           Cadastrar
         </SubmitButton>
       </ClientFormStyled>
 
       {isSubmitSuccessful && (
-        <SuccessMessage variant="body1">
-          Formulário enviado com sucesso!
-        </SuccessMessage>
+        <SuccessMessage>Formulário enviado com sucesso!</SuccessMessage>
       )}
     </ClientFormContainer>
   );

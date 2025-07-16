@@ -1,61 +1,163 @@
-import { styled } from "@mui/material/styles";
-import { Box, Typography, Divider } from "@mui/material";
+import styled from "styled-components";
+import { device, max, min } from "../../constants/responsiveClient";
 
-export const Container = styled(Box)({
-  display: "flex",
-});
+export const Container = styled.div`
+  display: flex;
 
-export const ContentBox = styled(Box)({
-  flex: 1,
-  padding: "40px",
-  marginLeft: "220px",
-  maxWidth: 700,
-  marginRight: "auto",
-});
+  @media (${max(device.mobile)}) {
+    flex-direction: column;
+  }
 
-export const Title = styled(Typography)({
-  marginBottom: 32,
-  fontWeight: 600,
-});
+  @media (${min(device.desktop)}) {
+    gap: 32px;
+  }
+`;
 
-export const SectionTitle = styled(Typography)({
-  marginBottom: 16,
-  fontWeight: 600,
-});
+export const ContentBox = styled.div`
+  flex: 1;
+  padding: 40px;
+  margin-left: 220px;
+  margin-right: auto;
+  max-width: 700px;
 
-export const FormControlLabelWrapper = styled(Box)({
-  marginBottom: 24,
-});
+  @media (${max(device.mobile)}) {
+    padding: 24px 16px;
+    margin-left: 0;
+  }
 
-export const FormHelperText = styled(Typography)({
-  marginTop: 4,
-  marginLeft: 12,
-});
+  @media (${min(device.desktop)}) {
+    max-width: 900px;
+    padding: 56px;
+  }
+`;
 
-export const GridWithMarginBottom = styled(Box)({
-  marginBottom: 80,
-});
+export const Title = styled.h2`
+  margin-bottom: 32px;
+  font-weight: 600;
+  color: #333;
 
-export const SectionDivider = styled(Divider)({
-  marginTop: 16,
-  marginBottom: 16,
-});
+  @media (${max(device.mobile)}) {
+    font-size: 1.5rem;
+  }
 
-export const ButtonContainer = styled(Box)({
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginTop: 32,
-});
+  @media (${min(device.desktop)}) {
+    font-size: 2rem;
+  }
+`;
 
-export const PersonalInfoSwitchWrapper = styled(Box)({
-  marginBottom: 24,
-  display: "flex",
-  alignItems: "center",
-  gap: 4,
-});
+export const SectionTitle = styled.h3`
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #444;
 
-export const ErrorText = styled(Typography)({
-  marginTop: 4,
-  marginLeft: 12,
-});
+  @media (${max(device.mobile)}) {
+    font-size: 1.25rem;
+  }
+
+  @media (${min(device.desktop)}) {
+    font-size: 1.5rem;
+  }
+`;
+
+export const FormControlLabelWrapper = styled.div`
+  margin-bottom: 24px;
+
+  @media (${max(device.mobile)}) {
+    margin-bottom: 16px;
+  }
+
+  @media (${min(device.desktop)}) {
+    margin-bottom: 32px;
+  }
+`;
+
+export const FormHelperText = styled.p`
+  margin-top: 4px;
+  margin-left: 12px;
+  font-size: 0.95rem;
+  color: #666;
+
+  @media (${max(device.mobile)}) {
+    font-size: 0.85rem;
+  }
+
+  @media (${min(device.desktop)}) {
+    font-size: 1rem;
+  }
+`;
+
+export const GridWithMarginBottom = styled.div`
+  margin-bottom: 80px;
+
+  @media (${max(device.mobile)}) {
+    margin-bottom: 40px;
+  }
+
+  @media (${min(device.desktop)}) {
+    margin-bottom: 96px;
+  }
+`;
+
+export const SectionDivider = styled.div`
+  height: 1px;
+  background-color: #e0e0e0;
+  margin-top: 16px;
+  margin-bottom: 16px;
+
+  @media (${max(device.mobile)}) {
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+
+  @media (${min(device.desktop)}) {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+`;
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+
+  @media (${max(device.mobile)}) {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  @media (${min(device.desktop)}) {
+    gap: 32px;
+  }
+`;
+
+export const PersonalInfoSwitchWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 24px;
+
+  @media (${max(device.mobile)}) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  @media (${min(device.desktop)}) {
+    gap: 12px;
+  }
+`;
+
+export const ErrorText = styled.p`
+  margin-top: 4px;
+  margin-left: 12px;
+  color: #d32f2f;
+
+  @media (${max(device.mobile)}) {
+    font-size: 0.85rem;
+  }
+
+  @media (${min(device.desktop)}) {
+    font-size: 1rem;
+  }
+`;

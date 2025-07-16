@@ -8,7 +8,10 @@ import {
 
 import { CustomCardBaseProps } from "../../types/cardBase";
 
-type CardBaseProps = Omit<CardProps, "title" | "sx"> & CustomCardBaseProps;
+type CardBaseProps = Omit<CardProps, "title" | "sx"> &
+  CustomCardBaseProps & {
+    minHeight?: number | string;
+  };
 
 export default function CardBase({
   title,
@@ -17,6 +20,7 @@ export default function CardBase({
   actions,
   children,
   centerContent = true,
+  minHeight = 400,
   sx,
   ...rest
 }: CardBaseProps) {
@@ -25,10 +29,10 @@ export default function CardBase({
       elevation={6}
       sx={{
         boxShadow: 5,
-
-        minHeight: 400,
         width: "100%",
+        minHeight: minHeight,
         borderRadius: 4,
+        boxSizing: "border-box",
 
         transition: "transform 0.2s ease-in-out",
         "&:hover": {
