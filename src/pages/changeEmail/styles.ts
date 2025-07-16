@@ -1,39 +1,43 @@
 import styled from "styled-components";
-import { Box, Paper, Divider } from "@mui/material";
 import { device, max } from "../../constants/responsiveClient";
 
-export const Container = styled(Box)(({ theme }) => ({
-  maxWidth: 480,
-  margin: "1rem auto 0",
+export const Container = styled.div`
+  max-width: 480px;
+  margin: 1rem auto 0;
 
-  [`@media ${max(device.mobile)}`]: {
-    padding: "0 16px",
-  },
-}));
+  @media (${max(device.mobile)}) {
+    padding: 0 16px;
+  }
+`;
 
-export const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: 32,
+export const StyledPaper = styled.div`
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
-  [`@media ${max(device.mobile)}`]: {
-    padding: 16,
-  },
-}));
+  @media (${max(device.mobile)}) {
+    padding: 1rem;
+  }
+`;
 
-export const StyledDivider = styled(Divider)(({ theme }) => ({
-  marginBottom: 24,
+export const StyledDivider = styled.div`
+  height: 1px;
+  background-color: #e0e0e0;
+  margin-bottom: 1.5rem;
 
-  [`@media ${max(device.mobile)}`]: {
-    marginBottom: 16,
-  },
-}));
+  @media (${max(device.mobile)}) {
+    margin-bottom: 1rem;
+  }
+`;
 
-export const ButtonsBox = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "space-between",
-  marginTop: 24,
+export const ButtonsBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
 
-  [`@media ${max(device.mobile)}`]: {
-    flexDirection: "column",
-    gap: 16,
-  },
-}));
+  @media (${max(device.mobile)}) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+`;

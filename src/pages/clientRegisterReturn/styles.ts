@@ -1,85 +1,89 @@
-import { SxProps, Theme } from "@mui/material";
+import styled from "styled-components";
 import { device, max } from "../../constants/responsiveClient";
-export const boxContainer: SxProps<Theme> = {
-  display: "flex",
 
-  [`@media ${max(device.mobile)}`]: {
-    flexDirection: "column",
-  },
-};
+export const BoxContainer = styled.div`
+  display: flex;
 
-export const boxFormContainer: SxProps<Theme> = {
-  flex: 1,
-  p: 5,
-  ml: "220px",
-  maxWidth: "700px",
-  mx: "auto",
+  @media ${max(device.mobile)} {
+    flex-direction: column;
+  }
+`;
 
-  [`@media ${max(device.mobile)}`]: {
-    p: 3,
-    ml: 0,
-  },
-};
+export const BoxFormContainer = styled.div`
+  flex: 1;
+  padding: 40px;
+  margin-left: 220px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
 
-export const typographySectionTitle: SxProps<Theme> = {
-  mb: 4,
-  fontWeight: 600,
+  @media ${max(device.mobile)} {
+    padding: 24px;
+    margin-left: 0;
+  }
+`;
 
-  [`@media ${max(device.mobile)}`]: {
-    fontSize: "1.25rem",
-  },
-};
+export const TypographySectionTitle = styled.h2`
+  margin-bottom: 32px;
+  font-weight: 600;
 
-export const typographySubTitle: SxProps<Theme> = {
-  mb: 2,
-  fontWeight: 600,
+  @media ${max(device.mobile)} {
+    font-size: 1.25rem;
+  }
+`;
 
-  [`@media ${max(device.mobile)}`]: {
-    fontSize: "1.1rem",
-  },
-};
+export const TypographySubTitle = styled.h3`
+  margin-bottom: 16px;
+  font-weight: 600;
 
-export const formControlLabelWrapper: SxProps<Theme> = {
-  mb: 3,
+  @media ${max(device.mobile)} {
+    font-size: 1.1rem;
+  }
+`;
 
-  [`@media ${max(device.mobile)}`]: {
-    mb: 2,
-  },
-};
+export const FormControlLabelWrapper = styled.div`
+  margin-bottom: 24px;
 
-export const formHelperText: SxProps<Theme> = {
-  mt: 0.5,
-  ml: 1.5,
+  @media ${max(device.mobile)} {
+    margin-bottom: 16px;
+  }
+`;
 
-  [`@media ${max(device.mobile)}`]: {
-    fontSize: "0.85rem",
-  },
-};
+export const FormHelperText = styled.p`
+  margin-top: 4px;
+  margin-left: 12px;
 
-export const gridMarginBottom10: SxProps<Theme> = {
-  mb: 10,
+  @media ${max(device.mobile)} {
+    font-size: 0.85rem;
+  }
+`;
 
-  [`@media ${max(device.mobile)}`]: {
-    mb: 6,
-  },
-};
+export const GridMarginBottom10 = styled.div`
+  margin-bottom: 80px;
 
-export const dividerMarginY2: SxProps<Theme> = {
-  my: 2,
+  @media ${max(device.mobile)} {
+    margin-bottom: 48px;
+  }
+`;
 
-  [`@media ${max(device.mobile)}`]: {
-    my: 1.5,
-  },
-};
+export const DividerMarginY2 = styled.hr`
+  margin-top: 16px;
+  margin-bottom: 16px;
 
-export const boxButtonContainer: SxProps<Theme> = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  mt: 4,
+  @media ${max(device.mobile)} {
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+`;
 
-  [`@media ${max(device.mobile)}`]: {
-    flexDirection: "column",
-    gap: 2,
-  },
-};
+export const BoxButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+
+  @media ${max(device.mobile)} {
+    flex-direction: column;
+    gap: 16px;
+  }
+`;

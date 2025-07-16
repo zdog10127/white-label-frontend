@@ -1,64 +1,71 @@
-import { SxProps, Theme } from "@mui/material";
+import styled from "styled-components";
 import { device, max } from "../../constants/responsiveClient";
 
-export const paperMain: SxProps<Theme> = {
-  p: 4,
-  [`@media ${max(device.mobile)}`]: {
-    p: 2,
-  },
-};
+export const PaperMain = styled.div`
+  padding: 32px;
 
-export const buttonBox: SxProps<Theme> = {
-  display: "flex",
-  gap: 2,
-  mt: 3,
-  justifyContent: "center",
-  flexWrap: "wrap",
-};
+  @media ${max(device.mobile)} {
+    padding: 16px;
+  }
+`;
 
-export const editButton: SxProps<Theme> = {
-  flex: 1,
-  minWidth: 140,
-  borderRadius: 2,
-  textTransform: "none",
-  fontWeight: "600",
-  py: 1.5,
-  [`@media ${max(device.mobile)}`]: {
-    width: "100%",
-  },
-};
+export const ButtonBox = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
 
-export const paperAvatar: SxProps<Theme> = {
-  p: 3,
-  textAlign: "center",
-  [`@media ${max(device.mobile)}`]: {
-    p: 2,
-  },
-};
+export const EditButton = styled.button`
+  flex: 1;
+  min-width: 140px;
+  border-radius: 8px;
+  text-transform: none;
+  font-weight: 600;
+  padding: 12px 0;
+  cursor: pointer;
 
-export const avatar: SxProps<Theme> = {
-  width: 100,
-  height: 100,
-  margin: "0 auto",
-  [`@media ${max(device.mobile)}`]: {
-    width: 70,
-    height: 70,
-  },
-};
+  @media ${max(device.mobile)} {
+    width: 100%;
+  }
+`;
 
-export const avatarImage: React.CSSProperties = {
-  width: "100%",
-  height: "100%",
-  objectFit: "cover",
-  borderRadius: "50%",
-};
+export const PaperAvatar = styled.div`
+  padding: 24px;
+  text-align: center;
 
-export const logoutButton: SxProps<Theme> = {
-  borderRadius: 2,
-  textTransform: "none",
-  fontWeight: "bold",
-  py: 1.2,
-  [`@media ${max(device.mobile)}`]: {
-    width: "100%",
-  },
-};
+  @media ${max(device.mobile)} {
+    padding: 16px;
+  }
+`;
+
+export const Avatar = styled.div`
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+
+  @media ${max(device.mobile)} {
+    width: 70px;
+    height: 70px;
+  }
+`;
+
+export const AvatarImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+`;
+
+export const LogoutButton = styled.button`
+  border-radius: 8px;
+  text-transform: none;
+  font-weight: bold;
+  padding: 10px 0;
+  cursor: pointer;
+
+  @media ${max(device.mobile)} {
+    width: 100%;
+  }
+`;
