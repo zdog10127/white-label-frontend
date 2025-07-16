@@ -1,11 +1,15 @@
 import styled from "styled-components";
-import { device, max } from "../../constants/responsiveClient";
+import { device, max, min } from "../../constants/responsiveClient";
 
 export const PaperMain = styled.div`
   padding: 32px;
 
   @media ${max(device.mobile)} {
     padding: 16px;
+  }
+
+  @media ${min(device.desktop)} {
+    padding: 48px;
   }
 `;
 
@@ -15,6 +19,11 @@ export const ButtonBox = styled.div`
   margin-top: 24px;
   justify-content: center;
   flex-wrap: wrap;
+
+  @media ${min(device.desktop)} {
+    gap: 24px;
+    margin-top: 32px;
+  }
 `;
 
 export const EditButton = styled.button`
@@ -29,6 +38,11 @@ export const EditButton = styled.button`
   @media ${max(device.mobile)} {
     width: 100%;
   }
+
+  @media ${min(device.desktop)} {
+    min-width: 180px;
+    padding: 16px 0;
+  }
 `;
 
 export const PaperAvatar = styled.div`
@@ -37,6 +51,10 @@ export const PaperAvatar = styled.div`
 
   @media ${max(device.mobile)} {
     padding: 16px;
+  }
+
+  @media ${min(device.desktop)} {
+    padding: 32px;
   }
 `;
 
@@ -48,6 +66,11 @@ export const Avatar = styled.div`
   @media ${max(device.mobile)} {
     width: 70px;
     height: 70px;
+  }
+
+  @media ${min(device.desktop)} {
+    width: 120px;
+    height: 120px;
   }
 `;
 
@@ -67,5 +90,9 @@ export const LogoutButton = styled.button`
 
   @media ${max(device.mobile)} {
     width: 100%;
+  }
+
+  @media ${min(device.desktop)} {
+    padding: 14px 0;
   }
 `;

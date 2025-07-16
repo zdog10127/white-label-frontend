@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Container, Paper, Box } from "@mui/material";
-import { device, max } from "../../constants/responsiveClient";
+import { device, max, min } from "../../constants/responsiveClient";
 
 export const BackgroundContainer = styled(Container)`
   height: 100vh;
@@ -13,6 +13,10 @@ export const BackgroundContainer = styled(Container)`
   justify-content: center;
   align-items: center;
   padding: 0 16px;
+
+  @media ${min(device.desktop)} {
+    padding: 0 48px;
+  }
 `;
 
 export const LoginPaper = styled(Paper)`
@@ -28,6 +32,12 @@ export const LoginPaper = styled(Paper)`
     padding: 40px 24px;
     margin-top: 40px;
   }
+
+  @media ${min(device.desktop)} {
+    width: 400px;
+    padding: 96px;
+    margin-top: 96px;
+  }
 `;
 
 export const LinksBox = styled(Box)`
@@ -41,5 +51,10 @@ export const LinksBox = styled(Box)`
     flex-direction: column;
     gap: 16px;
     margin-top: 40px;
+  }
+
+  @media ${min(device.desktop)} {
+    margin-top: 96px;
+    gap: 24px;
   }
 `;

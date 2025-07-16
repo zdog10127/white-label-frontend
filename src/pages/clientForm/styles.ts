@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { device, max } from "../../constants/responsiveClient";
+import { device, max, min } from "../../constants/responsiveClient";
 
 export const ClientFormContainer = styled.div`
   max-width: 480px;
@@ -13,6 +13,16 @@ export const ClientFormContainer = styled.div`
     margin: 1rem 16px;
     padding: 1.5rem;
   }
+
+  @media (${min(device.tablet)}) {
+    max-width: 700px;
+    padding: 2.5rem;
+  }
+
+  @media (${min(device.desktop)}) {
+    max-width: 900px;
+    padding: 3rem;
+  }
 `;
 
 export const Title = styled.h2`
@@ -24,6 +34,10 @@ export const Title = styled.h2`
   @media (${max(device.mobile)}) {
     font-size: 1.25rem;
   }
+
+  @media (${min(device.desktop)}) {
+    font-size: 1.75rem;
+  }
 `;
 
 export const ClientFormStyled = styled.form`
@@ -33,6 +47,10 @@ export const ClientFormStyled = styled.form`
 
   @media (${max(device.mobile)}) {
     gap: 0.75rem;
+  }
+
+  @media (${min(device.desktop)}) {
+    gap: 1.25rem;
   }
 `;
 
@@ -51,6 +69,11 @@ export const SubmitButton = styled.button`
     padding: 0.6rem;
   }
 
+  @media (${min(device.desktop)}) {
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+
   &:hover {
     background-color: #1565c0;
   }
@@ -64,5 +87,9 @@ export const SuccessMessage = styled.p`
 
   @media (${max(device.mobile)}) {
     font-size: 0.9rem;
+  }
+
+  @media (${min(device.desktop)}) {
+    font-size: 1.1rem;
   }
 `;

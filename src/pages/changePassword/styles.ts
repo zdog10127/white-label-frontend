@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { device, max } from "../../constants/responsiveClient";
+import { device, max, min } from "../../constants/responsiveClient";
 
 export const BoxContainer = styled.div`
   max-width: 480px;
@@ -7,6 +7,15 @@ export const BoxContainer = styled.div`
 
   @media (${max(device.mobile)}) {
     margin: 1rem 16px 0;
+  }
+
+  @media (${min(device.tablet)}) {
+    max-width: 700px;
+    margin: 3rem auto 0;
+  }
+
+  @media (${min(device.desktop)}) {
+    max-width: 900px;
   }
 `;
 
@@ -19,6 +28,10 @@ export const StyledPaper = styled.div`
   @media (${max(device.mobile)}) {
     padding: 1rem;
   }
+
+  @media (${min(device.desktop)}) {
+    padding: 3rem;
+  }
 `;
 
 export const StyledDivider = styled.div`
@@ -28,6 +41,10 @@ export const StyledDivider = styled.div`
 
   @media (${max(device.mobile)}) {
     margin-bottom: 1rem;
+  }
+
+  @media (${min(device.tablet)}) {
+    margin-bottom: 2rem;
   }
 `;
 
@@ -39,5 +56,10 @@ export const ButtonsBox = styled.div`
   @media (${max(device.mobile)}) {
     flex-direction: column;
     gap: 1rem;
+  }
+
+  @media (${min(device.desktop)}) {
+    justify-content: flex-end;
+    gap: 2rem;
   }
 `;

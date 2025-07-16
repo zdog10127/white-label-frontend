@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Box } from "@mui/material";
-import { device, max } from "../../constants/responsiveClient";
+import { device, max, min } from "../../constants/responsiveClient";
 
 interface DayBoxProps {
   isToday: boolean;
@@ -23,6 +23,11 @@ export const MonthHeader = styled(Box)`
     gap: 0.5rem;
     align-items: flex-start;
   }
+
+  @media ${min(device.desktop)} {
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
 `;
 
 export const WeekdayHeader = styled(Box)`
@@ -34,6 +39,11 @@ export const WeekdayHeader = styled(Box)`
   @media ${max(device.mobile)} {
     font-size: 0.75rem;
   }
+
+  @media ${min(device.desktop)} {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
 `;
 
 export const WeekGrid = styled(Box)`
@@ -43,6 +53,10 @@ export const WeekGrid = styled(Box)`
 
   @media ${max(device.mobile)} {
     gap: 4px;
+  }
+
+  @media ${min(device.desktop)} {
+    gap: 12px;
   }
 `;
 
@@ -76,6 +90,11 @@ export const DayBox = styled(Box)<DayBoxProps>`
       height: 70px;
       padding: ${theme.spacing(0.5)};
     }
+
+    @media ${min(device.desktop)} {
+      height: 120px;
+      padding: ${theme.spacing(2)};
+    }
   `}
 `;
 
@@ -92,6 +111,11 @@ export const WeekNavigation = styled(Box)`
     flex-direction: column;
     gap: 0.5rem;
     align-items: flex-start;
+  }
+
+  @media ${min(device.desktop)} {
+    gap: 1rem;
+    margin-bottom: 2rem;
   }
 `;
 

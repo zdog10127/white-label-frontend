@@ -7,13 +7,17 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { device, max } from "../../constants/responsiveClient";
+import { device, max, min } from "../../constants/responsiveClient";
 
 export const Container = styled(Box)`
   padding: 24px;
 
   @media ${max(device.mobile)} {
     padding: 16px;
+  }
+
+  @media ${min(device.desktop)} {
+    padding: 32px;
   }
 `;
 
@@ -22,6 +26,10 @@ export const HeaderTitle = styled(Typography)`
 
   @media ${max(device.mobile)} {
     font-size: 1.25rem;
+  }
+
+  @media ${min(device.desktop)} {
+    font-size: 1.75rem;
   }
 `;
 
@@ -32,6 +40,10 @@ export const ButtonsStack = styled(Stack)`
   @media ${max(device.mobile)} {
     gap: 12px;
   }
+
+  @media ${min(device.desktop)} {
+    gap: 24px;
+  }
 `;
 
 export const FiltersBox = styled(Box)`
@@ -40,6 +52,10 @@ export const FiltersBox = styled(Box)`
   @media ${max(device.mobile)} {
     margin-bottom: 12px;
   }
+
+  @media ${min(device.desktop)} {
+    margin-bottom: 24px;
+  }
 `;
 
 export const StyledFormControl = styled(FormControl)`
@@ -47,6 +63,10 @@ export const StyledFormControl = styled(FormControl)`
 
   @media ${max(device.mobile)} {
     min-width: 100%;
+  }
+
+  @media ${min(device.desktop)} {
+    min-width: 200px;
   }
 `;
 
@@ -57,6 +77,10 @@ export const StyledTextField = styled(TextField)`
   @media ${max(device.mobile)} {
     min-width: 100%;
   }
+
+  @media ${min(device.desktop)} {
+    min-width: 300px;
+  }
 `;
 
 export const ActionsButton = styled(Button)`
@@ -66,17 +90,25 @@ export const ActionsButton = styled(Button)`
     width: 100%;
     margin-right: 0;
   }
+
+  @media ${min(device.desktop)} {
+    padding: 10px 24px;
+  }
 `;
 
 export const ActionsButtonDelete = styled(Button)`
   @media ${max(device.mobile)} {
     width: 100%;
   }
+
+  @media ${min(device.desktop)} {
+    padding: 10px 24px;
+  }
 `;
 
 export const ConditionalButton = styled(Button)<{ $isPrimary?: boolean }>`
   margin-right: 8px;
-  background-color: ${(props) => (props.$isPrimary ? "#1976d2" : "#grey")};
+  background-color: ${(props) => (props.$isPrimary ? "#1976d2" : "#ccc")};
 
   ${(props) =>
     props.disabled &&
@@ -89,6 +121,10 @@ export const ConditionalButton = styled(Button)<{ $isPrimary?: boolean }>`
     width: 100%;
     margin-right: 0;
   }
+
+  @media ${min(device.desktop)} {
+    padding: 10px 24px;
+  }
 `;
 
 export const ThemedContainer = styled(Box)`
@@ -98,6 +134,10 @@ export const ThemedContainer = styled(Box)`
 
   @media ${max(device.mobile)} {
     padding: 16px;
+  }
+
+  @media ${min(device.desktop)} {
+    padding: 32px;
   }
 `;
 
@@ -118,6 +158,10 @@ export const InteractiveButton = styled(Button)`
     width: 100%;
     margin-right: 0;
   }
+
+  @media ${min(device.desktop)} {
+    padding: 10px 24px;
+  }
 `;
 
 export const DefaultTextField = styled(TextField).attrs({
@@ -130,12 +174,20 @@ export const DefaultTextField = styled(TextField).attrs({
   @media ${max(device.mobile)} {
     min-width: 100%;
   }
+
+  @media ${min(device.desktop)} {
+    min-width: 350px;
+  }
 `;
 
 export const BaseButton = styled(Button)`
   padding: 8px 16px;
   border-radius: 4px;
   transition: all 0.2s ease;
+
+  @media ${min(device.desktop)} {
+    padding: 10px 24px;
+  }
 `;
 
 export const PrimaryButton = styled(BaseButton)`

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { device } from "../../constants/responsiveClient";
+import { device, max, min } from "../../constants/responsiveClient";
 
 export const Container = styled.div`
   margin-top: 16px;
@@ -7,14 +7,19 @@ export const Container = styled.div`
   padding-left: 40px;
   padding-right: 40px;
 
-  @media (max-width: ${device.tablet}) {
+  @media ${max(device.tablet)} {
     padding-left: 20px;
     padding-right: 20px;
   }
 
-  @media (max-width: ${device.mobile}) {
+  @media ${max(device.mobile)} {
     padding-left: 12px;
     padding-right: 12px;
+  }
+
+  @media ${min(device.desktop)} {
+    padding-left: 48px;
+    padding-right: 48px;
   }
 `;
 
@@ -29,7 +34,7 @@ export const GridLayout = styled.div`
     "tabs"
     "tasks";
 
-  @media (min-width: ${device.tablet}) {
+  @media ${min(device.tablet)} {
     grid-template-columns: 2fr 1fr;
     grid-template-areas:
       "sessions finance"
