@@ -10,7 +10,6 @@ import {
   TableRow,
   Paper,
   TextField,
-  Chip,
   Typography,
   FormControl,
   InputLabel,
@@ -21,6 +20,9 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 import clientsDataRaw from "../../components/data/clients.json";
 import {
   adaptClient,
@@ -38,6 +40,9 @@ import {
   StyledTextField,
   ActionsButton,
   ActionsButtonDelete,
+  StatusAtivo,
+  StatusInativo,
+  StatusListaEspera,
 } from "./styles";
 
 const ClientList: React.FC = () => {
@@ -128,7 +133,46 @@ const ClientList: React.FC = () => {
     setPage(0);
   };
 
+  const handleExportExcel = () => {
+    const exportData = filteredClients.map((client) => ({
+      Nome: client.name,
+      Status: client.status,
+      Grupo: client.group || "-",
+      "Data de Cadastro": client.registrationDate,
+      "E-mail": client.email || "-",
+      Telefone: client.cellphone || "-",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Clientes");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+
+    saveAs(blob, "clientes.xlsx");
+  };
+
   const clientToDelete = clients.find((c) => c.id === selectedClientId);
+
+  const renderStatus = (status: string) => {
+    switch (status) {
+      case "Ativo":
+        return <StatusAtivo>{status}</StatusAtivo>;
+      case "Inativo":
+        return <StatusInativo>{status}</StatusInativo>;
+      case "Lista de Espera":
+        return <StatusListaEspera>{status}</StatusListaEspera>;
+      default:
+        return <Typography>{status}</Typography>;
+    }
+  };
 
   return (
     <Container>
@@ -161,6 +205,10 @@ const ClientList: React.FC = () => {
           onClick={handleToggleGroups}
         >
           Grupos
+        </Button>
+
+        <Button variant="outlined" color="success" onClick={handleExportExcel}>
+          Exportar Excel
         </Button>
       </ButtonsStack>
 
@@ -200,64 +248,32 @@ const ClientList: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Nome do cliente</TableCell>
+              <TableCell>Nome</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Grupo</TableCell>
-              <TableCell>Data do cadastro</TableCell>
-              <TableCell>E-mail</TableCell>
-              <TableCell>Telefone</TableCell>
-              <TableCell align="center">Ações</TableCell>
+              <TableCell>Ações</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedClients.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} align="center">
-                  Nenhum cliente encontrado.
-                </TableCell>
-              </TableRow>
-            ) : (
-              paginatedClients.map((client) => (
-                <TableRow key={client.id}>
-                  <TableCell>{client.name}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={client.status}
-                      color={
-                        client.status === "Ativo"
-                          ? "success"
-                          : client.status === "Inativo"
-                          ? "default"
-                          : "warning"
-                      }
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>{client.group || "-"}</TableCell>
-                  <TableCell>{client.registrationDate}</TableCell>
-                  <TableCell>{client.email || "-"}</TableCell>
-                  <TableCell>{client.cellphone || "-"}</TableCell>
-                  <TableCell align="center">
-                    <ActionsButton
-                      variant="outlined"
-                      size="small"
-                      color="primary"
-                      onClick={() => handleEdit(client)}
-                    >
+            {paginatedClients.map((client) => (
+              <TableRow key={client.id}>
+                <TableCell>{client.name}</TableCell>
+                <TableCell>{renderStatus(client.status)}</TableCell>
+                <TableCell>{client.group || "-"}</TableCell>
+                <TableCell>
+                  <Stack direction="row" spacing={1}>
+                    <ActionsButton onClick={() => handleEdit(client)}>
                       Editar
                     </ActionsButton>
                     <ActionsButtonDelete
-                      variant="outlined"
-                      size="small"
-                      color="error"
                       onClick={() => handleDelete(client.id)}
                     >
                       Excluir
                     </ActionsButtonDelete>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
+                  </Stack>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
@@ -268,9 +284,8 @@ const ClientList: React.FC = () => {
         page={page}
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[5, 10, 25]}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage="Linhas por página"
+         labelRowsPerPage="Nova Pagina"
       />
 
       <DeleteClientModal

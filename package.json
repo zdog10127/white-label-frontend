@@ -22,6 +22,9 @@
     "axios": "^1.10.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "file-saver": "^2.0.5",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.58.1",
@@ -30,10 +33,12 @@
     "react-toastify": "^11.0.5",
     "recharts": "^2.8.0",
     "styled-components": "^6.1.18",
+    "xlsx": "^0.18.5",
     "zod": "^3.25.67"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@types/file-saver": "^2.0.7",
     "@types/react": "^18.0.38",
     "@types/react-dom": "^18.0.11",
     "@types/recharts": "^1.8.29",

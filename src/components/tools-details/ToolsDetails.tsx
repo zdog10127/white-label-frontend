@@ -273,7 +273,7 @@ const ClientList: React.FC = () => {
         rowsPerPage={rowsPerPage}
         rowsPerPageOptions={[5, 10, 25]}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage="Linhas por página"
+        labelRowsPerPage="Nova Pagina"
       />
     </Box>
   );
