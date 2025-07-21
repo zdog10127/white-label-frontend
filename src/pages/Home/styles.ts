@@ -7,19 +7,14 @@ export const Container = styled.div`
   padding-left: 40px;
   padding-right: 40px;
 
-  @media ${max(device.tablet)} {
+  ${max(device.tablet)} {
     padding-left: 20px;
     padding-right: 20px;
   }
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     padding-left: 12px;
     padding-right: 12px;
-  }
-
-  @media ${min(device.desktop)} {
-    padding-left: 48px;
-    padding-right: 48px;
   }
 `;
 
@@ -34,7 +29,7 @@ export const GridLayout = styled.div`
     "tabs"
     "tasks";
 
-  @media ${min(device.tablet)} {
+  ${min(device.tablet)} {
     grid-template-columns: 2fr 1fr;
     grid-template-areas:
       "sessions finance"
