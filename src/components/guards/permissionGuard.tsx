@@ -36,18 +36,13 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
 
   const hasPermission = () => {
     if (!user || !user.permissions) {
-      console.warn("❌ Usuário sem permissões:", user);
       return false;
     }
-
-    console.warn("📋 Permissões do usuário:", user.permissions);
-    console.warn("🔑 Permissões necessárias:", requiredPermissions);
 
     const hasAccess = user.permissions.some((permission) =>
       requiredPermissions.includes(permission)
     );
 
-    console.warn("✅ Tem acesso?", hasAccess);
     return hasAccess;
   };
 

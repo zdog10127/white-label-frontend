@@ -24,7 +24,6 @@ export const useUsers = () => {
         setError(
           err instanceof Error ? err.message : "Erro ao carregar usuários"
         );
-        console.error("Erro ao buscar usuários:", err);
       } finally {
         setLoading(false);
       }

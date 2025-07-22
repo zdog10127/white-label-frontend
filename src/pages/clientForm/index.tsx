@@ -37,7 +37,6 @@ const ClientForm: React.FC = () => {
   });
 
   const onSubmit = (data: ClientFormData) => {
-    console.warn("Dados enviados:", data);
     reset();
   };
 
