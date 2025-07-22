@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
   Table,
-  TableHead,
   TableRow,
   TableCell,
   TableBody,
@@ -15,210 +8,14 @@ import {
   Box,
   Typography,
   InputAdornment,
-  Chip,
   Avatar,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import CloseIcon from "@mui/icons-material/Close";
-import { styled } from "@mui/material/styles";
-import type { User } from "../../types/permissionUser";
-
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialog-paper": {
-    borderRadius: "16px",
-    maxWidth: "700px",
-    width: "100%",
-    margin: "16px",
-    boxShadow:
-      theme.palette.mode === "dark"
-        ? "0 24px 48px rgba(0,0,0,0.5)"
-        : "0 24px 48px rgba(0,0,0,0.15)",
-    [theme.breakpoints.down("sm")]: {
-      margin: "8px",
-      borderRadius: "12px",
-    },
-  },
-}));
-
-const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
-  background:
-    theme.palette.mode === "dark"
-      ? `linear-gradient(135deg, ${theme.palette.grey[800]} 0%, ${theme.palette.grey[900]} 100%)`
-      : `linear-gradient(135deg, ${theme.palette.grey[50]} 0%, ${theme.palette.grey[100]} 100%)`,
-  borderBottom: `2px solid ${theme.palette.divider}`,
-  padding: "24px 32px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  [theme.breakpoints.down("sm")]: {
-    padding: "20px 24px",
-  },
-}));
-
-const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
-  padding: "32px",
-  background: theme.palette.background.default,
-  [theme.breakpoints.down("sm")]: {
-    padding: "24px",
-  },
-}));
-
-const StyledTextField = styled(TextField)(({ theme }) => ({
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "12px",
-    backgroundColor: theme.palette.background.paper,
-    transition: "all 0.2s ease",
-    "&:hover": {
-      boxShadow:
-        theme.palette.mode === "dark"
-          ? "0 4px 12px rgba(0,0,0,0.3)"
-          : "0 4px 12px rgba(0,0,0,0.08)",
-    },
-    "&.Mui-focused": {
-      boxShadow: `0 0 0 2px ${theme.palette.primary.main}20`,
-    },
-  },
-}));
-
-const TableContainer = styled(Box)(({ theme }) => ({
-  maxHeight: "400px",
-  overflowY: "auto",
-  marginTop: "20px",
-  border: `1px solid ${theme.palette.divider}`,
-  borderRadius: "12px",
-  backgroundColor: theme.palette.background.paper,
-  boxShadow:
-    theme.palette.mode === "dark"
-      ? "0 4px 16px rgba(0,0,0,0.3)"
-      : "0 4px 16px rgba(0,0,0,0.08)",
-  "&::-webkit-scrollbar": {
-    width: "6px",
-  },
-  "&::-webkit-scrollbar-track": {
-    background: theme.palette.action.hover,
-  },
-  "&::-webkit-scrollbar-thumb": {
-    background: theme.palette.text.disabled,
-    borderRadius: "3px",
-  },
-}));
-
-const StyledTableHead = styled(TableHead)(({ theme }) => ({
-  position: "sticky",
-  top: 0,
-  zIndex: 1,
-  background:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[800]
-      : theme.palette.grey[100],
-  "& .MuiTableCell-root": {
-    fontWeight: 700,
-    fontSize: "14px",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
-    color: theme.palette.text.primary,
-    borderBottom: `2px solid ${theme.palette.divider}`,
-    padding: "20px 24px",
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  transition: "all 0.2s ease",
-  "&:hover": {
-    backgroundColor: theme.palette.action.hover,
-    transform: "scale(1.002)",
-  },
-  "& .MuiTableCell-root": {
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    padding: "16px 24px",
-  },
-}));
-
-const UserInfo = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: "12px",
-}));
-
-const UserDetails = styled(Box)(() => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "4px",
-  flex: 1,
-}));
-
-const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
-  padding: "24px 32px",
-  backgroundColor: theme.palette.background.paper,
-  borderTop: `1px solid ${theme.palette.divider}`,
-  gap: "12px",
-  [theme.breakpoints.down("sm")]: {
-    padding: "20px 24px",
-    flexDirection: "column-reverse",
-    "& > :not(:first-of-type)": {
-      marginLeft: 0,
-      marginBottom: "8px",
-    },
-  },
-}));
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  borderRadius: "8px",
-  fontWeight: 600,
-  padding: "12px 24px",
-  textTransform: "none",
-  fontSize: "14px",
-  transition: "all 0.2s ease",
-  "&:hover": {
-    transform: "translateY(-1px)",
-    boxShadow:
-      theme.palette.mode === "dark"
-        ? "0 4px 12px rgba(0,0,0,0.4)"
-        : "0 4px 12px rgba(0,0,0,0.15)",
-  },
-}));
-
-const HeaderInfo = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: "12px",
-  flex: 1,
-}));
-
-const CloseButton = styled(Button)(({ theme }) => ({
-  minWidth: "40px",
-  width: "40px",
-  height: "40px",
-  padding: 0,
-  borderRadius: "50%",
-  color: theme.palette.text.secondary,
-  "&:hover": {
-    backgroundColor: theme.palette.action.hover,
-    color: theme.palette.text.primary,
-  },
-}));
-
-const ResultsChip = styled(Chip)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main + "20",
-  color: theme.palette.primary.main,
-  fontWeight: 600,
-  "& .MuiChip-label": {
-    fontSize: "12px",
-  },
-}));
-
-const EmptyState = styled(Box)(({ theme }) => ({
-  textAlign: "center",
-  padding: "60px 20px",
-  color: theme.palette.text.secondary,
-  "& .icon": {
-    fontSize: "48px",
-    marginBottom: "16px",
-    opacity: 0.7,
-  },
-}));
+import type { User } from "../../../types/permissionUser";
+import * as S from "./styles";
 
 interface AddUsersModalProps {
   open: boolean;
@@ -291,9 +88,9 @@ export function AddUsersModal({
   };
 
   return (
-    <StyledDialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <StyledDialogTitle>
-        <HeaderInfo>
+    <S.StyledDialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <S.StyledDialogTitle>
+        <S.HeaderInfo>
           <GroupAddIcon sx={{ fontSize: 28, color: "primary.main" }} />
           <Box>
             <Typography variant="h6" fontWeight="bold" sx={{ mb: 0.5 }}>
@@ -303,15 +100,15 @@ export function AddUsersModal({
               Selecione os usuários para adicionar permissões
             </Typography>
           </Box>
-        </HeaderInfo>
-        <CloseButton onClick={onClose}>
+        </S.HeaderInfo>
+        <S.CloseButton onClick={onClose}>
           <CloseIcon />
-        </CloseButton>
-      </StyledDialogTitle>
+        </S.CloseButton>
+      </S.StyledDialogTitle>
 
-      <StyledDialogContent>
+      <S.StyledDialogContent>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-          <StyledTextField
+          <S.StyledTextField
             variant="outlined"
             placeholder="Pesquisar por nome, e-mail ou CPF..."
             fullWidth
@@ -325,15 +122,15 @@ export function AddUsersModal({
               ),
             }}
           />
-          <ResultsChip
+          <S.ResultsChip
             label={`${filteredUsers.length} usuários`}
             size="small"
           />
         </Box>
 
-        <TableContainer>
+        <S.TableContainer>
           <Table stickyHeader size="small" aria-label="user table">
-            <StyledTableHead>
+            <S.StyledTableHead>
               <TableRow>
                 <TableCell padding="checkbox">
                   <Checkbox
@@ -345,12 +142,12 @@ export function AddUsersModal({
                 </TableCell>
                 <TableCell>Usuário</TableCell>
               </TableRow>
-            </StyledTableHead>
+            </S.StyledTableHead>
             <TableBody>
               {filteredUsers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={2}>
-                    <EmptyState>
+                    <S.EmptyState>
                       <PersonIcon className="icon" />
                       <Typography variant="h6" gutterBottom>
                         {searchTerm
@@ -362,12 +159,12 @@ export function AddUsersModal({
                           ? "Tente ajustar os termos de busca"
                           : "Todos os usuários já possuem esta permissão"}
                       </Typography>
-                    </EmptyState>
+                    </S.EmptyState>
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredUsers.map((user) => (
-                  <StyledTableRow key={user.id}>
+                  <S.StyledTableRow key={user.id}>
                     <TableCell padding="checkbox">
                       <Checkbox
                         checked={selectedUserIds.includes(user.id)}
@@ -377,7 +174,7 @@ export function AddUsersModal({
                       />
                     </TableCell>
                     <TableCell id={`user-${user.id}`}>
-                      <UserInfo>
+                      <S.UserInfo>
                         <Avatar
                           sx={{
                             width: 40,
@@ -389,7 +186,7 @@ export function AddUsersModal({
                         >
                           {getInitials(user.name)}
                         </Avatar>
-                        <UserDetails>
+                        <S.UserDetails>
                           <Typography
                             fontWeight="bold"
                             sx={{ fontSize: "15px", lineHeight: 1.2 }}
@@ -410,22 +207,22 @@ export function AddUsersModal({
                           >
                             CPF: {user.cpf}
                           </Typography>
-                        </UserDetails>
-                      </UserInfo>
+                        </S.UserDetails>
+                      </S.UserInfo>
                     </TableCell>
-                  </StyledTableRow>
+                  </S.StyledTableRow>
                 ))
               )}
             </TableBody>
           </Table>
-        </TableContainer>
-      </StyledDialogContent>
+        </S.TableContainer>
+      </S.StyledDialogContent>
 
-      <StyledDialogActions>
-        <StyledButton variant="outlined" onClick={onClose} color="inherit">
+      <S.StyledDialogActions>
+        <S.StyledButton variant="outlined" onClick={onClose} color="inherit">
           Cancelar
-        </StyledButton>
-        <StyledButton
+        </S.StyledButton>
+        <S.StyledButton
           variant="contained"
           onClick={handleAdd}
           disabled={selectedUserIds.length === 0}
@@ -433,8 +230,8 @@ export function AddUsersModal({
         >
           Adicionar{" "}
           {selectedUserIds.length > 0 && `(${selectedUserIds.length})`}
-        </StyledButton>
-      </StyledDialogActions>
-    </StyledDialog>
+        </S.StyledButton>
+      </S.StyledDialogActions>
+    </S.StyledDialog>
   );
 }

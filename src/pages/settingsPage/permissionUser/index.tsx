@@ -13,7 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import GroupIcon from "@mui/icons-material/Group";
 import { useParams } from "react-router-dom";
-import { AddUsersModal } from "../../../components/mod/userModal";
+import { AddUsersModal } from "../../../components/mod/user-Modal";
 import { useUsers } from "../../../shared/hooks/searchUser";
 import * as S from "./styles";
 import type { User } from "../../../types/permissionUser";

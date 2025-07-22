@@ -17,6 +17,26 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [usersDB, setUsersDB] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const response = await fetch("/user.json");
+        if (!response.ok) {
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        const users = await response.json();
+        setUsersDB(users);
+        console.log("Usuários carregados com sucesso:", users.length);
+      } catch (error) {
+        console.error("Erro ao carregar usuários:", error);
+        setUsersDB([]);
+      }
+    };
+
+    loadUsers();
+  }, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -27,17 +47,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const login = (email: string, password: string): boolean => {
-    const usersDB = [
-      { email: "admin@example.com", password: "1234" },
-      { email: "jhonathancosta_dev@hotmail.com", password: "1234567890" },
-      { email: "gabrielteles@example.com", password: "1234567890" },
-    ];
+    if (usersDB.length === 0) {
+      console.log("Base de usuários não carregada");
+      return false;
+    }
 
     const matchedUser = usersDB.find(
-      (u) => u.email === email && u.password === password
+      (u) =>
+        u.email === email && u.password === password && u.canLogin !== false
     );
 
     if (matchedUser) {
+      if (matchedUser.canLogin === false) {
+        console.log("Usuário não tem permissão para fazer login");
+        return false;
+      }
+
       const profileData = localStorage.getItem(`user-profile-data-${email}`);
       const avatar = localStorage.getItem(`user-profile-image-${email}`);
 
@@ -46,21 +71,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         : {};
 
       const userData: User = {
-        email,
+        email: matchedUser.email,
         avatar: avatar || undefined,
-        firstName: extraFields.firstName || "",
-        lastName: extraFields.lastName || "",
-        phone: extraFields.phone || "",
-        city: extraFields.city || "",
-        state: extraFields.state || "",
-        occupation: extraFields.occupation || "",
+        firstName: extraFields.firstName || matchedUser.firstName || "",
+        lastName: extraFields.lastName || matchedUser.lastName || "",
+        phone: extraFields.phone || matchedUser.phone || "",
+        city: extraFields.city || matchedUser.city || "",
+        state: extraFields.state || matchedUser.state || "",
+        occupation: extraFields.occupation || matchedUser.occupation || "",
+        id: matchedUser.id,
+        name: matchedUser.name,
+        cpf: matchedUser.cpf,
+        permissions: matchedUser.permissions || [],
       };
 
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
+      console.log("Login realizado com sucesso:", userData);
       return true;
     }
 
+    console.log("Credenciais inválidas ou usuário sem permissão de login");
     return false;
   };
 
@@ -74,6 +105,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const updatedUser = { ...user, avatar };
       setUser(updatedUser);
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      localStorage.setItem(`user-profile-image-${user.email}`, avatar);
     }
   };
 

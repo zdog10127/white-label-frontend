@@ -139,82 +139,6 @@ export const SearchInput = styled.input`
   }
 `;
 
-export const CategoryFilter = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: ${({ theme }) => theme.palette.text.primary};
-  font-weight: 500;
-
-  svg {
-    color: ${({ theme }) => theme.palette.text.secondary};
-  }
-`;
-
-export const CategorySelect = styled.select`
-  padding: 12px 16px;
-  border: 1px solid ${({ theme }) => theme.palette.divider};
-  border-radius: 8px;
-  background-color: ${({ theme }) => theme.palette.background.default};
-  color: ${({ theme }) => theme.palette.text.primary};
-  font-size: 14px;
-  outline: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 200px;
-
-  &:focus {
-    border-color: ${({ theme }) => theme.palette.primary.main};
-    box-shadow: 0 0 0 2px ${({ theme }) => theme.palette.primary.main}20;
-  }
-
-  ${max(device.mobile)} {
-    min-width: 100%;
-  }
-
-  ${min(device.desktop)} {
-    font-size: 15px;
-    padding: 14px 18px;
-    min-width: 220px;
-  }
-`;
-
-export const ResultsInfo = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  color: ${({ theme }) => theme.palette.text.secondary};
-  font-weight: 500;
-
-  ${max(device.mobile)} {
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
-  }
-`;
-
-export const CategoryBadge = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: capitalize;
-  border: 1px solid currentColor;
-
-  svg {
-    font-size: 16px;
-  }
-
-  ${min(device.desktop)} {
-    font-size: 13px;
-    padding: 7px 16px;
-  }
-`;
-
 export const TableWrapper = styled.div`
   background-color: ${({ theme }) => theme.palette.background.paper};
   border-radius: 12px;
@@ -245,11 +169,11 @@ export const Table = styled.table`
   border-collapse: separate;
   border-spacing: 0;
   background-color: ${({ theme }) => theme.palette.background.paper};
-  min-width: 800px;
+  min-width: 600px;
 
   ${max(device.mobile)} {
     font-size: 12px;
-    min-width: 700px;
+    min-width: 500px;
   }
 
   ${min(device.desktop)} {
@@ -272,14 +196,8 @@ export const TableHead = styled.th`
   border-bottom: 2px solid ${({ theme }) => theme.palette.divider};
   white-space: nowrap;
 
-  &:nth-child(3) {
+  &:nth-child(2) {
     min-width: 300px;
-  }
-
-  &:nth-child(5) {
-    ${max(device.mobile)} {
-      display: none;
-    }
   }
 
   ${max(device.mobile)} {
@@ -311,12 +229,6 @@ export const TableCell = styled.td`
   font-size: 14px;
   color: ${({ theme }) => theme.palette.text.primary};
   vertical-align: middle;
-
-  &:nth-child(5) {
-    ${max(device.mobile)} {
-      display: none;
-    }
-  }
 
   ${max(device.mobile)} {
     font-size: 12px;
@@ -372,42 +284,6 @@ export const LevelBadge = styled.span`
   ${min(device.desktop)} {
     font-size: 12px;
     padding: 5px 14px;
-  }
-`;
-
-export const TagsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  max-width: 120px;
-
-  ${min(device.desktop)} {
-    max-width: 150px;
-  }
-`;
-
-export const Tag = styled.span`
-  background-color: ${({ theme }) => theme.palette.action.selected};
-  color: ${({ theme }) => theme.palette.text.primary};
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 10px;
-  font-weight: 500;
-  white-space: nowrap;
-
-  ${min(device.desktop)} {
-    font-size: 11px;
-    padding: 3px 10px;
-  }
-`;
-
-export const MoreTags = styled.span`
-  color: ${({ theme }) => theme.palette.text.secondary};
-  font-size: 10px;
-  font-weight: 500;
-
-  ${min(device.desktop)} {
-    font-size: 11px;
   }
 `;
 

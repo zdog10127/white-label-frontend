@@ -7,7 +7,7 @@ import {
   ToggleButtonGroup,
   useTheme,
 } from "@mui/material";
-import ScheduleModal from "../../components/mod/modal-Schedule/sheduleModal";
+import ScheduleModal from "../../components/mod/modal-Schedule";
 import rawClientsData from "../../components/data/clients.json";
 import { getBrazilianHolidays } from "../../utils/holidays";
 import { ClientType, AgendamentoType } from "../../types/schedule";

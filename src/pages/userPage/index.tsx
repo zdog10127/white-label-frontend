@@ -22,13 +22,26 @@ import {
   userProfileSchema,
   UserProfileFormData,
 } from "../../schemas/userPageSchemas";
+import { User } from "../../types/user";
 
 import ChangeEmail from "../changeEmail";
 import ChangePassword from "../changePassword";
 
+interface ExtendedUser extends Omit<User, "id"> {
+  id: string | number | undefined;
+  firstName?: string;
+  lastName?: string;
+  occupation?: string;
+  city?: string;
+  state?: string;
+  avatar?: string;
+}
+
 export default function UserPage() {
   const { user, logout, updateUserAvatar } = useAuth();
   const navigate = useNavigate();
+
+  const extendedUser = user as unknown as ExtendedUser | null;
 
   const [view, setView] = useState<"main" | "email" | "password">("main");
   const [preview, setPreview] = useState<string | null>(null);
@@ -59,36 +72,38 @@ export default function UserPage() {
   });
 
   useEffect(() => {
-    if (user?.email) {
+    if (extendedUser?.email) {
       const savedImage = localStorage.getItem(
-        `user-profile-image-${user.email}`
+        `user-profile-image-${extendedUser.email}`
       );
       if (savedImage) setPreview(savedImage);
-      else if (user.avatar) setPreview(user.avatar);
+      else if (extendedUser.avatar) setPreview(extendedUser.avatar);
 
-      const savedData = localStorage.getItem(`user-profile-data-${user.email}`);
+      const savedData = localStorage.getItem(
+        `user-profile-data-${extendedUser.email}`
+      );
       if (savedData) {
         const parsed = JSON.parse(savedData);
         Object.keys(parsed).forEach((key) => {
           setValue(key as keyof UserProfileFormData, parsed[key]);
         });
       } else {
-        setValue("firstName", user.firstName || "");
-        setValue("lastName", user.lastName || "");
-        setValue("birthDate", user.birthDate || "");
-        setValue("gender", user.gender || "");
-        setValue("email", user.email || "");
-        setValue("phone", user.phone || "");
-        setValue("occupation", user.occupation || "");
-        setValue("street", user.street || "");
-        setValue("number", user.number || "");
-        setValue("neighborhood", user.neighborhood || "");
-        setValue("city", user.city || "");
-        setValue("state", user.state || "");
-        setValue("zip", user.zip || "");
+        setValue("firstName", extendedUser.firstName || "");
+        setValue("lastName", extendedUser.lastName || "");
+        setValue("birthDate", extendedUser.birthDate || "");
+        setValue("gender", extendedUser.gender || "");
+        setValue("email", extendedUser.email || "");
+        setValue("phone", extendedUser.phone || "");
+        setValue("occupation", extendedUser.occupation || "");
+        setValue("street", extendedUser.street || "");
+        setValue("number", extendedUser.number || "");
+        setValue("neighborhood", extendedUser.neighborhood || "");
+        setValue("city", extendedUser.city || "");
+        setValue("state", extendedUser.state || "");
+        setValue("zip", extendedUser.zip || "");
       }
     }
-  }, [user, setValue]);
+  }, [extendedUser, setValue]);
 
   const toBase64 = (file: File) =>
     new Promise<string>((resolve, reject) => {
@@ -102,18 +117,20 @@ export default function UserPage() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
-    if (file && user?.email) {
+    if (file && extendedUser?.email) {
       const base64 = await toBase64(file);
       setPreview(base64);
-      localStorage.setItem(`user-profile-image-${user.email}`, base64);
-      updateUserAvatar(base64);
+      localStorage.setItem(`user-profile-image-${extendedUser.email}`, base64);
+      if (updateUserAvatar) {
+        updateUserAvatar(base64);
+      }
     }
   };
 
   const onSubmit = (data: UserProfileFormData) => {
-    if (user?.email) {
+    if (extendedUser?.email) {
       localStorage.setItem(
-        `user-profile-data-${user.email}`,
+        `user-profile-data-${extendedUser.email}`,
         JSON.stringify(data)
       );
       alert("Dados salvos com sucesso!");
@@ -424,9 +441,9 @@ export default function UserPage() {
           <Grid item xs={12} md={4}>
             <Paper elevation={3} sx={{ p: 3, textAlign: "center" }}>
               <Avatar sx={{ width: 100, height: 100, margin: "0 auto" }}>
-                {preview || user?.avatar ? (
+                {preview || extendedUser?.avatar ? (
                   <img
-                    src={preview || user?.avatar}
+                    src={preview || extendedUser?.avatar}
                     alt="avatar"
                     style={{
                       width: "100%",
@@ -436,7 +453,7 @@ export default function UserPage() {
                     }}
                   />
                 ) : (
-                  watch("firstName")?.charAt(0).toUpperCase() || "U"
+                  watch("firstName")?.charAt(0)?.toUpperCase() || "U"
                 )}
               </Avatar>
 
@@ -495,8 +512,11 @@ export default function UserPage() {
         </Grid>
       )}
 
-      {view === "email" && user?.email && (
-        <ChangeEmail onBack={handleBackToMain} clientEmail={user.email} />
+      {view === "email" && extendedUser?.email && (
+        <ChangeEmail
+          onBack={handleBackToMain}
+          clientEmail={extendedUser.email}
+        />
       )}
 
       {view === "password" && <ChangePassword onBack={handleBackToMain} />}

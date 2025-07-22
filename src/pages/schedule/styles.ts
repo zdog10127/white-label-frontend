@@ -18,13 +18,13 @@ export const MonthHeader = styled(Box)`
   align-items: center;
   margin-bottom: 1rem;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     flex-direction: column;
     gap: 0.5rem;
     align-items: flex-start;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     gap: 1rem;
     margin-bottom: 2rem;
   }
@@ -36,11 +36,11 @@ export const WeekdayHeader = styled(Box)`
   text-align: center;
   margin-bottom: 0.5rem;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     font-size: 0.75rem;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     font-size: 1rem;
     margin-bottom: 1rem;
   }
@@ -51,11 +51,11 @@ export const WeekGrid = styled(Box)`
   grid-template-columns: repeat(7, 1fr);
   gap: 8px;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     gap: 4px;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     gap: 12px;
   }
 `;
@@ -86,12 +86,12 @@ export const DayBox = styled(Box)<DayBoxProps>`
       color: ${theme.palette.text.primary};
     }
 
-    @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
       height: 70px;
       padding: ${theme.spacing(0.5)};
     }
 
-    @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
       height: 120px;
       padding: ${theme.spacing(2)};
     }
@@ -107,13 +107,13 @@ export const WeekNavigation = styled(Box)`
   justify-content: space-between;
   margin-bottom: 1rem;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     flex-direction: column;
     gap: 0.5rem;
     align-items: flex-start;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     gap: 1rem;
     margin-bottom: 2rem;
   }

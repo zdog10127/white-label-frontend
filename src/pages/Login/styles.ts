@@ -14,7 +14,7 @@ export const BackgroundContainer = styled(Container)`
   align-items: center;
   padding: 0 16px;
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     padding: 0 48px;
   }
 `;
@@ -27,13 +27,13 @@ export const LoginPaper = styled(Paper)`
   border-color: gray;
   border-radius: 16px;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     width: 100%;
     padding: 40px 24px;
     margin-top: 40px;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     width: 400px;
     padding: 96px;
     margin-top: 96px;
@@ -47,13 +47,13 @@ export const LinksBox = styled(Box)`
   width: 100%;
   margin-top: 80px;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     flex-direction: column;
     gap: 16px;
     margin-top: 40px;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     margin-top: 96px;
     gap: 24px;
   }
