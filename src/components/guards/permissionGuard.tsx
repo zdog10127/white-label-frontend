@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../shared/contexts/AuthContext";
-import AccessDeniedModal from "../mod/AcessDanied-Modal/index";
+import AccessDeniedModal from "../../components/mod/AccessDenied-Modal/index";
 
 const ROUTE_PERMISSIONS = {
   "/home": ["Administrador", "Usuário", "Cliente"],
@@ -36,18 +36,18 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
 
   const hasPermission = () => {
     if (!user || !user.permissions) {
-      console.log("❌ Usuário sem permissões:", user);
+      console.warn("❌ Usuário sem permissões:", user);
       return false;
     }
 
-    console.log("📋 Permissões do usuário:", user.permissions);
-    console.log("🔑 Permissões necessárias:", requiredPermissions);
+    console.warn("📋 Permissões do usuário:", user.permissions);
+    console.warn("🔑 Permissões necessárias:", requiredPermissions);
 
     const hasAccess = user.permissions.some((permission) =>
       requiredPermissions.includes(permission)
     );
 
-    console.log("✅ Tem acesso?", hasAccess);
+    console.warn("✅ Tem acesso?", hasAccess);
     return hasAccess;
   };
 

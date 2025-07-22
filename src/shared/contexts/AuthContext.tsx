@@ -28,7 +28,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
         const users = await response.json();
         setUsersDB(users);
-        console.log("Usuários carregados com sucesso:", users.length);
+        console.warn("Usuários carregados com sucesso:", users.length);
       } catch (error) {
         console.error("Erro ao carregar usuários:", error);
         setUsersDB([]);
@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = (email: string, password: string): boolean => {
     if (usersDB.length === 0) {
-      console.log("Base de usuários não carregada");
+      console.warn("Base de usuários não carregada");
       return false;
     }
 
@@ -59,7 +59,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     if (matchedUser) {
       if (matchedUser.canLogin === false) {
-        console.log("Usuário não tem permissão para fazer login");
+        console.warn("Usuário não tem permissão para fazer login");
         return false;
       }
 
@@ -87,11 +87,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
-      console.log("Login realizado com sucesso:", userData);
+      console.warn("Login realizado com sucesso:", userData);
       return true;
     }
 
-    console.log("Credenciais inválidas ou usuário sem permissão de login");
+    console.warn("Credenciais inválidas ou usuário sem permissão de login");
     return false;
   };
 

@@ -13,7 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import CardBase from "./CardBase";
 import { Task } from "../../types/taskCard";
-import CreateTaskModal from "../../components/mod/taskCard-Modal/taskCardModal";
+import CreateTaskModal from "../../components/mod/taskCard-Modal/TaskCardModal";
 
 export default function TasksCard() {
   const theme = useTheme();

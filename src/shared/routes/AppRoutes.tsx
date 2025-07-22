@@ -60,11 +60,11 @@ export const AppRoutes = () => {
 
   useEffect(() => {
     if (loading || !user) {
-      console.log("Aguardando carregamento do usuário...", { loading, user });
+      console.warn("Aguardando carregamento do usuário...", { loading, user });
       return;
     }
 
-    console.log("Configurando drawer para usuário:", user.permissions);
+    console.warn("Configurando drawer para usuário:", user.permissions);
 
     const allDrawerOptions = [
       {
@@ -112,11 +112,11 @@ export const AppRoutes = () => {
 
     const allowedOptions = allDrawerOptions.filter((option) => {
       const canAccess = canAccessRoute(option.path);
-      console.log(`Pode acessar ${option.path}?`, canAccess);
+      console.warn(`Pode acessar ${option.path}?`, canAccess);
       return canAccess;
     });
 
-    console.log("Opções permitidas:", allowedOptions);
+    console.warn("Opções permitidas:", allowedOptions);
     setDrawerOptions(allowedOptions);
   }, [setDrawerOptions, canAccessRoute, user, loading]);
 

@@ -1,4 +1,4 @@
-import { styled } from "@mui/material/styles";
+import styled from "styled-components";
 import {
   Dialog,
   DialogTitle,
@@ -12,197 +12,230 @@ import {
   Chip,
 } from "@mui/material";
 
-export const StyledDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialog-paper": {
-    borderRadius: "16px",
-    maxWidth: "700px",
-    width: "100%",
-    margin: "16px",
-    boxShadow:
+export const StyledDialog = styled(Dialog)`
+  .MuiDialog-paper {
+    border-radius: 16px;
+    max-width: 700px;
+    width: 100%;
+    margin: 16px;
+    box-shadow: ${({ theme }) =>
       theme.palette.mode === "dark"
-        ? "0 24px 48px rgba(0,0,0,0.5)"
-        : "0 24px 48px rgba(0,0,0,0.15)",
-    [theme.breakpoints.down("sm")]: {
-      margin: "8px",
-      borderRadius: "12px",
-    },
-  },
-}));
+        ? "0 24px 48px rgba(0,0,0,0.7)"
+        : "0 24px 48px rgba(0,0,0,0.15)"};
 
-export const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
-  background:
+    ${({ theme }) => theme.breakpoints.down("sm")} {
+      margin: 8px;
+      border-radius: 12px;
+    }
+  }
+`;
+
+export const StyledDialogTitle = styled(DialogTitle)`
+  background: ${({ theme }) =>
     theme.palette.mode === "dark"
-      ? `linear-gradient(135deg, ${theme.palette.grey[800]} 0%, ${theme.palette.grey[900]} 100%)`
-      : `linear-gradient(135deg, ${theme.palette.grey[50]} 0%, ${theme.palette.grey[100]} 100%)`,
-  borderBottom: `2px solid ${theme.palette.divider}`,
-  padding: "24px 32px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  [theme.breakpoints.down("sm")]: {
-    padding: "20px 24px",
-  },
-}));
+      ? `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.background.default} 100%)`
+      : `linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%)`};
+  border-bottom: 2px solid
+    ${({ theme }) =>
+      theme.palette.mode === "dark" ? theme.palette.divider : "#e0e0e0"};
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-export const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
-  padding: "32px",
-  background: theme.palette.background.default,
-  [theme.breakpoints.down("sm")]: {
-    padding: "24px",
-  },
-}));
+  ${({ theme }) => theme.breakpoints.down("sm")} {
+    padding: 20px 24px;
+  }
+`;
 
-export const StyledTextField = styled(TextField)(({ theme }) => ({
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "12px",
-    backgroundColor: theme.palette.background.paper,
-    transition: "all 0.2s ease",
-    "&:hover": {
-      boxShadow:
+export const StyledDialogContent = styled(DialogContent)`
+  padding: 32px;
+  background: ${({ theme }) => theme.palette.background.paper};
+
+  ${({ theme }) => theme.breakpoints.down("sm")} {
+    padding: 24px;
+  }
+`;
+
+export const StyledTextField = styled(TextField)`
+  .MuiOutlinedInput-root {
+    border-radius: 12px;
+    background-color: ${({ theme }) => theme.palette.background.paper};
+    transition: all 0.2s ease;
+
+    &:hover {
+      box-shadow: ${({ theme }) =>
         theme.palette.mode === "dark"
-          ? "0 4px 12px rgba(0,0,0,0.3)"
-          : "0 4px 12px rgba(0,0,0,0.08)",
-    },
-    "&.Mui-focused": {
-      boxShadow: `0 0 0 2px ${theme.palette.primary.main}20`,
-    },
-  },
-}));
+          ? "0 4px 12px rgba(0, 0, 0, 0.6)"
+          : "0 4px 12px rgba(0, 0, 0, 0.08)"};
+    }
 
-export const TableContainer = styled(Box)(({ theme }) => ({
-  maxHeight: "400px",
-  overflowY: "auto",
-  marginTop: "20px",
-  border: `1px solid ${theme.palette.divider}`,
-  borderRadius: "12px",
-  backgroundColor: theme.palette.background.paper,
-  boxShadow:
+    &.Mui-focused {
+      box-shadow: 0 0 0 2px ${({ theme }) => theme.palette.primary.main}20;
+    }
+  }
+`;
+
+export const TableContainer = styled(Box)`
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 20px;
+  border: 1px solid
+    ${({ theme }) =>
+      theme.palette.mode === "dark" ? theme.palette.divider : "#e0e0e0"};
+  border-radius: 12px;
+  background-color: ${({ theme }) => theme.palette.background.paper};
+  box-shadow: ${({ theme }) =>
     theme.palette.mode === "dark"
-      ? "0 4px 16px rgba(0,0,0,0.3)"
-      : "0 4px 16px rgba(0,0,0,0.08)",
-  "&::-webkit-scrollbar": {
-    width: "6px",
-  },
-  "&::-webkit-scrollbar-track": {
-    background: theme.palette.action.hover,
-  },
-  "&::-webkit-scrollbar-thumb": {
-    background: theme.palette.text.disabled,
-    borderRadius: "3px",
-  },
-}));
+      ? "0 4px 16px rgba(0, 0, 0, 0.7)"
+      : "0 4px 16px rgba(0, 0, 0, 0.08)"};
 
-export const StyledTableHead = styled(TableHead)(({ theme }) => ({
-  position: "sticky",
-  top: 0,
-  zIndex: 1,
-  background:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[800]
-      : theme.palette.grey[100],
-  "& .MuiTableCell-root": {
-    fontWeight: 700,
-    fontSize: "14px",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
-    color: theme.palette.text.primary,
-    borderBottom: `2px solid ${theme.palette.divider}`,
-    padding: "20px 24px",
-  },
-}));
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
 
-export const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  transition: "all 0.2s ease",
-  "&:hover": {
-    backgroundColor: theme.palette.action.hover,
-    transform: "scale(1.002)",
-  },
-  "& .MuiTableCell-root": {
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    padding: "16px 24px",
-  },
-}));
-
-export const UserInfo = styled(Box)(() => ({
-  display: "flex",
-  alignItems: "center",
-  gap: "12px",
-}));
-
-export const UserDetails = styled(Box)(() => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "4px",
-  flex: 1,
-}));
-
-export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
-  padding: "24px 32px",
-  backgroundColor: theme.palette.background.paper,
-  borderTop: `1px solid ${theme.palette.divider}`,
-  gap: "12px",
-  [theme.breakpoints.down("sm")]: {
-    padding: "20px 24px",
-    flexDirection: "column-reverse",
-    "& > :not(:first-of-type)": {
-      marginLeft: 0,
-      marginBottom: "8px",
-    },
-  },
-}));
-
-export const StyledButton = styled(Button)(({ theme }) => ({
-  borderRadius: "8px",
-  fontWeight: 600,
-  padding: "12px 24px",
-  textTransform: "none",
-  fontSize: "14px",
-  transition: "all 0.2s ease",
-  "&:hover": {
-    transform: "translateY(-1px)",
-    boxShadow:
+  &::-webkit-scrollbar-track {
+    background: ${({ theme }) =>
       theme.palette.mode === "dark"
-        ? "0 4px 12px rgba(0,0,0,0.4)"
-        : "0 4px 12px rgba(0,0,0,0.15)",
-  },
-}));
+        ? theme.palette.background.default
+        : "#f0f0f0"};
+  }
 
-export const HeaderInfo = styled(Box)(() => ({
-  display: "flex",
-  alignItems: "center",
-  gap: "12px",
-  flex: 1,
-}));
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) =>
+      theme.palette.mode === "dark" ? "#555" : "#bdbdbd"};
+    border-radius: 3px;
+  }
+`;
 
-export const CloseButton = styled(Button)(({ theme }) => ({
-  minWidth: "40px",
-  width: "40px",
-  height: "40px",
-  padding: 0,
-  borderRadius: "50%",
-  color: theme.palette.text.secondary,
-  "&:hover": {
-    backgroundColor: theme.palette.action.hover,
-    color: theme.palette.text.primary,
-  },
-}));
+export const StyledTableHead = styled(TableHead)`
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: ${({ theme }) =>
+    theme.palette.mode === "dark"
+      ? theme.palette.background.default
+      : "#f5f5f5"};
 
-export const ResultsChip = styled(Chip)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main + "20",
-  color: theme.palette.primary.main,
-  fontWeight: 600,
-  "& .MuiChip-label": {
-    fontSize: "12px",
-  },
-}));
+  .MuiTableCell-root {
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: ${({ theme }) => theme.palette.text.primary};
+    border-bottom: 2px solid ${({ theme }) => theme.palette.divider};
+    padding: 20px 24px;
+  }
+`;
 
-export const EmptyState = styled(Box)(({ theme }) => ({
-  textAlign: "center",
-  padding: "60px 20px",
-  color: theme.palette.text.secondary,
-  "& .icon": {
-    fontSize: "48px",
-    marginBottom: "16px",
-    opacity: 0.7,
-  },
-}));
+export const StyledTableRow = styled(TableRow)`
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: ${({ theme }) =>
+      theme.palette.mode === "dark" ? theme.palette.action.hover : "#f5f5f5"};
+    transform: scale(1.002);
+  }
+
+  .MuiTableCell-root {
+    border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
+    padding: 16px 24px;
+  }
+`;
+
+export const UserInfo = styled(Box)`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const UserDetails = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+`;
+
+export const StyledDialogActions = styled(DialogActions)`
+  padding: 24px 32px;
+  background-color: ${({ theme }) => theme.palette.background.paper};
+  border-top: 1px solid ${({ theme }) => theme.palette.divider};
+  gap: 12px;
+
+  ${({ theme }) => theme.breakpoints.down("sm")} {
+    padding: 20px 24px;
+    flex-direction: column-reverse;
+
+    & > :not(:first-of-type) {
+      margin-left: 0;
+      margin-bottom: 8px;
+    }
+  }
+`;
+
+export const StyledButton = styled(Button)`
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 12px 24px;
+  text-transform: none;
+  font-size: 14px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: ${({ theme }) =>
+      theme.palette.mode === "dark"
+        ? "0 4px 12px rgba(0,0,0,0.7)"
+        : "0 4px 12px rgba(0,0,0,0.15)"};
+  }
+`;
+
+export const HeaderInfo = styled(Box)`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+`;
+
+export const CloseButton = styled(Button)`
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  color: ${({ theme }) =>
+    theme.palette.mode === "dark" ? theme.palette.text.secondary : "#757575"};
+
+  &:hover {
+    background-color: ${({ theme }) =>
+      theme.palette.mode === "dark" ? theme.palette.action.hover : "#f0f0f0"};
+    color: ${({ theme }) =>
+      theme.palette.mode === "dark" ? theme.palette.text.primary : "#212121"};
+  }
+`;
+
+export const ResultsChip = styled(Chip)`
+  background-color: ${({ theme }) =>
+    theme.palette.mode === "dark"
+      ? "rgba(25, 118, 210, 0.25)"
+      : "rgba(25, 118, 210, 0.125)"};
+  color: ${({ theme }) => theme.palette.primary.main};
+  font-weight: 600;
+
+  .MuiChip-label {
+    font-size: 12px;
+  }
+`;
+
+export const EmptyState = styled(Box)`
+  text-align: center;
+  padding: 60px 20px;
+  color: ${({ theme }) =>
+    theme.palette.mode === "dark" ? theme.palette.text.secondary : "#757575"};
+
+  .icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+`;

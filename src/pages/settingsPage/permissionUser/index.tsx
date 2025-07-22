@@ -32,7 +32,7 @@ const PermissionUsers = () => {
         user.permissions?.includes(decodedPermission)
       );
       setUsersWithPermission(filtered);
-      console.log("Usuários com permissão:", filtered);
+      console.warn("Usuários com permissão:", filtered);
     }
   }, [allUsers, decodedPermission, loading]);
 
@@ -46,12 +46,12 @@ const PermissionUsers = () => {
     }));
 
     setUsersWithPermission((prev) => [...prev, ...updatedUsers]);
-    console.log("Usuários adicionados:", updatedUsers);
+    console.warn("Usuários adicionados:", updatedUsers);
   };
 
   const handleRemoveUser = (userId: number) => {
     setUsersWithPermission((prev) => prev.filter((u) => u.id !== userId));
-    console.log("Usuário removido:", userId);
+    console.warn("Usuário removido:", userId);
   };
 
   const existingUserIds = usersWithPermission.map((u) => u.id);

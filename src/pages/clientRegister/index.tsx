@@ -187,7 +187,7 @@ const NewClientRegister: React.FC = () => {
     setErrors(validationErrors);
     const hasError = Object.keys(validationErrors).length > 0;
     if (!hasError) {
-      console.log("Dados do novo cliente:", form);
+      console.warn("Dados do novo cliente:", form);
       alert("Cliente cadastrado com sucesso!");
 
       setForm(initialFormValues);
