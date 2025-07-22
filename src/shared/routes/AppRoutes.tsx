@@ -29,6 +29,7 @@ import SettingsPage from "../../pages/settingsPage";
 import MyClinicPage from "../../pages/myClinicPage";
 import ChangeEmail from "../../pages/changeEmail";
 import ChangePassword from "../../pages/changePassword";
+import PermissionUsers from "../../pages/settingsPage/permissionUser/index";
 
 function ChangeEmailWrapper() {
   const navigate = useNavigate();
@@ -115,6 +116,11 @@ export const AppRoutes = () => {
           <Route path="/relatorios" element={<ReportPage />} />
           <Route path="/marketing" element={<MarketingPage />} />
           <Route path="/configuracao" element={<SettingsPage />} />
+          <Route
+            path="/permissions/:permissionName"
+            element={<PermissionUsers />}
+          />
+
           <Route path="/minhaclinica" element={<MyClinicPage />} />
         </Route>
       </Route>

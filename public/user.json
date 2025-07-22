@@ -1,0 +1,177 @@
+[
+  {
+    "id": 1,
+    "name": "Ana Beatriz Lima",
+    "cpf": "123.456.789-00",
+    "email": "ana.lima@empresa.com",
+    "permissions": ["Administrador do Sistema"]
+  },
+  {
+    "id": 2,
+    "name": "João Pedro Martins",
+    "cpf": "987.654.321-11",
+    "email": "joao.martins@empresa.com",
+    "permissions": ["Gestor de eventos"]
+  },
+  {
+    "id": 3,
+    "name": "Camila Ferreira",
+    "cpf": "456.123.789-22",
+    "email": "camila.ferreira@empresa.com",
+    "permissions": ["Usuário de campo"]
+  },
+  {
+    "id": 4,
+    "name": "Ricardo Oliveira",
+    "cpf": "321.987.654-33",
+    "email": "ricardo.oliveira@empresa.com",
+    "permissions": ["Gestor de eventos", "Usuário de campo"]
+  },
+  {
+    "id": 5,
+    "name": "Tatiane Souza",
+    "cpf": "654.321.987-44",
+    "email": "tatiane.souza@empresa.com",
+    "permissions": ["Administrador do Sistema"]
+  },
+  {
+    "id": 6,
+    "name": "Gabriel Santos Silva",
+    "cpf": "789.123.456-55",
+    "email": "gabriel.santos@empresa.com",
+    "permissions": ["Moderador de conteúdo", "Suporte técnico"]
+  },
+  {
+    "id": 7,
+    "name": "Mariana Costa Alves",
+    "cpf": "159.753.486-66",
+    "email": "mariana.costa@empresa.com",
+    "permissions": ["Analista financeiro"]
+  },
+  {
+    "id": 8,
+    "name": "Felipe Rodrigues",
+    "cpf": "357.951.246-77",
+    "email": "felipe.rodrigues@empresa.com",
+    "permissions": ["Supervisor de equipe", "Gestor de eventos"]
+  },
+  {
+    "id": 9,
+    "name": "Larissa Barbosa",
+    "cpf": "852.741.963-88",
+    "email": "larissa.barbosa@empresa.com",
+    "permissions": ["Operador de sistema"]
+  },
+  {
+    "id": 10,
+    "name": "Rafael Mendes",
+    "cpf": "741.852.369-99",
+    "email": "rafael.mendes@empresa.com",
+    "permissions": ["Auditor interno", "Moderador de conteúdo"]
+  },
+  {
+    "id": 11,
+    "name": "Juliana Pereira",
+    "cpf": "963.258.147-10",
+    "email": "juliana.pereira@empresa.com",
+    "permissions": ["Gerente de projeto"]
+  },
+  {
+    "id": 12,
+    "name": "Carlos Eduardo",
+    "cpf": "147.369.258-21",
+    "email": "carlos.eduardo@empresa.com",
+    "permissions": ["Desenvolvedor", "Suporte técnico"]
+  },
+  {
+    "id": 13,
+    "name": "Amanda Silva",
+    "cpf": "258.147.369-32",
+    "email": "amanda.silva@empresa.com",
+    "permissions": ["Controller financeiro"]
+  },
+  {
+    "id": 14,
+    "name": "Bruno Henrique",
+    "cpf": "369.258.147-43",
+    "email": "bruno.henrique@empresa.com",
+    "permissions": ["Usuário de campo", "Operador de sistema"]
+  },
+  {
+    "id": 15,
+    "name": "Fernanda Gomes",
+    "cpf": "741.963.852-54",
+    "email": "fernanda.gomes@empresa.com",
+    "permissions": ["Supervisor de equipe"]
+  },
+  {
+    "id": 16,
+    "name": "Lucas Nascimento",
+    "cpf": "852.369.741-65",
+    "email": "lucas.nascimento@empresa.com",
+    "permissions": ["Analista financeiro", "Auditor interno"]
+  },
+  {
+    "id": 17,
+    "name": "Patrícia Rocha",
+    "cpf": "963.147.258-76",
+    "email": "patricia.rocha@empresa.com",
+    "permissions": ["Gerente de projeto", "Gestor de eventos"]
+  },
+  {
+    "id": 18,
+    "name": "Thiago Carvalho",
+    "cpf": "147.258.963-87",
+    "email": "thiago.carvalho@empresa.com",
+    "permissions": ["Desenvolvedor"]
+  },
+  {
+    "id": 19,
+    "name": "Priscila Andrade",
+    "cpf": "258.963.147-98",
+    "email": "priscila.andrade@empresa.com",
+    "permissions": ["Moderador de conteúdo"]
+  },
+  {
+    "id": 20,
+    "name": "Diego Ramos",
+    "cpf": "369.147.258-09",
+    "email": "diego.ramos@empresa.com",
+    "permissions": ["Suporte técnico", "Operador de sistema"]
+  },
+  {
+    "id": 21,
+    "name": "Vanessa Torres",
+    "cpf": "741.258.963-10",
+    "email": "vanessa.torres@empresa.com",
+    "permissions": ["Usuário de campo"]
+  },
+  {
+    "id": 22,
+    "name": "Rodrigo Azevedo",
+    "cpf": "852.147.369-21",
+    "email": "rodrigo.azevedo@empresa.com",
+    "permissions": ["Administrador do Sistema", "Desenvolvedor"]
+  },
+  {
+    "id": 23,
+    "name": "Beatriz Cunha",
+    "cpf": "963.369.741-32",
+    "email": "beatriz.cunha@empresa.com",
+    "permissions": ["Controller financeiro", "Analista financeiro"]
+  },
+  {
+    "id": 24,
+    "name": "Leandro Fonseca",
+    "cpf": "147.741.852-43",
+    "email": "leandro.fonseca@empresa.com",
+    "permissions": ["Supervisor de equipe", "Auditor interno"]
+  },
+  {
+    "id": 25,
+    "name": "Isabela Moreira",
+    "cpf": "258.852.963-54",
+    "email": "isabela.moreira@empresa.com",
+    "permissions": ["Gerente de projeto", "Moderador de conteúdo"]
+  }
+]
