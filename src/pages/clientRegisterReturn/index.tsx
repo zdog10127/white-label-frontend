@@ -234,9 +234,7 @@ const ClientRegister: React.FC = () => {
             age: calculatedAge.toString(),
           }));
         }
-      } catch (error) {
-        console.warn("Erro ao calcular idade:", error);
-      }
+      } catch (error) {}
     }
   }, [form.birth]);
 

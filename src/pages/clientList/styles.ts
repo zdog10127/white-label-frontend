@@ -16,11 +16,11 @@ export const Container = styled(Box)`
   border-radius: 12px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     padding: 16px;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     padding: 32px;
   }
 `;
@@ -30,11 +30,11 @@ export const HeaderTitle = styled(Typography)`
   font-weight: 700;
   color: ${({ theme }) => theme.palette.text.primary};
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     font-size: 1.3rem;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     font-size: 2rem;
   }
 `;
@@ -44,11 +44,11 @@ export const ButtonsStack = styled(Stack)`
   flex-wrap: wrap;
   gap: 16px;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     gap: 12px;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     gap: 24px;
   }
 `;
@@ -56,11 +56,11 @@ export const ButtonsStack = styled(Stack)`
 export const FiltersBox = styled(Box)`
   margin-bottom: 20px;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     margin-bottom: 14px;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     margin-bottom: 28px;
   }
 `;
@@ -70,11 +70,11 @@ export const StyledFormControl = styled(FormControl)`
   background: ${({ theme }) => theme.palette.background.default};
   border-radius: 8px;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     min-width: 100%;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     min-width: 220px;
   }
 `;
@@ -89,11 +89,11 @@ export const StyledTextField = styled(TextField)`
     border-radius: 8px;
   }
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     min-width: 100%;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     min-width: 320px;
   }
 `;
@@ -111,12 +111,12 @@ export const ActionsButton = styled(Button)`
     box-shadow: 0 4px 12px rgb(21 101 192 / 0.6);
   }
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     width: 100%;
     margin-right: 0;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     padding: 12px 28px;
   }
 `;
@@ -135,11 +135,11 @@ export const ActionsButtonDelete = styled(Button)`
     box-shadow: 0 4px 12px rgb(211 47 47 / 0.6);
   }
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     width: 100%;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     padding: 12px 28px;
   }
 `;
@@ -168,12 +168,12 @@ export const ConditionalButton = styled(Button)<{ $isPrimary?: boolean }>`
     cursor: not-allowed;
   `}
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     width: 100%;
     margin-right: 0;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     padding: 12px 28px;
   }
 `;
@@ -185,11 +185,11 @@ export const ThemedContainer = styled(Box)`
     theme.palette?.background?.default || "#fff"};
   box-shadow: 0 3px 12px rgb(0 0 0 / 0.05);
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     padding: 16px;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     padding: 32px;
   }
 `;
@@ -212,12 +212,12 @@ export const InteractiveButton = styled(Button)`
     transform: translateY(0);
   }
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     width: 100%;
     margin-right: 0;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     padding: 12px 28px;
   }
 `;
@@ -234,11 +234,11 @@ export const DefaultTextField = styled(TextField).attrs({
     border-radius: 8px;
   }
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     min-width: 100%;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     min-width: 360px;
   }
 `;
@@ -250,7 +250,7 @@ export const BaseButton = styled(Button)`
   transition: all 0.25s ease;
   text-transform: none;
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     padding: 12px 28px;
   }
 `;

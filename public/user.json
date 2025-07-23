@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "name": "Administrador",
+    "cpf": "123.456.789-00",
+    "email": "admin@example.com",
+    "password": "1234",
+    "permissions": ["Usuário"],
+    "firstName": "Ana Beatriz",
+    "lastName": "Lima",
+    "phone": "(11) 99999-1234",
+    "city": "São Paulo",
+    "state": "SP",
+    "occupation": "Administradora do Sistema",
+    "canLogin": true
+  },
+  {
+    "id": 2,
+    "name": "Jhonathan Enio Araujo Costa",
+    "cpf": "987.654.321-11",
+    "email": "jhonathancosta_dev@hotmail.com",
+    "password": "1234567890",
+    "permissions": ["Administrador"],
+    "firstName": "Jhonathan Costa",
+    "lastName": "Costa",
+    "phone": "(34) 98888-5678",
+    "city": "Uberlandia",
+    "state": "MG",
+    "occupation": "Desenvolvedor",
+    "canLogin": true
+  },
+  {
+    "id": 3,
+    "name": "Gabriel Teles",
+    "cpf": "456.123.789-22",
+    "email": "gabrielteles@example.com",
+    "password": "1234567890",
+    "permissions": ["Cliente"],
+    "firstName": "Gabriel",
+    "lastName": "Teles",
+    "phone": "(11) 97777-9012",
+    "city": "Belo Horizonte",
+    "state": "MG",
+    "occupation": "Desenvolvedor",
+    "canLogin": true
+  }
+]

@@ -29,7 +29,7 @@ import {
   ClientWithExtras,
   RawClient,
 } from "../../utils/adaptClient";
-import DeleteClientModal from "../../components/mod/deleteClientModal";
+import DeleteClientModal from "../../components/mod/deleteClient-Modal";
 
 import {
   Container,
@@ -285,7 +285,7 @@ const ClientList: React.FC = () => {
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-         labelRowsPerPage="Nova Pagina"
+        labelRowsPerPage="Proxima Pagina"
       />
 
       <DeleteClientModal

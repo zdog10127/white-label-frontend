@@ -15,8 +15,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import CardBase from "./CardBase";
-import EditSessionModal from "../mod/editSessionModal";
-import ClientInfoModal from "../mod/clientModalInfo";
+import EditSessionModal from "../mod/editSession-Modal/index";
+import ClientInfoModal from "../mod/clientInfo-Modal/clientModalInfo";
 import { ClientType } from "../../types/clientModalInfo";
 
 import clientDataJson from "../../components/data/clients.json";

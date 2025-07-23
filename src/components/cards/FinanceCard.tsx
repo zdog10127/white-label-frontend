@@ -44,7 +44,6 @@ export default function FinanceCard() {
       } catch (err) {
         setError("Erro ao carregar dados financeiros.");
         setLoading(false);
-        console.error(err);
       }
     };
 

@@ -4,11 +4,11 @@ import { device, max, min } from "../../constants/responsiveClient";
 export const PaperMain = styled.div`
   padding: 32px;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     padding: 16px;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     padding: 48px;
   }
 `;
@@ -20,7 +20,7 @@ export const ButtonBox = styled.div`
   justify-content: center;
   flex-wrap: wrap;
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     gap: 24px;
     margin-top: 32px;
   }
@@ -35,11 +35,11 @@ export const EditButton = styled.button`
   padding: 12px 0;
   cursor: pointer;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     width: 100%;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     min-width: 180px;
     padding: 16px 0;
   }
@@ -49,11 +49,11 @@ export const PaperAvatar = styled.div`
   padding: 24px;
   text-align: center;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     padding: 16px;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     padding: 32px;
   }
 `;
@@ -63,12 +63,12 @@ export const Avatar = styled.div`
   height: 100px;
   margin: 0 auto;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     width: 70px;
     height: 70px;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     width: 120px;
     height: 120px;
   }
@@ -88,11 +88,11 @@ export const LogoutButton = styled.button`
   padding: 10px 0;
   cursor: pointer;
 
-  @media ${max(device.mobile)} {
+  ${max(device.mobile)} {
     width: 100%;
   }
 
-  @media ${min(device.desktop)} {
+  ${min(device.desktop)} {
     padding: 14px 0;
   }
 `;

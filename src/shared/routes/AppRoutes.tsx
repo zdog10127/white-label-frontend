@@ -13,6 +13,11 @@ import {
 } from "@mui/icons-material";
 
 import { useAuth } from "../contexts/AuthContext";
+import {
+  PermissionGuard,
+  usePermissions,
+  ROUTE_PERMISSIONS,
+} from "../../components/guards/permissionGuard";
 
 import ProtectedRoute from "./PrivateRoute";
 import UserProfile from "../../pages/userPage";
@@ -29,6 +34,7 @@ import SettingsPage from "../../pages/settingsPage";
 import MyClinicPage from "../../pages/myClinicPage";
 import ChangeEmail from "../../pages/changeEmail";
 import ChangePassword from "../../pages/changePassword";
+import PermissionUsers from "../../pages/settingsPage/permissionUser/index";
 
 function ChangeEmailWrapper() {
   const navigate = useNavigate();
@@ -49,14 +55,20 @@ function ChangePasswordWrapper() {
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();
+  const { canAccessRoute } = usePermissions();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    setDrawerOptions([
+    if (loading || !user) {
+      return;
+    }
+
+    const allDrawerOptions = [
       {
         label: "Painel",
         path: "/home",
         icon: <PersonalVideo fontSize="large" />,
-        flexDirection: "column",
+        flexDirection: "column" as const,
       },
       {
         label: "Clientes",
@@ -93,8 +105,16 @@ export const AppRoutes = () => {
         path: "/minhaclinica",
         icon: <Apartment fontSize="large" />,
       },
-    ]);
-  }, [setDrawerOptions]);
+    ];
+
+    const allowedOptions = allDrawerOptions.filter((option) => {
+      const canAccess = canAccessRoute(option.path);
+
+      return canAccess;
+    });
+
+    setDrawerOptions(allowedOptions);
+  }, [setDrawerOptions, canAccessRoute, user, loading]);
 
   return (
     <Routes>
@@ -102,20 +122,175 @@ export const AppRoutes = () => {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<PrivateLayout />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/clientes" element={<ClientList />} />
-          <Route path="/agenda" element={<Agenda />} />
-          <Route path="/cadastro-usuario" element={<ClientRegisterReturn />} />
-          <Route path="/perfil" element={<UserProfile />} />
-          <Route path="/alterar-email" element={<ChangeEmailWrapper />} />
-          <Route path="/alterar-senha" element={<ChangePasswordWrapper />} />
-          <Route path="/clientes/novo" element={<ClientRegisterReturn />} />
+          <Route
+            path="/home"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/home"]}
+                routePath="/home"
+              >
+                <Home />
+              </PermissionGuard>
+            }
+          />
 
-          <Route path="/financeiro" element={<FinancialPage />} />
-          <Route path="/relatorios" element={<ReportPage />} />
-          <Route path="/marketing" element={<MarketingPage />} />
-          <Route path="/configuracao" element={<SettingsPage />} />
-          <Route path="/minhaclinica" element={<MyClinicPage />} />
+          <Route
+            path="/clientes"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/clientes"]}
+                routePath="/clientes"
+              >
+                <ClientList />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/agenda"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/agenda"]}
+                routePath="/agenda"
+              >
+                <Agenda />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/financeiro"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/financeiro"]}
+                routePath="/financeiro"
+              >
+                <FinancialPage />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/relatorios"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/relatorios"]}
+                routePath="/relatorios"
+              >
+                <ReportPage />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/marketing"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/marketing"]}
+                routePath="/marketing"
+              >
+                <MarketingPage />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/configuracao"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/configuracao"]}
+                routePath="/configuracao"
+              >
+                <SettingsPage />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/permissions/:permissionName"
+            element={
+              <PermissionGuard
+                requiredPermissions={
+                  ROUTE_PERMISSIONS["/permissions/:permissionName"]
+                }
+                routePath="/permissions/:permissionName"
+              >
+                <PermissionUsers />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/minhaclinica"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/minhaclinica"]}
+                routePath="/minhaclinica"
+              >
+                <MyClinicPage />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/perfil"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/perfil"]}
+                routePath="/perfil"
+              >
+                <UserProfile />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/alterar-email"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/alterar-email"]}
+                routePath="/alterar-email"
+              >
+                <ChangeEmailWrapper />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/alterar-senha"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/alterar-senha"]}
+                routePath="/alterar-senha"
+              >
+                <ChangePasswordWrapper />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/cadastro-usuario"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/cadastro-usuario"]}
+                routePath="/cadastro-usuario"
+              >
+                <ClientRegisterReturn />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/clientes/novo"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/clientes/novo"]}
+                routePath="/clientes/novo"
+              >
+                <ClientRegisterReturn />
+              </PermissionGuard>
+            }
+          />
         </Route>
       </Route>
 

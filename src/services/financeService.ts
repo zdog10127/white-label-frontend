@@ -8,7 +8,6 @@ export const fetchFinanceData = async (): Promise<FinanceData> => {
     const response = await axios.get<FinanceData>(API_URL);
     return response.data;
   } catch (error) {
-    console.error("Erro ao buscar dados financeiros:", error);
     throw new Error("Erro ao buscar dados financeiros.");
   }
 };

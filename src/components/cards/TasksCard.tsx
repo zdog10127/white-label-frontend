@@ -13,7 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import CardBase from "./CardBase";
 import { Task } from "../../types/taskCard";
-import CreateTaskModal from "../mod/taskCardModal";
+import CreateTaskModal from "../../components/mod/taskCard-Modal/TaskCardModal";
 
 export default function TasksCard() {
   const theme = useTheme();
@@ -49,12 +49,10 @@ export default function TasksCard() {
 
   const handleSaveTask = (title: string, id?: number) => {
     if (id) {
-
       setTasks((prev) =>
         prev.map((task) => (task.id === id ? { ...task, title } : task))
       );
     } else {
-
       const newTask: Task = {
         id: Date.now(),
         title,

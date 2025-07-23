@@ -9,15 +9,16 @@ import {
   Grid,
 } from "@mui/material";
 
-import { Props } from "../../types/clientModalInfo";
+import { Props } from "../../../types/clientModalInfo";
+import { StyledDialog, StyledDialogTitle, StyledDialogContent } from "./styles";
 
 const ClientInfoModal: React.FC<Props> = ({ open, client, onClose }) => {
   if (!client) return null;
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Informações do Cliente</DialogTitle>
-      <DialogContent dividers>
+    <StyledDialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <StyledDialogTitle>Informações do Cliente</StyledDialogTitle>
+      <StyledDialogContent dividers>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Typography>
@@ -65,13 +66,13 @@ const ClientInfoModal: React.FC<Props> = ({ open, client, onClose }) => {
             </Typography>
           </Grid>
         </Grid>
-      </DialogContent>
+      </StyledDialogContent>
       <DialogActions>
         <Button onClick={onClose} variant="contained" color="primary">
           Fechar
         </Button>
       </DialogActions>
-    </Dialog>
+    </StyledDialog>
   );
 };
 

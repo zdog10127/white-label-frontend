@@ -101,9 +101,7 @@ const NewClientRegister: React.FC = () => {
             age: calculatedAge.toString(),
           }));
         }
-      } catch (error) {
-        console.warn("Erro ao calcular idade:", error);
-      }
+      } catch (error) {}
     }
   }, [form.birth]);
 
@@ -187,7 +185,6 @@ const NewClientRegister: React.FC = () => {
     setErrors(validationErrors);
     const hasError = Object.keys(validationErrors).length > 0;
     if (!hasError) {
-      console.log("Dados do novo cliente:", form);
       alert("Cliente cadastrado com sucesso!");
 
       setForm(initialFormValues);

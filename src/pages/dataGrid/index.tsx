@@ -7,7 +7,7 @@ import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import AddIcon from "@mui/icons-material/Add";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import ScheduleModal from "../../components/mod/modal-Schedule/sheduleModal";
+import ScheduleModal from "../../components/mod/modal-Schedule";
 import clients from "../../components/data/clients.json";
 
 import {
