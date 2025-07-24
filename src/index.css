@@ -48,9 +48,11 @@ button {
         color: #213547;
         background-color: #ffffff;
     }
+
     a:hover {
         color: #747bff;
     }
+
     button {
         background-color: #f9f9f9;
     }
@@ -63,8 +65,7 @@ body,
 }
 
 .Booking-Login-component {
-    background: url(../src/assets/BookingLogin.png) no-repeat center center
-        fixed;
+    background: url(../src/assets/BookingLogin.png) no-repeat center center fixed;
     background-size: cover;
 }
 

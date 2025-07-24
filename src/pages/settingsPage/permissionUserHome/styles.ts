@@ -1,18 +1,24 @@
 import styled from "styled-components";
-import { device, max, min } from "../../constants/responsiveClient";
+import { device, max, min } from "../../../constants/responsiveClient";
 
 export const Container = styled.div`
   padding: 40px;
   background-color: ${({ theme }) => theme.palette.background.default};
   min-height: 100vh;
-  width: 100%;
+  width: calc(100% - 260px);
+  margin-left: 260px;
+  box-sizing: border-box;
 
   ${max(device.mobile)} {
     padding: 20px;
+    margin-left: 0;
+    width: 100%;
   }
 
   ${min(device.desktop)} {
     padding: 48px;
+    margin-left: 260px;
+    width: calc(100% - 260px);
   }
 `;
 
@@ -148,6 +154,7 @@ export const TableWrapper = styled.div`
     ${({ theme }) =>
       theme.palette.mode === "dark" ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.08)"};
   overflow-x: auto;
+  width: 100%;
 
   ${max(device.mobile)} {
     border-radius: 8px;
@@ -170,6 +177,7 @@ export const Table = styled.table`
   border-spacing: 0;
   background-color: ${({ theme }) => theme.palette.background.paper};
   min-width: 600px;
+  table-layout: auto;
 
   ${max(device.mobile)} {
     font-size: 12px;
@@ -200,14 +208,27 @@ export const TableHead = styled.th`
     min-width: 300px;
   }
 
+  &:last-child {
+    width: 80px;
+    text-align: center;
+  }
+
   ${max(device.mobile)} {
     padding: 16px 12px;
     font-size: 11px;
+
+    &:last-child {
+      width: 60px;
+    }
   }
 
   ${min(device.desktop)} {
     font-size: 14px;
     padding: 24px 20px;
+
+    &:last-child {
+      width: 100px;
+    }
   }
 `;
 
@@ -230,14 +251,27 @@ export const TableCell = styled.td`
   color: ${({ theme }) => theme.palette.text.primary};
   vertical-align: middle;
 
+  &:last-child {
+    text-align: center;
+    padding: 16px 8px;
+  }
+
   ${max(device.mobile)} {
     font-size: 12px;
     padding: 16px 12px;
+
+    &:last-child {
+      padding: 12px 6px;
+    }
   }
 
   ${min(device.desktop)} {
     font-size: 15px;
     padding: 24px 20px;
+
+    &:last-child {
+      padding: 20px 12px;
+    }
   }
 `;
 
@@ -318,26 +352,51 @@ export const UserCountBadge = styled.span`
 `;
 
 export const ActionButton = styled.button`
-  background: none;
-  border: none;
+  background: ${({ theme }) => theme.palette.background.paper};
+  border: 1px solid ${({ theme }) => theme.palette.divider};
   padding: 12px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   color: ${({ theme }) => theme.palette.text.secondary};
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  position: relative;
+  z-index: 1;
 
   &:hover {
     color: ${({ theme }) => theme.palette.primary.main};
-    background-color: ${({ theme }) => theme.palette.action.hover};
-    transform: scale(1.1);
+    background-color: ${({ theme }) => theme.palette.primary.main}08;
+    border-color: ${({ theme }) => theme.palette.primary.main};
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px ${({ theme }) => theme.palette.primary.main}20;
   }
 
   &:active {
-    transform: scale(0.95);
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: ${({ theme }) => theme.palette.action.disabledBackground};
+    border-color: ${({ theme }) => theme.palette.divider};
+
+    &:hover {
+      transform: none;
+      background-color: ${({ theme }) =>
+        theme.palette.action.disabledBackground};
+      border-color: ${({ theme }) => theme.palette.divider};
+      box-shadow: none;
+    }
   }
 
   svg {
     font-size: 20px;
+    display: block;
 
     ${max(device.mobile)} {
       font-size: 18px;
@@ -349,11 +408,15 @@ export const ActionButton = styled.button`
   }
 
   ${max(device.mobile)} {
-    padding: 8px;
+    padding: 10px;
+    min-width: 40px;
+    min-height: 40px;
   }
 
   ${min(device.desktop)} {
     padding: 14px;
+    min-width: 48px;
+    min-height: 48px;
   }
 `;
 
