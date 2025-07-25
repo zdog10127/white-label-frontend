@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useDrawerContext } from "../contexts/DrawerContext";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import {
   Apartment,
   Article,
@@ -25,16 +25,18 @@ import Login from "../../pages/Login";
 import Home from "../../pages/Home";
 import ClientList from "../../pages/clientList";
 import ClientRegisterReturn from "../../pages/clientRegisterReturn";
+import NewClientRegister from "../../pages/clientRegister";
 import PrivateLayout from "../layouts/PrivateLayout";
 import Agenda from "../../pages/schedule";
 import FinancialPage from "../../pages/financialPage";
 import ReportPage from "../../pages/reportPage";
 import MarketingPage from "../../pages/marketingPage";
-import SettingsPage from "../../pages/settingsPage";
+import Configuracoes from "../../pages/settingsPage/settingsHome";
 import MyClinicPage from "../../pages/myClinicPage";
 import ChangeEmail from "../../pages/changeEmail";
 import ChangePassword from "../../pages/changePassword";
-import PermissionUsers from "../../pages/settingsPage/permissionUser/index";
+import PermissionUsers from "../../pages/settingsPage/permissionUserAdd";
+import PermissionList from "../../pages/settingsPage/permissionUserHome";
 
 function ChangeEmailWrapper() {
   const navigate = useNavigate();
@@ -58,12 +60,8 @@ export const AppRoutes = () => {
   const { canAccessRoute } = usePermissions();
   const { user, loading } = useAuth();
 
-  useEffect(() => {
-    if (loading || !user) {
-      return;
-    }
-
-    const allDrawerOptions = [
+  const allDrawerOptions = useMemo(
+    () => [
       {
         label: "Painel",
         path: "/home",
@@ -105,16 +103,21 @@ export const AppRoutes = () => {
         path: "/minhaclinica",
         icon: <Apartment fontSize="large" />,
       },
-    ];
+    ],
+    []
+  );
 
-    const allowedOptions = allDrawerOptions.filter((option) => {
-      const canAccess = canAccessRoute(option.path);
+  const allowedOptions = useMemo(() => {
+    if (loading || !user) return [];
 
-      return canAccess;
-    });
+    return allDrawerOptions.filter((option) => canAccessRoute(option.path));
+  }, [allDrawerOptions, canAccessRoute, user, loading]);
+
+  useEffect(() => {
+    if (loading || !user) return;
 
     setDrawerOptions(allowedOptions);
-  }, [setDrawerOptions, canAccessRoute, user, loading]);
+  }, [setDrawerOptions, allowedOptions, user, loading]);
 
   return (
     <Routes>
@@ -142,6 +145,30 @@ export const AppRoutes = () => {
                 routePath="/clientes"
               >
                 <ClientList />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/clientes/novo"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/clientes/novo"]}
+                routePath="/clientes/novo"
+              >
+                <NewClientRegister />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/clientes/editar"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/clientes/novo"]}
+                routePath="/clientes/editar"
+              >
+                <ClientRegisterReturn />
               </PermissionGuard>
             }
           />
@@ -190,32 +217,6 @@ export const AppRoutes = () => {
                 routePath="/marketing"
               >
                 <MarketingPage />
-              </PermissionGuard>
-            }
-          />
-
-          <Route
-            path="/configuracao"
-            element={
-              <PermissionGuard
-                requiredPermissions={ROUTE_PERMISSIONS["/configuracao"]}
-                routePath="/configuracao"
-              >
-                <SettingsPage />
-              </PermissionGuard>
-            }
-          />
-
-          <Route
-            path="/permissions/:permissionName"
-            element={
-              <PermissionGuard
-                requiredPermissions={
-                  ROUTE_PERMISSIONS["/permissions/:permissionName"]
-                }
-                routePath="/permissions/:permissionName"
-              >
-                <PermissionUsers />
               </PermissionGuard>
             }
           />
@@ -275,19 +276,68 @@ export const AppRoutes = () => {
                 requiredPermissions={ROUTE_PERMISSIONS["/cadastro-usuario"]}
                 routePath="/cadastro-usuario"
               >
-                <ClientRegisterReturn />
+                <NewClientRegister />
               </PermissionGuard>
             }
           />
 
           <Route
-            path="/clientes/novo"
+            path="/permissions/:permissionName"
             element={
               <PermissionGuard
-                requiredPermissions={ROUTE_PERMISSIONS["/clientes/novo"]}
-                routePath="/clientes/novo"
+                requiredPermissions={
+                  ROUTE_PERMISSIONS["/permissions/:permissionName"]
+                }
+                routePath="/permissions/:permissionName"
               >
-                <ClientRegisterReturn />
+                <PermissionUsers />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/configuracao"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/configuracao"]}
+                routePath="/configuracao"
+              >
+                <Configuracoes />
+              </PermissionGuard>
+            }
+          >
+            <Route
+              index
+              element={<div>Selecione uma opção do menu lateral</div>}
+            />
+            <Route path="usuarios" element={<div>Usuários</div>} />
+            <Route path="documentos" element={<div>Documentos</div>} />
+            <Route path="formularios" element={<div>Formulários</div>} />
+            <Route path="anamnese" element={<div>Anamnese</div>} />
+            <Route path="agenda" element={<div>Agenda e Salas</div>} />
+            <Route path="pacotes" element={<div>Pacotes</div>} />
+            <Route path="convenios" element={<div>Convênios</div>} />
+            <Route path="pagamentos" element={<div>Pagamentos</div>} />
+            <Route
+              path="notificacoes-clientes"
+              element={<div>Notificações para Clientes</div>}
+            />
+            <Route
+              path="notificacoes-profissionais"
+              element={<div>Notificações para Profissionais</div>}
+            />
+          </Route>
+
+          <Route
+            path="/configuracao/permissoes"
+            element={
+              <PermissionGuard
+                requiredPermissions={
+                  ROUTE_PERMISSIONS["/configuracao/permissoes"]
+                }
+                routePath="/configuracao/permissoes"
+              >
+                <PermissionList />
               </PermissionGuard>
             }
           />

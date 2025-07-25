@@ -16,12 +16,12 @@ export const Container = styled.div`
 export const ContentBox = styled.div`
   flex: 1;
   padding: 40px;
-  margin-left: 220px;
-  margin-right: auto;
   max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
 
   ${max(device.mobile)} {
-    padding: 24px 16px;
+    padding: 24px;
     margin-left: 0;
   }
 
@@ -34,10 +34,10 @@ export const ContentBox = styled.div`
 export const Title = styled.h2`
   margin-bottom: 32px;
   font-weight: 600;
-  color: #333;
+  color: ${({ theme }) => theme.palette.text.primary};
 
   ${max(device.mobile)} {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   ${min(device.desktop)} {
@@ -48,10 +48,10 @@ export const Title = styled.h2`
 export const SectionTitle = styled.h3`
   margin-bottom: 16px;
   font-weight: 600;
-  color: #444;
+  color: ${({ theme }) => theme.palette.text.primary};
 
   ${max(device.mobile)} {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
   }
 
   ${min(device.desktop)} {
@@ -74,8 +74,7 @@ export const FormControlLabelWrapper = styled.div`
 export const FormHelperText = styled.p`
   margin-top: 4px;
   margin-left: 12px;
-  font-size: 0.95rem;
-  color: #666;
+  color: ${({ theme }) => theme.palette.text.secondary};
 
   ${max(device.mobile)} {
     font-size: 0.85rem;
@@ -90,7 +89,7 @@ export const GridWithMarginBottom = styled.div`
   margin-bottom: 80px;
 
   ${max(device.mobile)} {
-    margin-bottom: 40px;
+    margin-bottom: 48px;
   }
 
   ${min(device.desktop)} {
@@ -98,11 +97,12 @@ export const GridWithMarginBottom = styled.div`
   }
 `;
 
-export const SectionDivider = styled.div`
-  height: 1px;
-  background-color: #e0e0e0;
+export const SectionDivider = styled.hr`
   margin-top: 16px;
   margin-bottom: 16px;
+  border: none;
+  height: 1px;
+  background-color: ${({ theme }) => theme.palette.divider};
 
   ${max(device.mobile)} {
     margin-top: 12px;
@@ -127,7 +127,7 @@ export const ButtonContainer = styled.div`
   }
 
   ${min(device.desktop)} {
-    gap: 32px;
+    gap: 24px;
   }
 `;
 
@@ -151,7 +151,7 @@ export const PersonalInfoSwitchWrapper = styled.div`
 export const ErrorText = styled.p`
   margin-top: 4px;
   margin-left: 12px;
-  color: #d32f2f;
+  color: ${({ theme }) => theme.palette.error.main};
 
   ${max(device.mobile)} {
     font-size: 0.85rem;

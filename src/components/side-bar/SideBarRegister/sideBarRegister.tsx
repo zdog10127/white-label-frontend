@@ -1,14 +1,14 @@
 import React from "react";
 import {
-  Box,
+  Avatar,
+  Divider,
   List,
   ListItemButton,
-  ListItemText,
   ListItemIcon,
-  Divider,
-  Avatar,
-  Typography,
+  ListItemText,
   Tooltip,
+  Typography,
+  useTheme,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PersonIcon from "@mui/icons-material/Person";
@@ -16,7 +16,12 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { useTheme } from "@mui/material/styles";
+import {
+  SidebarContainer,
+  SidebarHeader,
+  StyledListItemButton,
+  StyledListItemIcon,
+} from "./styles";
 
 type Props = {
   onSelect: (section: string) => void;
@@ -44,34 +49,18 @@ const SideBarRegister: React.FC<Props> = ({
   ];
 
   return (
-    <Box
-      width={240}
-      height="100vh"
-      position="fixed"
-      sx={{
-        bgcolor: theme.palette.background.paper,
-        color: theme.palette.text.primary,
-        boxShadow: 3,
-        borderRight: `1px solid ${theme.palette.divider}`,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        transition: "all 0.3s ease",
-        "&:hover": {
-          bgcolor: isDarkMode ? "#2a2a2a" : "#fafafa",
-        },
-      }}
-    >
-      <Box>
-        <Box px={2} py={3} textAlign="center">
+    <SidebarContainer isDarkMode={isDarkMode}>
+      <div>
+        <SidebarHeader>
           <Tooltip title="Foto do cliente">
             <Avatar
               alt={clientName || "Cliente"}
               src={
                 clientImageUrl
                   ? clientImageUrl
-                  : "https://ui-avatars.com/api/?name=" +
-                    encodeURIComponent(clientName || "Cliente")
+                  : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      clientName || "Cliente"
+                    )}`
               }
               sx={{
                 width: 120,
@@ -82,61 +71,34 @@ const SideBarRegister: React.FC<Props> = ({
               }}
             />
           </Tooltip>
-
           <Typography variant="h6" gutterBottom>
             {clientName || "Cliente"}
           </Typography>
           <Typography variant="caption" color="text.secondary">
             Cliente
           </Typography>
-        </Box>
+        </SidebarHeader>
 
         <Divider sx={{ borderColor: theme.palette.divider }} />
 
         <List>
           {menuItems.map((item) => (
-            <ListItemButton
+            <StyledListItemButton
               key={item.value}
               selected={activeSection === item.value}
               onClick={() => onSelect(item.value)}
-              sx={{
-                borderRadius: 1,
-                mb: 0.5,
-                color:
-                  activeSection === item.value
-                    ? `${theme.palette.primary.main} !important`
-                    : "text.primary",
-                bgcolor: isDarkMode
-                  ? activeSection === item.value
-                    ? "rgba(255,255,255,0.08)"
-                    : "transparent"
-                  : activeSection === item.value
-                  ? "action.selected"
-                  : "transparent",
-                "&:hover": {
-                  bgcolor: isDarkMode
-                    ? "rgba(255,255,255,0.05)"
-                    : "action.hover",
-                },
-                transition: "all 0.2s ease",
-              }}
+              isDarkMode={isDarkMode}
+              isSelected={activeSection === item.value}
             >
-              <ListItemIcon
-                sx={{
-                  color:
-                    activeSection === item.value
-                      ? theme.palette.primary.main
-                      : "inherit",
-                }}
-              >
+              <StyledListItemIcon isSelected={activeSection === item.value}>
                 {item.icon}
-              </ListItemIcon>
+              </StyledListItemIcon>
               <ListItemText primary={item.label} />
-            </ListItemButton>
+            </StyledListItemButton>
           ))}
         </List>
-      </Box>
-    </Box>
+      </div>
+    </SidebarContainer>
   );
 };
 

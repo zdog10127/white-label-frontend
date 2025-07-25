@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import * as S from "./styles";
+import * as S from "../permissionUserHome/styles";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import SecurityIcon from "@mui/icons-material/Security";
@@ -7,7 +7,8 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import PersonIcon from "@mui/icons-material/Person";
 import PeopleIcon from "@mui/icons-material/People";
 import { useNavigate } from "react-router-dom";
-import { useUsers } from "../../shared/hooks/searchUser";
+import { useUsers } from "../../../shared/hooks/searchUser";
+import SettingsSidebar from "../../../components/side-bar/SideBarSettings/SideBarSettings";
 
 interface Permission {
   name: string;
@@ -50,7 +51,6 @@ const PermissionList = () => {
 
   const getUserCountByPermission = (permissionName: string): number => {
     if (!users || users.length === 0) return 0;
-
     return users.filter(
       (user) => user.permissions && user.permissions.includes(permissionName)
     ).length;
@@ -60,7 +60,6 @@ const PermissionList = () => {
     const matchesSearch =
       perm.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       perm.description.toLowerCase().includes(searchTerm.toLowerCase());
-
     return matchesSearch;
   });
 
@@ -132,6 +131,7 @@ const PermissionList = () => {
 
   return (
     <S.Container>
+      <SettingsSidebar />
       <S.Header>
         <S.Title>
           <SecurityIcon style={{ marginRight: "12px", fontSize: "32px" }} />

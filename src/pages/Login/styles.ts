@@ -5,14 +5,22 @@ import { device, max, min } from "../../constants/responsiveClient";
 export const BackgroundContainer = styled(Container)`
   height: 100vh;
   width: 100vw;
+  max-width: none !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0 16px;
+
   background-image: url("assets/fundo3dbranco.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-attachment: fixed;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 16px;
 
   ${min(device.desktop)} {
     padding: 0 48px;
