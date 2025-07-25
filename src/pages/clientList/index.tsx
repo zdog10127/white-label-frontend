@@ -66,11 +66,12 @@ const ClientList: React.FC = () => {
   }, []);
 
   const handleAddClient = () => {
-    navigate("/cadastro-usuario");
+    navigate("/clientes/novo");
   };
 
   const handleEdit = (client: ClientWithExtras) => {
-    navigate("/cadastro-usuario", {
+    console.log("🔧 Navigating to edit with client:", client);
+    navigate("/clientes/editar", {
       state: { clientToEdit: client },
     });
   };

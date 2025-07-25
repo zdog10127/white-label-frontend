@@ -12,10 +12,16 @@ import {
 import {
   useDrawerContext,
   useAppThemeContext,
-} from "../../shared/contexts/IndexContexts";
+} from "../../../shared/contexts/IndexContexts";
 import { useNavigate, useResolvedPath, useMatch } from "react-router-dom";
-import MaterialUISwitch from "../ThemeSwitch";
-import { IListItemLinkProps, SideBarProps } from "../../types/sideBar";
+import MaterialUISwitch from "../../ThemeSwitch";
+import { IListItemLinkProps, SideBarProps } from "../../../types/sideBar";
+import {
+  StyledListItemButton,
+  StyledListItemIcon,
+  StyledListItemText,
+  MainContent,
+} from "./styles";
 
 const ListItemLink: React.FC<IListItemLinkProps> = ({
   to,
@@ -33,34 +39,10 @@ const ListItemLink: React.FC<IListItemLinkProps> = ({
   };
 
   return (
-    <ListItemButton
-      selected={!!match}
-      onClick={handleClick}
-      sx={{
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        py: 1,
-        px: 2,
-      }}
-    >
-      <ListItemIcon
-        sx={{
-          minWidth: "auto",
-          fontSize: 36,
-          color: "inherit",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {icon}
-      </ListItemIcon>
-      <ListItemText
-        primary={label}
-        sx={{ textAlign: "center", margin: 0, mt: 0.5 }}
-      />
-    </ListItemButton>
+    <StyledListItemButton selected={!!match} onClick={handleClick}>
+      <StyledListItemIcon>{icon}</StyledListItemIcon>
+      <StyledListItemText primary={label} />
+    </StyledListItemButton>
   );
 };
 
@@ -115,18 +97,9 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
         </Box>
       </Drawer>
 
-      <Box
-        component="main"
-        sx={{
-          height: "100vh",
-          ml: smDown ? 0 : drawerWidth,
-          mt: theme.spacing(8),
-          p: 1,
-          overflow: "auto",
-        }}
-      >
+      <MainContent drawerWidth={drawerWidth} smDown={smDown}>
         {children}
-      </Box>
+      </MainContent>
     </>
   );
 };

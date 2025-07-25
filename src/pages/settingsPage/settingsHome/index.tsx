@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
-  Container,
+  PageWrapper,
+  Content,
   Header,
   Title,
   SubHeader,
@@ -18,32 +19,7 @@ import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import SettingsSidebar from "../../../components/side-bar/SideBarSettings";
-import styled from "styled-components";
-
-const PageWrapper = styled.div`
-  display: flex;
-  margin-left: 104px;
-  padding-top: 64px;
-  min-height: 100vh;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    margin-left: 0;
-    padding-top: 64px;
-  }
-`;
-
-const Content = styled.div`
-  flex: 1;
-  padding: 32px;
-  margin-left: 240px;
-
-  @media (max-width: 768px) {
-    margin-left: 0;
-    padding: 16px;
-  }
-`;
+import SettingsSidebar from "../../../components/side-bar/SideBarSettings/SideBarSettings";
 
 const Configuracoes = () => {
   const [activeTab, setActiveTab] = useState<"profissionais" | "colaboradores">(

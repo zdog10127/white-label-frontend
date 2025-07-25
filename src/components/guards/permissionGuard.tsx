@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../shared/contexts/AuthContext";
 import AccessDeniedModal from "../../components/mod/AccessDenied-Modal/index";
@@ -97,26 +97,39 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
 export const usePermissions = () => {
   const { user } = useAuth();
 
-  const hasPermission = (permission: string) => {
-    if (!user || !user.permissions) return false;
-    return user.permissions.includes(permission);
-  };
+  const hasPermission = useCallback(
+    (permission: string) => {
+      if (!user || !user.permissions) return false;
+      return user.permissions.includes(permission);
+    },
+    [user]
+  );
 
-  const hasAnyPermission = (permissions: string[]) => {
-    if (!user || !user.permissions) return false;
-    return user.permissions.some((p) => permissions.includes(p));
-  };
+  const hasAnyPermission = useCallback(
+    (permissions: string[]) => {
+      if (!user || !user.permissions) return false;
+      return user.permissions.some((p) => permissions.includes(p));
+    },
+    [user]
+  );
 
-  const canAccessRoute = (routePath: string) => {
-    const requiredPermissions =
-      ROUTE_PERMISSIONS[routePath as keyof typeof ROUTE_PERMISSIONS];
-    if (!requiredPermissions) return true;
-    return hasAnyPermission(requiredPermissions);
-  };
+  const canAccessRoute = useCallback(
+    (routePath: string) => {
+      const requiredPermissions =
+        ROUTE_PERMISSIONS[routePath as keyof typeof ROUTE_PERMISSIONS];
+      if (!requiredPermissions) return true;
+      if (!user || !user.permissions) return false;
+      return user.permissions.some((p) => requiredPermissions.includes(p));
+    },
+    [user]
+  );
 
-  const canShowMenuItem = (routePath: string) => {
-    return canAccessRoute(routePath);
-  };
+  const canShowMenuItem = useCallback(
+    (routePath: string) => {
+      return canAccessRoute(routePath);
+    },
+    [canAccessRoute]
+  );
 
   return {
     hasPermission,

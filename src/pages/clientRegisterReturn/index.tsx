@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import InputMask from "react-input-mask";
-import SideBarRegister from "../../components/side-bar/sideBarRegister";
+import SideBarRegister from "../../components/side-bar/SideBarRegister/sideBarRegister";
 import { estadosBrasil } from "../../utils/estados";
 import { calculateAge } from "../../utils/calculateAge";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";

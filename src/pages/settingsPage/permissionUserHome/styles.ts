@@ -4,6 +4,7 @@ import { device, max, min } from "../../../constants/responsiveClient";
 export const Container = styled.div`
   padding: 40px;
   background-color: ${({ theme }) => theme.palette.background.default};
+  color: ${({ theme }) => theme.palette.text.primary};
   min-height: 100vh;
   width: calc(100% - 260px);
   margin-left: 260px;
@@ -82,9 +83,7 @@ export const FilterSection = styled.div`
   background-color: ${({ theme }) => theme.palette.background.paper};
   border-radius: 12px;
   border: 1px solid ${({ theme }) => theme.palette.divider};
-  box-shadow: 0 2px 8px
-    ${({ theme }) =>
-      theme.palette.mode === "dark" ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.05)"};
+  box-shadow: ${({ theme }) => theme.shadows[2]};
 
   ${max(device.mobile)} {
     flex-direction: column;
@@ -126,17 +125,22 @@ export const SearchInput = styled.input`
   border-radius: 8px;
   font-size: 14px;
   outline: none;
-  background-color: ${({ theme }) => theme.palette.background.default};
+  background-color: ${({ theme }) => theme.palette.background.paper};
   color: ${({ theme }) => theme.palette.text.primary};
   transition: all 0.2s ease;
 
   &:focus {
     border-color: ${({ theme }) => theme.palette.primary.main};
-    box-shadow: 0 0 0 2px ${({ theme }) => theme.palette.primary.main}20;
+    box-shadow: 0 0 0 2px
+      ${({ theme }) =>
+        theme.palette.mode === "dark"
+          ? "rgba(59, 130, 246, 0.2)"
+          : "rgba(37, 99, 235, 0.2)"};
   }
 
   &::placeholder {
     color: ${({ theme }) => theme.palette.text.secondary};
+    opacity: 0.7;
   }
 
   ${min(device.desktop)} {
@@ -150,24 +154,18 @@ export const TableWrapper = styled.div`
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.palette.divider};
-  box-shadow: 0 4px 16px
-    ${({ theme }) =>
-      theme.palette.mode === "dark" ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.08)"};
+  box-shadow: ${({ theme }) => theme.shadows[4]};
   overflow-x: auto;
   width: 100%;
 
   ${max(device.mobile)} {
     border-radius: 8px;
-    box-shadow: 0 2px 8px
-      ${({ theme }) =>
-        theme.palette.mode === "dark" ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.05)"};
+    box-shadow: ${({ theme }) => theme.shadows[2]};
   }
 
   ${min(device.desktop)} {
     border-radius: 16px;
-    box-shadow: 0 6px 24px
-      ${({ theme }) =>
-        theme.palette.mode === "dark" ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.1)"};
+    box-shadow: ${({ theme }) => theme.shadows[6]};
   }
 `;
 
@@ -194,7 +192,7 @@ export const TableHead = styled.th`
   padding: 20px 16px;
   background-color: ${({ theme }) =>
     theme.palette.mode === "dark"
-      ? theme.palette.grey[800]
+      ? theme.palette.grey[100]
       : theme.palette.grey[100]};
   color: ${({ theme }) => theme.palette.text.primary};
   font-weight: 700;
@@ -234,14 +232,25 @@ export const TableHead = styled.th`
 
 export const TableRow = styled.tr`
   transition: all 0.2s ease;
+  background-color: ${({ theme }) => theme.palette.background.paper};
 
   &:hover {
-    background-color: ${({ theme }) => theme.palette.action.hover};
+    background-color: ${({ theme }) =>
+      theme.palette.mode === "dark"
+        ? "rgba(59, 130, 246, 0.05)"
+        : "rgba(37, 99, 235, 0.03)"};
     transform: scale(1.001);
   }
 
   &:not(:last-child) td {
     border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
+  }
+
+  &:nth-child(even) {
+    background-color: ${({ theme }) =>
+      theme.palette.mode === "dark"
+        ? "rgba(248, 250, 252, 0.02)"
+        : "rgba(15, 23, 42, 0.01)"};
   }
 `;
 
@@ -250,6 +259,7 @@ export const TableCell = styled.td`
   font-size: 14px;
   color: ${({ theme }) => theme.palette.text.primary};
   vertical-align: middle;
+  background: transparent;
 
   &:last-child {
     text-align: center;
@@ -312,7 +322,9 @@ export const LevelBadge = styled.span`
   border-radius: 20px;
   font-size: 11px;
   font-weight: 600;
-  border: 1px solid;
+  border: 1px solid ${({ theme }) => theme.palette.divider};
+  background-color: ${({ theme }) => theme.palette.background.paper};
+  color: ${({ theme }) => theme.palette.text.primary};
   white-space: nowrap;
 
   ${min(device.desktop)} {
@@ -327,6 +339,7 @@ export const UserCount = styled.div`
   gap: 6px;
   font-weight: 500;
   font-size: 13px;
+  color: ${({ theme }) => theme.palette.text.primary};
 
   ${min(device.desktop)} {
     font-size: 14px;
@@ -369,10 +382,13 @@ export const ActionButton = styled.button`
 
   &:hover {
     color: ${({ theme }) => theme.palette.primary.main};
-    background-color: ${({ theme }) => theme.palette.primary.main}08;
+    background-color: ${({ theme }) =>
+      theme.palette.mode === "dark"
+        ? "rgba(59, 130, 246, 0.08)"
+        : "rgba(37, 99, 235, 0.08)"};
     border-color: ${({ theme }) => theme.palette.primary.main};
     transform: scale(1.05);
-    box-shadow: 0 2px 8px ${({ theme }) => theme.palette.primary.main}20;
+    box-shadow: ${({ theme }) => theme.shadows[3]};
   }
 
   &:active {
@@ -382,15 +398,22 @@ export const ActionButton = styled.button`
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background-color: ${({ theme }) => theme.palette.action.disabledBackground};
+    background-color: ${({ theme }) =>
+      theme.palette.mode === "dark"
+        ? theme.palette.grey[200]
+        : theme.palette.grey[100]};
     border-color: ${({ theme }) => theme.palette.divider};
+    color: ${({ theme }) => theme.palette.text.disabled};
 
     &:hover {
       transform: none;
       background-color: ${({ theme }) =>
-        theme.palette.action.disabledBackground};
+        theme.palette.mode === "dark"
+          ? theme.palette.grey[200]
+          : theme.palette.grey[100]};
       border-color: ${({ theme }) => theme.palette.divider};
       box-shadow: none;
+      color: ${({ theme }) => theme.palette.text.disabled};
     }
   }
 
@@ -426,9 +449,7 @@ export const EmptyState = styled.div`
   background-color: ${({ theme }) => theme.palette.background.paper};
   border-radius: 12px;
   border: 1px solid ${({ theme }) => theme.palette.divider};
-  box-shadow: 0 2px 8px
-    ${({ theme }) =>
-      theme.palette.mode === "dark" ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.05)"};
+  box-shadow: ${({ theme }) => theme.shadows[2]};
 
   .icon {
     font-size: 64px;

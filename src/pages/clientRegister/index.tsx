@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import InputMask from "react-input-mask";
-import SideBarRegister from "../../components/side-bar/sideBarRegister";
+import SideBarRegister from "../../components/side-bar/SideBarRegister/sideBarRegister";
 import { estadosBrasil } from "../../utils/estados";
 import { calculateAge } from "../../utils/calculateAge";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -95,15 +95,18 @@ const NewClientRegister: React.FC = () => {
       try {
         const formattedDate = form.birth.format("DD/MM/YYYY");
         const calculatedAge = calculateAge(formattedDate);
-        if (calculatedAge !== null && calculatedAge.toString() !== form.age) {
+        const ageString =
+          calculatedAge !== null ? calculatedAge.toString() : "";
+
+        if (ageString !== form.age) {
           setForm((prev) => ({
             ...prev,
-            age: calculatedAge.toString(),
+            age: ageString,
           }));
         }
       } catch (error) {}
     }
-  }, [form.birth]);
+  }, [form.birth?.valueOf(), form.age]);
 
   const updateFormField = useCallback(
     (field: string, value: any) => {

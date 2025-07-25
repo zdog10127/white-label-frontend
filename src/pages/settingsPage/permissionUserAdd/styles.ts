@@ -4,6 +4,7 @@ import { device, max, min } from "../../../constants/responsiveClient";
 export const Container = styled.div`
   padding: 2rem;
   background-color: ${({ theme }) => theme.palette.background.default};
+  color: ${({ theme }) => theme.palette.text.primary};
   min-height: 100vh;
   width: 100%;
 
@@ -72,7 +73,7 @@ export const Actions = styled.div`
   background-color: ${({ theme }) => theme.palette.background.paper};
   border-radius: 8px;
   border: 1px solid ${({ theme }) => theme.palette.divider};
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ theme }) => theme.shadows[3]};
 
   ${max(device.mobile)} {
     flex-direction: column;
@@ -145,7 +146,7 @@ export const StyledButton = styled.button`
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ theme }) => theme.shadows[3]};
 
   .MuiSvgIcon-root {
     font-size: 1.25rem;
@@ -153,6 +154,7 @@ export const StyledButton = styled.button`
 
   &:hover:not(:disabled) {
     background-color: ${({ theme }) => theme.palette.primary.dark};
+    box-shadow: ${({ theme }) => theme.shadows[4]};
   }
 
   &:active:not(:disabled) {
@@ -160,7 +162,10 @@ export const StyledButton = styled.button`
   }
 
   &:disabled {
-    background-color: ${({ theme }) => theme.palette.action.disabled};
+    background-color: ${({ theme }) =>
+      theme.palette.mode === "dark"
+        ? theme.palette.grey[200]
+        : theme.palette.grey[300]};
     color: ${({ theme }) => theme.palette.text.disabled};
     cursor: not-allowed;
     transform: none;
@@ -184,17 +189,18 @@ export const TableWrapper = styled.div`
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.palette.divider};
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ theme }) => theme.shadows[3]};
 
   .MuiTable-root {
     border-collapse: separate;
     border-spacing: 0;
+    background-color: ${({ theme }) => theme.palette.background.paper};
   }
 
   .MuiTableHead-root {
     background-color: ${({ theme }) =>
       theme.palette.mode === "dark"
-        ? theme.palette.grey[800]
+        ? theme.palette.grey[100]
         : theme.palette.grey[100]};
 
     .MuiTableCell-root {
@@ -206,19 +212,31 @@ export const TableWrapper = styled.div`
       border: none;
       padding: 1.25rem 1.5rem;
       border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
+      background-color: transparent;
     }
   }
 
   .MuiTableBody-root {
     .MuiTableRow-root {
       transition: all 0.2s ease;
+      background-color: ${({ theme }) => theme.palette.background.paper};
 
       &:hover {
-        background-color: ${({ theme }) => theme.palette.action.hover};
+        background-color: ${({ theme }) =>
+          theme.palette.mode === "dark"
+            ? "rgba(59, 130, 246, 0.05)"
+            : "rgba(37, 99, 235, 0.03)"};
       }
 
       &:not(:last-child) .MuiTableCell-root {
         border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
+      }
+
+      &:nth-child(even) {
+        background-color: ${({ theme }) =>
+          theme.palette.mode === "dark"
+            ? "rgba(248, 250, 252, 0.02)"
+            : "rgba(15, 23, 42, 0.01)"};
       }
     }
 
@@ -226,6 +244,7 @@ export const TableWrapper = styled.div`
       padding: 1.25rem 1.5rem;
       font-size: 0.9375rem;
       color: ${({ theme }) => theme.palette.text.primary};
+      background-color: transparent;
 
       &:first-child {
         font-weight: 600;
@@ -254,7 +273,7 @@ export const EmptyState = styled.div`
   background-color: ${({ theme }) => theme.palette.background.paper};
   border-radius: 8px;
   border: 1px solid ${({ theme }) => theme.palette.divider};
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ theme }) => theme.shadows[2]};
 
   .icon {
     font-size: 4rem;
@@ -325,7 +344,7 @@ export const LoadingWrapper = styled.div`
   background-color: ${({ theme }) => theme.palette.background.paper};
   border-radius: 8px;
   border: 1px solid ${({ theme }) => theme.palette.divider};
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ theme }) => theme.shadows[2]};
 
   .MuiCircularProgress-root {
     margin-bottom: 1.25rem;
@@ -361,7 +380,7 @@ export const ErrorWrapper = styled.div`
   background-color: ${({ theme }) => theme.palette.background.paper};
   border: 1px solid ${({ theme }) => theme.palette.error.main};
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ theme }) => theme.shadows[2]};
 
   .MuiAlert-root {
     background-color: transparent;
@@ -388,8 +407,8 @@ export const ErrorWrapper = styled.div`
 `;
 
 export const ActionButton = styled.button`
-  background: none;
-  border: none;
+  background: ${({ theme }) => theme.palette.background.paper};
+  border: 1px solid ${({ theme }) => theme.palette.divider};
   padding: 0.75rem;
   border-radius: 8px;
   cursor: pointer;
@@ -401,7 +420,11 @@ export const ActionButton = styled.button`
   }
 
   &:hover {
-    background-color: ${({ theme }) => theme.palette.error.light}20;
+    background-color: ${({ theme }) =>
+      theme.palette.mode === "dark"
+        ? "rgba(239, 68, 68, 0.08)"
+        : "rgba(239, 68, 68, 0.05)"};
+    border-color: ${({ theme }) => theme.palette.error.main};
   }
 
   &:active {
@@ -436,7 +459,7 @@ export const PermissionBadge = styled.div`
   font-weight: 600;
   letter-spacing: 0.3px;
   margin-bottom: 0.25rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ theme }) => theme.shadows[1]};
 
   ${max(device.mobile)} {
     padding: 0.375rem 1rem;

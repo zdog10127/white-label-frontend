@@ -7,8 +7,8 @@ import {
 } from "react";
 import { ThemeProvider as MUIThemeProvider } from "@mui/material/styles";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
-import { Box } from "@mui/system";
-import { DarkTheme, lightTheme } from "../themes";
+import { CssBaseline, Box } from "@mui/material";
+import { darkTheme, lightTheme } from "../themes";
 import {
   IThemeContextData,
   IAppThemeProviderProps,
@@ -30,17 +30,22 @@ export const AppThemeProvider: React.FC<IAppThemeProviderProps> = ({
   }, []);
 
   const theme = useMemo(() => {
-    return themeName === "light" ? lightTheme : DarkTheme;
+    return themeName === "light" ? lightTheme : darkTheme;
   }, [themeName]);
 
   return (
     <ThemeContext.Provider value={{ themeName, toggleTheme }}>
       <MUIThemeProvider theme={theme}>
+        <CssBaseline />
         <StyledThemeProvider theme={theme}>
           <Box
             width="100vw"
             height="100vh"
-            sx={{ backgroundColor: theme.palette.background.default }}
+            sx={{
+              backgroundColor: theme.palette.background.default,
+              color: theme.palette.text.primary,
+              transition: "background-color 0.3s ease, color 0.3s ease",
+            }}
           >
             {children}
           </Box>

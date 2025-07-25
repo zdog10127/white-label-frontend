@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useDrawerContext } from "../contexts/DrawerContext";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import {
   Apartment,
   Article,
@@ -25,6 +25,7 @@ import Login from "../../pages/Login";
 import Home from "../../pages/Home";
 import ClientList from "../../pages/clientList";
 import ClientRegisterReturn from "../../pages/clientRegisterReturn";
+import NewClientRegister from "../../pages/clientRegister";
 import PrivateLayout from "../layouts/PrivateLayout";
 import Agenda from "../../pages/schedule";
 import FinancialPage from "../../pages/financialPage";
@@ -59,10 +60,8 @@ export const AppRoutes = () => {
   const { canAccessRoute } = usePermissions();
   const { user, loading } = useAuth();
 
-  useEffect(() => {
-    if (loading || !user) return;
-
-    const allDrawerOptions = [
+  const allDrawerOptions = useMemo(
+    () => [
       {
         label: "Painel",
         path: "/home",
@@ -104,14 +103,21 @@ export const AppRoutes = () => {
         path: "/minhaclinica",
         icon: <Apartment fontSize="large" />,
       },
-    ];
+    ],
+    []
+  );
 
-    const allowedOptions = allDrawerOptions.filter((option) =>
-      canAccessRoute(option.path)
-    );
+  const allowedOptions = useMemo(() => {
+    if (loading || !user) return [];
+
+    return allDrawerOptions.filter((option) => canAccessRoute(option.path));
+  }, [allDrawerOptions, canAccessRoute, user, loading]);
+
+  useEffect(() => {
+    if (loading || !user) return;
 
     setDrawerOptions(allowedOptions);
-  }, [setDrawerOptions, canAccessRoute, user, loading]);
+  }, [setDrawerOptions, allowedOptions, user, loading]);
 
   return (
     <Routes>
@@ -149,6 +155,18 @@ export const AppRoutes = () => {
               <PermissionGuard
                 requiredPermissions={ROUTE_PERMISSIONS["/clientes/novo"]}
                 routePath="/clientes/novo"
+              >
+                <NewClientRegister />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/clientes/editar"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/clientes/novo"]}
+                routePath="/clientes/editar"
               >
                 <ClientRegisterReturn />
               </PermissionGuard>
@@ -247,6 +265,18 @@ export const AppRoutes = () => {
                 routePath="/alterar-senha"
               >
                 <ChangePasswordWrapper />
+              </PermissionGuard>
+            }
+          />
+
+          <Route
+            path="/cadastro-usuario"
+            element={
+              <PermissionGuard
+                requiredPermissions={ROUTE_PERMISSIONS["/cadastro-usuario"]}
+                routePath="/cadastro-usuario"
+              >
+                <NewClientRegister />
               </PermissionGuard>
             }
           />

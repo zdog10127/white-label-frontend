@@ -6,9 +6,38 @@ interface NavItemProps {
   active?: boolean;
 }
 
+export const PageWrapper = styled.div`
+  display: flex;
+  margin-left: 104px;
+  padding-top: 64px;
+  min-height: 100vh;
+  background: ${({ theme }) => theme.palette.background.default};
+  color: ${({ theme }) => theme.palette.text.primary};
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    margin-left: 0;
+    padding-top: 64px;
+  }
+`;
+
+export const Content = styled.div`
+  flex: 1;
+  padding: 32px;
+  margin-left: 240px;
+  background: ${({ theme }) => theme.palette.background.default};
+  color: ${({ theme }) => theme.palette.text.primary};
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    padding: 16px;
+  }
+`;
+
 export const Container = styled.div`
   padding: 40px;
   background: ${({ theme }) => theme.palette.background.default};
+  color: ${({ theme }) => theme.palette.text.primary};
   min-height: 100vh;
   overflow-y: auto;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -61,11 +90,7 @@ export const TopNav = styled.div`
   margin-bottom: 8px;
   overflow-x: auto;
   position: relative;
-  box-shadow: 0 2px 8px
-    ${({ theme }) =>
-      theme.palette.mode === "dark"
-        ? "rgba(0, 0, 0, 0.2)"
-        : "rgba(0, 0, 0, 0.04)"};
+  box-shadow: ${({ theme }) => theme.shadows[2]};
 
   &::after {
     content: "";
@@ -108,6 +133,7 @@ export const NavItem = styled.div<NavItemProps>`
   white-space: nowrap;
   min-width: fit-content;
   border-radius: 8px 8px 0 0;
+  background: transparent;
 
   &::before {
     content: "";
@@ -124,7 +150,10 @@ export const NavItem = styled.div<NavItemProps>`
 
   &:hover {
     color: ${({ theme }) => theme.palette.primary.main};
-    background: ${({ theme }) => `${theme.palette.primary.main}08`};
+    background: ${({ theme }) =>
+      theme.palette.mode === "dark"
+        ? "rgba(59, 130, 246, 0.08)"
+        : "rgba(37, 99, 235, 0.08)"};
 
     &::before {
       opacity: 0.04;
@@ -149,11 +178,7 @@ export const Header = styled.div`
   background: ${({ theme }) => theme.palette.background.paper};
   border-radius: 20px;
   border: 1px solid ${({ theme }) => theme.palette.divider};
-  box-shadow: 0 4px 20px
-    ${({ theme }) =>
-      theme.palette.mode === "dark"
-        ? "rgba(0, 0, 0, 0.3)"
-        : "rgba(0, 0, 0, 0.08)"};
+  box-shadow: ${({ theme }) => theme.shadows[3]};
   position: relative;
   overflow: hidden;
 
@@ -167,8 +192,7 @@ export const Header = styled.div`
     background: linear-gradient(
       90deg,
       ${({ theme }) => theme.palette.primary.main},
-      ${({ theme }) =>
-        theme.palette.secondary.main || theme.palette.primary.light}
+      ${({ theme }) => theme.palette.secondary.main}
     );
   }
 
@@ -183,13 +207,13 @@ export const Title = styled.h1`
   font-size: 32px;
   font-weight: 800;
   margin-bottom: 12px;
-  color: ${({ theme }) => theme.palette.text.primary};
   letter-spacing: -0.5px;
   line-height: 1.2;
+  color: ${({ theme }) => theme.palette.text.primary};
   background: linear-gradient(
     135deg,
-    ${({ theme }) => theme.palette.text.primary},
-    ${({ theme }) => theme.palette.primary.main}
+    ${({ theme }) => theme.palette.text.primary} 0%,
+    ${({ theme }) => theme.palette.primary.main} 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -232,13 +256,13 @@ export const AddButton = styled(Button)`
       ${({ theme }) => theme.palette.primary.main},
       ${({ theme }) => theme.palette.primary.dark}
     );
-    color: white;
+    color: ${({ theme }) => theme.palette.primary.contrastText};
     text-transform: none;
     font-weight: 700;
     font-size: 15px;
     padding: 14px 28px;
     border-radius: 12px;
-    box-shadow: 0 8px 24px ${({ theme }) => `${theme.palette.primary.main}40`};
+    box-shadow: ${({ theme }) => theme.shadows[4]};
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -266,8 +290,7 @@ export const AddButton = styled(Button)`
         ${({ theme }) => theme.palette.primary.main}
       );
       transform: translateY(-2px);
-      box-shadow: 0 12px 32px
-        ${({ theme }) => `${theme.palette.primary.main}60`};
+      box-shadow: ${({ theme }) => theme.shadows[6]};
 
       &::before {
         left: 100%;
@@ -299,11 +322,7 @@ export const Table = styled.table`
   background: ${({ theme }) => theme.palette.background.paper};
   border-radius: 0 0 20px 20px;
   overflow: hidden;
-  box-shadow: 0 8px 32px
-    ${({ theme }) =>
-      theme.palette.mode === "dark"
-        ? "rgba(0, 0, 0, 0.4)"
-        : "rgba(0, 0, 0, 0.12)"};
+  box-shadow: ${({ theme }) => theme.shadows[5]};
   border: 1px solid ${({ theme }) => theme.palette.divider};
   border-top: 1px solid ${({ theme }) => theme.palette.divider};
   position: relative;
@@ -322,7 +341,7 @@ export const Table = styled.table`
 export const TableHeader = styled.thead`
   background: ${({ theme }) =>
     theme.palette.mode === "dark"
-      ? `linear-gradient(135deg, ${theme.palette.grey[800]}, ${theme.palette.grey[900]})`
+      ? `linear-gradient(135deg, ${theme.palette.grey[100]}, ${theme.palette.grey[50]})`
       : `linear-gradient(135deg, ${theme.palette.grey[50]}, ${theme.palette.grey[100]})`};
   position: relative;
 
@@ -374,6 +393,7 @@ export const TableRow = styled.tr`
   border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
   transition: all 0.3s ease;
   position: relative;
+  background: ${({ theme }) => theme.palette.background.paper};
 
   &:last-child {
     border-bottom: none;
@@ -382,21 +402,17 @@ export const TableRow = styled.tr`
   &:hover {
     background: ${({ theme }) =>
       theme.palette.mode === "dark"
-        ? "rgba(255, 255, 255, 0.02)"
-        : "rgba(0, 0, 0, 0.02)"};
+        ? "rgba(59, 130, 246, 0.05)"
+        : "rgba(37, 99, 235, 0.03)"};
     transform: scale(1.001);
-    box-shadow: 0 2px 8px
-      ${({ theme }) =>
-        theme.palette.mode === "dark"
-          ? "rgba(0, 0, 0, 0.3)"
-          : "rgba(0, 0, 0, 0.06)"};
+    box-shadow: ${({ theme }) => theme.shadows[2]};
   }
 
   &:nth-child(even) {
     background: ${({ theme }) =>
       theme.palette.mode === "dark"
-        ? "rgba(255, 255, 255, 0.01)"
-        : "rgba(0, 0, 0, 0.01)"};
+        ? "rgba(248, 250, 252, 0.02)"
+        : "rgba(15, 23, 42, 0.01)"};
   }
 `;
 
@@ -409,6 +425,7 @@ export const TableCell = styled.td`
   line-height: 1.5;
   vertical-align: middle;
   position: relative;
+  background: transparent;
 
   &:not(:last-child)::after {
     content: "";
@@ -471,7 +488,7 @@ export const ActionButtons = styled.div`
       color: ${({ theme }) => theme.palette.primary.main};
       border-color: ${({ theme }) => theme.palette.primary.main};
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px ${({ theme }) => `${theme.palette.primary.main}20`};
+      box-shadow: ${({ theme }) => theme.shadows[3]};
 
       &::before {
         width: 100%;

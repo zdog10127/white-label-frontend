@@ -8,7 +8,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import PeopleIcon from "@mui/icons-material/People";
 import { useNavigate } from "react-router-dom";
 import { useUsers } from "../../../shared/hooks/searchUser";
-import SettingsSidebar from "../../../components/side-bar/SideBarSettings";
+import SettingsSidebar from "../../../components/side-bar/SideBarSettings/SideBarSettings";
 
 interface Permission {
   name: string;
