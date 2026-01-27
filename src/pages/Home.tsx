@@ -1,4 +1,6 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import PatientsStatsCard from "../components/cards/PatientsStatsCard";
+import RecentPatientsCard from "../components/cards/RecentPatientsCard";
 import SessionsCard from "../components/cards/SessionsCard";
 import FinanceCard from "../components/cards/FinanceCard";
 import TabsCard from "../components/cards/TabsCard";
@@ -13,6 +15,22 @@ export default function DashboardHome(): JSX.Element {
         px: 5,
       }}
     >
+      {/* Título do Dashboard */}
+      <Box mb={3}>
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
+          Dashboard
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Visão geral do sistema AMPARA - White Label
+        </Typography>
+      </Box>
+
+      {/* Estatísticas de Pacientes */}
+      <Box mb={4}>
+        <PatientsStatsCard />
+      </Box>
+
+      {/* Grid com Cards */}
       <Box
         sx={{
           display: "grid",
@@ -21,18 +39,24 @@ export default function DashboardHome(): JSX.Element {
           gridAutoRows: "min-content",
           gridTemplateAreas: {
             xs: `
+              "recent"
               "sessions"
               "finance"
               "tabs"
               "tasks"
             `,
             md: `
-              "sessions finance"
-              "tabs    tasks"
+              "recent   sessions"
+              "recent   finance"
+              "tabs     tasks"
             `,
           },
         }}
       >
+        <Box sx={{ gridArea: "recent" }}>
+          <RecentPatientsCard />
+        </Box>
+
         <Box sx={{ gridArea: "sessions" }}>
           <SessionsCard />
         </Box>

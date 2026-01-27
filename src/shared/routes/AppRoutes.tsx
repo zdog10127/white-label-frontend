@@ -26,6 +26,9 @@ import ReportPage from "../../pages/reportPage";
 import MarketingPage from "../../pages/marketingPage";
 import SettingsPage from "../../pages/settingsPage";
 import MyClinicPage from "../../pages/myClinicPage";
+import ClientDetails from "../../pages/ClientDetails";
+import ClientEdit from "../../pages/ClientEdit";
+import Register from "../../pages/Register";
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();
@@ -79,13 +82,16 @@ export const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/criar-conta" element={<Register />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<PrivateLayout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/clientes" element={<ClientList />} />
-          <Route path="/agenda" element={<Agenda />} />
           <Route path="/cadastro-usuario" element={<ClientRegister />} />
+          <Route path="/clientes/:id" element={<ClientDetails />} />
+          <Route path="/clientes/:id/editar" element={<ClientEdit />} />
+          <Route path="/agenda" element={<Agenda />} />
           <Route path="/perfil" element={<UserProfile />} />
           <Route path="/alterar-credenciais" element={<AlterCredentials />} />
           <Route path="/financeiro" element={<FinancialPage />} />
