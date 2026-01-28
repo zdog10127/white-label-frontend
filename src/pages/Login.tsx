@@ -18,9 +18,6 @@ import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
 
 const Login: React.FC = () => {
-  // ============================================
-  // STATE
-  // ============================================
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -30,9 +27,6 @@ const Login: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // ============================================
-  // VALIDAÇÕES
-  // ============================================
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
     return emailRegex.test(email);
@@ -62,14 +56,10 @@ const Login: React.FC = () => {
     return true;
   };
 
-  // ============================================
-  // SUBMIT HANDLER - AGORA ASYNC!
-  // ============================================
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    // Validar formulário
     if (!validateForm()) {
       return;
     }
@@ -77,9 +67,6 @@ const Login: React.FC = () => {
     try {
       setIsLoading(true);
 
-      console.log('🔐 Tentando fazer login...');
-
-      // AQUI CHAMA A API DE VERDADE!
       const success = await login(email, password);
 
       if (success) {
@@ -96,9 +83,6 @@ const Login: React.FC = () => {
     }
   };
 
-  // ============================================
-  // RENDER
-  // ============================================
   return (
     <Container
       maxWidth={false}
@@ -125,19 +109,15 @@ const Login: React.FC = () => {
           borderRadius: 4,
         }}
       >
-        {/* Logo/Título */}
         <Box textAlign="center" mb={3}>
           <Typography variant="h4" gutterBottom fontWeight="bold">
-            White Label
+            MedInova
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Sistema de Gestão - AMPARA
+            Sistema de Gestão
           </Typography>
         </Box>
-
-        {/* Formulário */}
         <Box component="form" onSubmit={handleSubmit}>
-          {/* Email */}
           <TextField
             fullWidth
             label="E-mail"
@@ -154,8 +134,6 @@ const Login: React.FC = () => {
             placeholder="seu@email.com"
             error={!!error && !email}
           />
-
-          {/* Senha */}
           <TextField
             fullWidth
             label="Senha"
@@ -185,15 +163,11 @@ const Login: React.FC = () => {
               ),
             }}
           />
-
-          {/* Mensagem de erro */}
           {error && (
             <Alert severity="error" sx={{ mt: 2 }}>
               {error}
             </Alert>
           )}
-
-          {/* Botão de login */}
           <Button
             fullWidth
             variant="contained"
@@ -214,8 +188,6 @@ const Login: React.FC = () => {
               "Entrar"
             )}
           </Button>
-
-          {/* Links */}
           <Box
             display="flex"
             justifyContent="space-between"
@@ -240,11 +212,9 @@ const Login: React.FC = () => {
             </Link>
           </Box>
         </Box>
-
-        {/* Rodapé */}
         <Box textAlign="center" mt={4}>
           <Typography variant="caption" color="text.secondary">
-            © 2025 White Label - AMPARA
+            © 2025 MedInova
           </Typography>
         </Box>
       </Paper>

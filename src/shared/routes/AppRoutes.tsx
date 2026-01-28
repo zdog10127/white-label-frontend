@@ -21,14 +21,12 @@ import ClientRegister from "../../pages/clientRegister";
 import PrivateLayout from "../layouts/PrivateLayout";
 import Agenda from "../../pages/Schedule";
 import AlterCredentials from "../../pages/alterCredentials";
-import FinancialPage from "../../pages/financialPage";
 import ReportPage from "../../pages/reportPage";
-import MarketingPage from "../../pages/marketingPage";
 import SettingsPage from "../../pages/settingsPage";
-import MyClinicPage from "../../pages/myClinicPage";
 import ClientDetails from "../../pages/ClientDetails";
 import ClientEdit from "../../pages/ClientEdit";
 import Register from "../../pages/Register";
+import NotificationsPage from "../../pages/NotificationPage";
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();
@@ -52,29 +50,14 @@ export const AppRoutes = () => {
         icon: <CalendarMonth fontSize="large" />,
       },
       {
-        label: "Financeiro",
-        path: "/financeiro",
-        icon: <Paid fontSize="large" />,
-      },
-      {
         label: "Relatórios",
         path: "/relatorios",
         icon: <Article fontSize="large" />,
       },
       {
-        label: "Marketing",
-        path: "/marketing",
-        icon: <Campaign fontSize="large" />,
-      },
-      {
         label: "Configuração",
         path: "/configuracao",
         icon: <Settings fontSize="large" />,
-      },
-      {
-        label: "Minha Clínica",
-        path: "/minhaclinica",
-        icon: <Apartment fontSize="large" />,
       },
     ]);
   }, [setDrawerOptions]);
@@ -94,11 +77,9 @@ export const AppRoutes = () => {
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/perfil" element={<UserProfile />} />
           <Route path="/alterar-credenciais" element={<AlterCredentials />} />
-          <Route path="/financeiro" element={<FinancialPage />} />
           <Route path="/relatorios" element={<ReportPage />} />
-          <Route path="/marketing" element={<MarketingPage />} />
           <Route path="/configuracao" element={<SettingsPage />} />
-          <Route path="/minhaclinica" element={<MyClinicPage />} />
+          <Route path="/notificacoes" element={<NotificationsPage />} />
         </Route>
       </Route>
 

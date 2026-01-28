@@ -1,9 +1,5 @@
 import api from './api';
 
-// ============================================
-// INTERFACES - Baseadas no seu backend
-// ============================================
-
 export interface Address {
   street: string;
   number?: string;
@@ -103,24 +99,15 @@ export interface PatientResponse {
   total?: number;
 }
 
-// ============================================
-// PATIENT SERVICE
-// ============================================
-
 class PatientService {
-  /**
-   * Listar todos os pacientes
-   */
   async getAll(): Promise<Patient[]> {
     try {
       const response = await api.get<PatientResponse>('/patient');
       
-      // Se retornar array direto
       if (Array.isArray(response.data)) {
         return response.data;
       }
       
-      // Se retornar objeto com data
       if (response.data.data) {
         return Array.isArray(response.data.data) ? response.data.data : [response.data.data];
       }
@@ -132,9 +119,6 @@ class PatientService {
     }
   }
 
-  /**
-   * Buscar paciente por ID
-   */
   async getById(id: string): Promise<Patient> {
     try {
       const response = await api.get<PatientResponse>(`/patient/${id}`);
@@ -150,9 +134,6 @@ class PatientService {
     }
   }
 
-  /**
-   * Criar novo paciente
-   */
   async create(patient: Patient): Promise<Patient> {
     try {
       console.log('📝 Criando paciente:', patient);
@@ -169,9 +150,6 @@ class PatientService {
     }
   }
 
-  /**
-   * Atualizar paciente existente
-   */
   async update(id: string, patient: Partial<Patient>): Promise<Patient> {
     try {
       console.log('✏️ Atualizando paciente:', id, patient);
@@ -188,9 +166,6 @@ class PatientService {
     }
   }
 
-  /**
-   * Deletar paciente
-   */
   async delete(id: string): Promise<void> {
     try {
       console.log('🗑️ Deletando paciente:', id);
@@ -201,9 +176,6 @@ class PatientService {
     }
   }
 
-  /**
-   * Buscar paciente por CPF
-   */
   async searchByCPF(cpf: string): Promise<Patient | null> {
     try {
       const allPatients = await this.getAll();
@@ -215,9 +187,6 @@ class PatientService {
     }
   }
 
-  /**
-   * Validar CPF (básico)
-   */
   validateCPF(cpf: string): boolean {
     const cleanCPF = cpf.replace(/\D/g, '');
     
@@ -227,21 +196,14 @@ class PatientService {
     return true;
   }
 
-  /**
-   * Formatar CPF (adicionar máscara)
-   */
   formatCPF(cpf: string): string {
     const cleanCPF = cpf.replace(/\D/g, '');
     return cleanCPF.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
 
-  /**
-   * Remover máscara do CPF
-   */
   unformatCPF(cpf: string): string {
     return cpf.replace(/\D/g, '');
   }
 }
 
-// Exportar instância única (Singleton)
 export default new PatientService();

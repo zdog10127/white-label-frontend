@@ -1,9 +1,5 @@
 import api from './api';
 
-// ============================================
-// INTERFACES
-// ============================================
-
 export interface LoginRequest {
   email: string;
   password: string;
@@ -13,8 +9,8 @@ export interface RegisterRequest {
   name: string;
   email: string;
   password: string;
-  phone: string; // ADICIONAR
-  confirmPassword: string; // ADICIONAR
+  phone: string; 
+  confirmPassword: string; 
 }
 
 export interface User {
@@ -45,14 +41,7 @@ export interface RegisterResponse {
   message: string;
 }
 
-// ============================================
-// AUTH SERVICE
-// ============================================
-
 class AuthService {
-  /**
-   * Realizar login de usuário
-   */
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
       const response = await api.post<LoginResponse>('/auth/login', credentials);
@@ -63,9 +52,6 @@ class AuthService {
     }
   }
 
-  /**
-   * Registrar novo usuário
-   */
   async register(userData: RegisterRequest): Promise<RegisterResponse> {
     try {
       const response = await api.post<RegisterResponse>('/auth/register', userData);
@@ -76,9 +62,6 @@ class AuthService {
     }
   }
 
-  /**
-   * Verificar se o token JWT ainda é válido
-   */
   async verifyToken(token: string): Promise<boolean> {
     try {
       const response = await api.post('/auth/verify-token', { token });
@@ -89,24 +72,15 @@ class AuthService {
     }
   }
 
-  /**
-   * Fazer logout (limpar dados locais)
-   */
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   }
 
-  /**
-   * Obter token do localStorage
-   */
   getToken(): string | null {
     return localStorage.getItem('token');
   }
 
-  /**
-   * Obter usuário do localStorage
-   */
   getUser(): User | null {
     const userStr = localStorage.getItem('user');
     if (!userStr) return null;
@@ -119,23 +93,16 @@ class AuthService {
     }
   }
 
-  /**
-   * Verificar se usuário está autenticado
-   */
   isAuthenticated(): boolean {
     const token = this.getToken();
     const user = this.getUser();
     return !!(token && user);
   }
 
-  /**
-   * Salvar dados de autenticação
-   */
   saveAuthData(token: string, user: User): void {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
   }
 }
 
-// Exportar instância única (Singleton)
 export default new AuthService();

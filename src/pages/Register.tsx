@@ -22,9 +22,6 @@ import { toast } from "react-toastify";
 import authService from "../services/authService";
 
 const Register: React.FC = () => {
-  // ============================================
-  // STATE
-  // ============================================
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
@@ -38,9 +35,6 @@ const Register: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // ============================================
-  // VALIDAÇÕES
-  // ============================================
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
     return emailRegex.test(email);
@@ -67,7 +61,6 @@ const Register: React.FC = () => {
       return false;
     }
 
-    // ADICIONAR VALIDAÇÃO DE TELEFONE
     if (!phone.trim()) {
       setError("O telefone é obrigatório");
       return false;
@@ -102,14 +95,10 @@ const Register: React.FC = () => {
     return true;
   };
 
-  // ============================================
-  // SUBMIT HANDLER
-  // ============================================
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    // Validar formulário
     if (!validateForm()) {
       return;
     }
@@ -117,22 +106,18 @@ const Register: React.FC = () => {
     try {
       setIsLoading(true);
 
-      console.log("📝 Tentando registrar novo usuário...");
-
-      // Chamar API de registro
       const success = await authService.register({
         name: name.trim(),
         email: email.trim().toLowerCase(),
         password: password,
-        phone: phone.replace(/\D/g, ""), // Remover máscara
-        confirmPassword: confirmPassword, // ADICIONAR
+        phone: phone.replace(/\D/g, ""),
+        confirmPassword: confirmPassword,
       });
 
       if (success) {
         console.log("✅ Registro bem-sucedido!");
         toast.success("Conta criada com sucesso! Redirecionando...");
 
-        // Redirecionar para home após 1 segundo
         setTimeout(() => {
           navigate("/home");
         }, 1000);
@@ -148,9 +133,6 @@ const Register: React.FC = () => {
     }
   };
 
-  // ============================================
-  // RENDER
-  // ============================================
   return (
     <Container
       maxWidth={false}
@@ -177,7 +159,6 @@ const Register: React.FC = () => {
           borderRadius: 4,
         }}
       >
-        {/* Logo/Título */}
         <Box textAlign="center" mb={3}>
           <Typography variant="h4" gutterBottom fontWeight="bold">
             Criar Conta
@@ -186,10 +167,7 @@ const Register: React.FC = () => {
             Sistema de Gestão - AMPARA
           </Typography>
         </Box>
-
-        {/* Formulário */}
         <Box component="form" onSubmit={handleSubmit}>
-          {/* Nome */}
           <TextField
             fullWidth
             label="Nome Completo *"
@@ -205,8 +183,6 @@ const Register: React.FC = () => {
             placeholder="Seu nome completo"
             error={!!error && !name}
           />
-
-          {/* Email */}
           <TextField
             fullWidth
             label="E-mail *"
@@ -223,15 +199,12 @@ const Register: React.FC = () => {
             placeholder="seu@email.com"
             error={!!error && !email}
           />
-
-          {/* ADICIONAR ESTE CAMPO AQUI: */}
           <TextField
             fullWidth
             label="Telefone *"
             variant="outlined"
             value={phone}
             onChange={(e) => {
-              // Aplicar máscara de telefone
               let value = e.target.value.replace(/\D/g, "");
               if (value.length <= 11) {
                 if (value.length <= 2) {
@@ -259,8 +232,6 @@ const Register: React.FC = () => {
             placeholder="(00) 00000-0000"
             error={!!error && !phone}
           />
-
-          {/* Senha */}
           <TextField
             fullWidth
             label="Senha *"
@@ -290,8 +261,6 @@ const Register: React.FC = () => {
               ),
             }}
           />
-
-          {/* Confirmar Senha */}
           <TextField
             fullWidth
             label="Confirmar Senha *"
@@ -321,15 +290,11 @@ const Register: React.FC = () => {
               ),
             }}
           />
-
-          {/* Mensagem de erro */}
           {error && (
             <Alert severity="error" sx={{ mt: 2 }}>
               {error}
             </Alert>
           )}
-
-          {/* Botão de registro */}
           <Button
             fullWidth
             variant="contained"
@@ -350,8 +315,6 @@ const Register: React.FC = () => {
               "Criar Conta"
             )}
           </Button>
-
-          {/* Link para login */}
           <Box textAlign="center" mt={2}>
             <Typography variant="body2" color="text.secondary">
               Já tem uma conta?{" "}
@@ -365,11 +328,9 @@ const Register: React.FC = () => {
             </Typography>
           </Box>
         </Box>
-
-        {/* Rodapé */}
         <Box textAlign="center" mt={4}>
           <Typography variant="caption" color="text.secondary">
-            © 2025 White Label - AMPARA
+            © 2025 MedInova
           </Typography>
         </Box>
       </Paper>

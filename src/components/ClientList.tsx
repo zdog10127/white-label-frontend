@@ -24,6 +24,9 @@ import {
   MenuItem,
   Grid,
   Collapse,
+  FormControlLabel,
+  Checkbox,
+  Menu,
 } from "@mui/material";
 import {
   Edit as EditIcon,
@@ -34,53 +37,52 @@ import {
   Refresh as RefreshIcon,
   FilterList as FilterIcon,
   Clear as ClearIcon,
+  Download as DownloadIcon,
+  Description as DescriptionIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import patientService, { Patient } from "../services/patientService";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import {
+  exportPatientsToExcel,
+  exportFiveYearsReport,
+  exportStatisticsReport,
+} from "../utils/exportUtils";
+import { PatientTableSkeleton } from "./LoadingSkeletons";
 
 const ClientList: React.FC = () => {
-  // ============================================
-  // STATE
-  // ============================================
   const [patients, setPatients] = useState<Patient[]>([]);
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // Busca e filtros
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("Todos");
   const [genderFilter, setGenderFilter] = useState<string>("Todos");
   const [ageFilter, setAgeFilter] = useState<string>("Todos");
+  const [treatmentYearFilter, setTreatmentYearFilter] = useState<string>("Todos");
+  const [fiveYearsFilter, setFiveYearsFilter] = useState<boolean>(false);
+  const [authorizeImageFilter, setAuthorizeImageFilter] = useState<boolean>(false);
   const [showFilters, setShowFilters] = useState<boolean>(false);
-  
-  // Paginação
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  
-  // Modal de exclusão
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState<{ id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [exportMenuAnchor, setExportMenuAnchor] = useState<null | HTMLElement>(null);
+  const exportMenuOpen = Boolean(exportMenuAnchor);
 
   const navigate = useNavigate();
 
-  // ============================================
-  // CARREGAR PACIENTES DA API
-  // ============================================
   const loadPatients = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      console.log('📋 Carregando pacientes da API...');
       const data = await patientService.getAll();
       
-      console.log('✅ Pacientes carregados:', data.length);
       setPatients(data);
-      applyFilters(data, searchTerm, statusFilter, genderFilter, ageFilter);
+      applyFilters(data, searchTerm, statusFilter, genderFilter, ageFilter, treatmentYearFilter, fiveYearsFilter, authorizeImageFilter);
       
       if (data.length > 0) {
         toast.success(`${data.length} paciente(s) carregado(s)`);
@@ -94,19 +96,18 @@ const ClientList: React.FC = () => {
     }
   };
 
-  // ============================================
-  // APLICAR FILTROS
-  // ============================================
   const applyFilters = (
     data: Patient[],
     search: string,
     status: string,
     gender: string,
-    age: string
+    age: string,
+    treatmentYear: string,
+    fiveYears: boolean,
+    authorizeImage: boolean
   ) => {
     let filtered = [...data];
 
-    // Filtro de busca
     if (search.trim()) {
       const searchLower = search.toLowerCase();
       filtered = filtered.filter((patient) =>
@@ -117,7 +118,6 @@ const ClientList: React.FC = () => {
       );
     }
 
-    // Filtro de status
     if (status !== "Todos") {
       filtered = filtered.filter((patient) => {
         if (status === "Ativo") return patient.active === true;
@@ -127,12 +127,10 @@ const ClientList: React.FC = () => {
       });
     }
 
-    // Filtro de gênero
     if (gender !== "Todos") {
       filtered = filtered.filter((patient) => patient.gender === gender);
     }
 
-    // Filtro de idade
     if (age !== "Todos") {
       filtered = filtered.filter((patient) => {
         const patientAge = calculateAge(patient.birthDate);
@@ -145,31 +143,57 @@ const ClientList: React.FC = () => {
       });
     }
 
+    if (treatmentYear !== "Todos") {
+      filtered = filtered.filter((patient) => 
+        patient.treatmentYear?.toString() === treatmentYear
+      );
+    }
+
+    if (fiveYears) {
+      filtered = filtered.filter((patient) => patient.fiveYears === true);
+    }
+
+    if (authorizeImage) {
+      filtered = filtered.filter((patient) => patient.authorizeImage === true);
+    }
+
     setFilteredPatients(filtered);
-    setPage(0); // Reset para primeira página
+    setPage(0); 
   };
 
-  // ============================================
-  // HANDLERS DE FILTROS
-  // ============================================
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
-    applyFilters(patients, value, statusFilter, genderFilter, ageFilter);
+    applyFilters(patients, value, statusFilter, genderFilter, ageFilter, treatmentYearFilter, fiveYearsFilter, authorizeImageFilter);
   };
 
   const handleStatusChange = (value: string) => {
     setStatusFilter(value);
-    applyFilters(patients, searchTerm, value, genderFilter, ageFilter);
+    applyFilters(patients, searchTerm, value, genderFilter, ageFilter, treatmentYearFilter, fiveYearsFilter, authorizeImageFilter);
   };
 
   const handleGenderChange = (value: string) => {
     setGenderFilter(value);
-    applyFilters(patients, searchTerm, statusFilter, value, ageFilter);
+    applyFilters(patients, searchTerm, statusFilter, value, ageFilter, treatmentYearFilter, fiveYearsFilter, authorizeImageFilter);
   };
 
   const handleAgeChange = (value: string) => {
     setAgeFilter(value);
-    applyFilters(patients, searchTerm, statusFilter, genderFilter, value);
+    applyFilters(patients, searchTerm, statusFilter, genderFilter, value, treatmentYearFilter, fiveYearsFilter, authorizeImageFilter);
+  };
+
+  const handleTreatmentYearChange = (value: string) => {
+    setTreatmentYearFilter(value);
+    applyFilters(patients, searchTerm, statusFilter, genderFilter, ageFilter, value, fiveYearsFilter, authorizeImageFilter);
+  };
+
+  const handleFiveYearsChange = (checked: boolean) => {
+    setFiveYearsFilter(checked);
+    applyFilters(patients, searchTerm, statusFilter, genderFilter, ageFilter, treatmentYearFilter, checked, authorizeImageFilter);
+  };
+
+  const handleAuthorizeImageChange = (checked: boolean) => {
+    setAuthorizeImageFilter(checked);
+    applyFilters(patients, searchTerm, statusFilter, genderFilter, ageFilter, treatmentYearFilter, fiveYearsFilter, checked);
   };
 
   const handleClearFilters = () => {
@@ -177,12 +201,12 @@ const ClientList: React.FC = () => {
     setStatusFilter("Todos");
     setGenderFilter("Todos");
     setAgeFilter("Todos");
-    applyFilters(patients, "", "Todos", "Todos", "Todos");
+    setTreatmentYearFilter("Todos");
+    setFiveYearsFilter(false);
+    setAuthorizeImageFilter(false);
+    applyFilters(patients, "", "Todos", "Todos", "Todos", "Todos", false, false);
   };
 
-  // ============================================
-  // MODAL DE EXCLUSÃO
-  // ============================================
   const openDeleteModal = (id: string, name: string) => {
     setPatientToDelete({ id, name });
     setDeleteModalOpen(true);
@@ -193,8 +217,7 @@ const ClientList: React.FC = () => {
 
     try {
       setDeleting(true);
-      console.log('🗑️ Deletando paciente:', patientToDelete.id);
-      
+
       await patientService.delete(patientToDelete.id);
       
       toast.success('Paciente excluído com sucesso!');
@@ -216,9 +239,6 @@ const ClientList: React.FC = () => {
     setPatientToDelete(null);
   };
 
-  // ============================================
-  // PAGINAÇÃO
-  // ============================================
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -230,16 +250,10 @@ const ClientList: React.FC = () => {
     setPage(0);
   };
 
-  // ============================================
-  // CARREGAR AO MONTAR
-  // ============================================
   useEffect(() => {
     loadPatients();
   }, []);
 
-  // ============================================
-  // FORMATAR DATA
-  // ============================================
   const formatDate = (dateString?: string): string => {
     if (!dateString) return '-';
     
@@ -251,9 +265,6 @@ const ClientList: React.FC = () => {
     }
   };
 
-  // ============================================
-  // CALCULAR IDADE
-  // ============================================
   const calculateAge = (birthDate: string): number => {
     const today = new Date();
     const birth = new Date(birthDate);
@@ -267,35 +278,86 @@ const ClientList: React.FC = () => {
     return age;
   };
 
-  // ============================================
-  // DADOS PAGINADOS
-  // ============================================
   const paginatedPatients = filteredPatients.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
 
-  // ============================================
-  // CONTADOR DE FILTROS ATIVOS
-  // ============================================
+  const getAvailableTreatmentYears = (): string[] => {
+    const years = new Set<string>();
+    patients.forEach(patient => {
+      if (patient.treatmentYear) {
+        years.add(patient.treatmentYear.toString());
+      }
+    });
+    return Array.from(years).sort((a, b) => parseInt(b) - parseInt(a)); 
+  };
+
   const activeFiltersCount = [
     statusFilter !== "Todos",
     genderFilter !== "Todos",
-    ageFilter !== "Todos"
+    ageFilter !== "Todos",
+    treatmentYearFilter !== "Todos",
+    fiveYearsFilter,
+    authorizeImageFilter,
   ].filter(Boolean).length;
 
-  // ============================================
-  // RENDER
-  // ============================================
+  const handleExportMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setExportMenuAnchor(event.currentTarget);
+  };
+
+  const handleExportMenuClose = () => {
+    setExportMenuAnchor(null);
+  };
+
+  const handleExportAll = () => {
+    try {
+      exportPatientsToExcel(filteredPatients, `pacientes_${new Date().toISOString().split('T')[0]}.xlsx`);
+      toast.success(`${filteredPatients.length} paciente(s) exportado(s)!`);
+      handleExportMenuClose();
+    } catch (error) {
+      toast.error("Erro ao exportar dados");
+      console.error(error);
+    }
+  };
+
+  const handleExportFiveYears = () => {
+    try {
+      exportFiveYearsReport(patients, `pacientes_5anos_${new Date().toISOString().split('T')[0]}.xlsx`);
+      toast.success("Relatório de pacientes com 5 anos exportado!");
+      handleExportMenuClose();
+    } catch (error) {
+      toast.error("Erro ao exportar relatório");
+      console.error(error);
+    }
+  };
+
+  const handleExportStatistics = () => {
+    try {
+      exportStatisticsReport(patients, `estatisticas_${new Date().toISOString().split('T')[0]}.xlsx`);
+      toast.success("Estatísticas exportadas!");
+      handleExportMenuClose();
+    } catch (error) {
+      toast.error("Erro ao exportar estatísticas");
+      console.error(error);
+    }
+  };
+
   return (
     <Box p={3}>
-      {/* Cabeçalho */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h5" fontWeight="bold">
           Listagem de Clientes
         </Typography>
-        
         <Stack direction="row" spacing={2}>
+          <Button
+            variant="outlined"
+            startIcon={<DownloadIcon />}
+            onClick={handleExportMenuOpen}
+            disabled={loading || patients.length === 0}
+          >
+            Exportar
+          </Button>
           <Button
             variant="outlined"
             startIcon={<RefreshIcon />}
@@ -304,7 +366,6 @@ const ClientList: React.FC = () => {
           >
             Atualizar
           </Button>
-          
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -314,8 +375,24 @@ const ClientList: React.FC = () => {
           </Button>
         </Stack>
       </Box>
-
-      {/* Busca e Botão de Filtros */}
+      <Menu
+        anchorEl={exportMenuAnchor}
+        open={exportMenuOpen}
+        onClose={handleExportMenuClose}
+      >
+        <MenuItem onClick={handleExportAll}>
+          <DescriptionIcon sx={{ mr: 1 }} fontSize="small" />
+          Exportar Lista Atual ({filteredPatients.length} pacientes)
+        </MenuItem>
+        <MenuItem onClick={handleExportFiveYears}>
+          <DescriptionIcon sx={{ mr: 1 }} fontSize="small" />
+          Relatório: Pacientes com 5 Anos
+        </MenuItem>
+        <MenuItem onClick={handleExportStatistics}>
+          <DescriptionIcon sx={{ mr: 1 }} fontSize="small" />
+          Relatório: Estatísticas Gerais
+        </MenuItem>
+      </Menu>
       <Stack direction="row" spacing={2} mb={2}>
         <TextField
           fullWidth
@@ -332,7 +409,6 @@ const ClientList: React.FC = () => {
             ),
           }}
         />
-        
         <Button
           variant={showFilters ? "contained" : "outlined"}
           startIcon={<FilterIcon />}
@@ -342,8 +418,6 @@ const ClientList: React.FC = () => {
           Filtros {activeFiltersCount > 0 && `(${activeFiltersCount})`}
         </Button>
       </Stack>
-
-      {/* Painel de Filtros Avançados */}
       <Collapse in={showFilters}>
         <Paper sx={{ p: 2, mb: 2 }}>
           <Grid container spacing={2} alignItems="center">
@@ -362,7 +436,6 @@ const ClientList: React.FC = () => {
                 </Select>
               </FormControl>
             </Grid>
-
             <Grid item xs={12} md={3}>
               <FormControl fullWidth size="small">
                 <InputLabel>Gênero</InputLabel>
@@ -378,7 +451,6 @@ const ClientList: React.FC = () => {
                 </Select>
               </FormControl>
             </Grid>
-
             <Grid item xs={12} md={3}>
               <FormControl fullWidth size="small">
                 <InputLabel>Faixa Etária</InputLabel>
@@ -396,7 +468,43 @@ const ClientList: React.FC = () => {
                 </Select>
               </FormControl>
             </Grid>
-
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Ano Tratamento</InputLabel>
+                <Select
+                  value={treatmentYearFilter}
+                  label="Ano Tratamento"
+                  onChange={(e) => handleTreatmentYearChange(e.target.value)}
+                >
+                  <MenuItem value="Todos">Todos</MenuItem>
+                  {getAvailableTreatmentYears().map((year) => (
+                    <MenuItem key={year} value={year}>{year}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={fiveYearsFilter}
+                    onChange={(e) => handleFiveYearsChange(e.target.checked)}
+                  />
+                }
+                label="Completou 5 anos"
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={authorizeImageFilter}
+                    onChange={(e) => handleAuthorizeImageChange(e.target.checked)}
+                  />
+                }
+                label="Autoriza imagem"
+              />
+            </Grid>
             <Grid item xs={12} md={3}>
               <Button
                 fullWidth
@@ -411,8 +519,6 @@ const ClientList: React.FC = () => {
           </Grid>
         </Paper>
       </Collapse>
-
-      {/* Contador */}
       <Box mb={2}>
         <Typography variant="body2" color="text.secondary">
           Exibindo {paginatedPatients.length} de {filteredPatients.length} cliente(s)
@@ -420,15 +526,11 @@ const ClientList: React.FC = () => {
           {activeFiltersCount > 0 && ` • ${activeFiltersCount} filtro(s) ativo(s)`}
         </Typography>
       </Box>
-
-      {/* Loading */}
       {loading && (
-        <Box display="flex" justifyContent="center" py={5}>
-          <CircularProgress />
+        <Box mb={3}>
+          <PatientTableSkeleton rows={rowsPerPage} />
         </Box>
       )}
-
-      {/* Erro */}
       {error && !loading && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
@@ -437,8 +539,6 @@ const ClientList: React.FC = () => {
           </Button>
         </Alert>
       )}
-
-      {/* Lista Vazia */}
       {!loading && !error && filteredPatients.length === 0 && (
         <Paper sx={{ p: 5, textAlign: 'center' }}>
           <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -467,8 +567,6 @@ const ClientList: React.FC = () => {
           )}
         </Paper>
       )}
-
-      {/* Tabela */}
       {!loading && !error && paginatedPatients.length > 0 && (
         <>
           <TableContainer component={Paper}>
@@ -561,8 +659,6 @@ const ClientList: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-
-          {/* Paginação */}
           <TablePagination
             component="div"
             count={filteredPatients.length}
@@ -578,8 +674,6 @@ const ClientList: React.FC = () => {
           />
         </>
       )}
-
-      {/* Modal de Confirmação de Exclusão */}
       <ConfirmDeleteModal
         open={deleteModalOpen}
         onClose={handleCancelDelete}

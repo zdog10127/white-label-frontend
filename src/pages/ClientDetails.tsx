@@ -1,477 +1,936 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
-  Paper,
-  Typography,
   Button,
+  Typography,
+  Grid,
+  Paper,
+  Chip,
+  Divider,
   CircularProgress,
   Alert,
-  Grid,
-  Divider,
-  Chip,
+  Avatar,
+  IconButton,
+  Tooltip,
   Card,
   CardContent,
-  Stack,
-  Avatar,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Tab,
 } from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
   Edit as EditIcon,
-  PersonOutline as PersonIcon,
+  Delete as DeleteIcon,
+  Person as PersonIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
-  LocationOn as LocationIcon,
-  LocalHospital as HospitalIcon,
-  MedicalServices as MedicalIcon,
+  Home as HomeIcon,
+  LocalHospital as LocalHospitalIcon,
+  Description as DescriptionIcon,
+  CheckCircle as CheckCircleIcon,
+  Cancel as CancelIcon,
   CalendarToday as CalendarIcon,
+  Image as ImageIcon,
 } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import patientService, { Patient } from "../services/patientService";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import { PatientDetailsSkeleton } from "../components/LoadingSkeletons";
+import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
+
+dayjs.locale("pt-br");
 
 const ClientDetails: React.FC = () => {
-  // ============================================
-  // STATE
-  // ============================================
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<boolean>(false);
 
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-
-  // ============================================
-  // CARREGAR PACIENTE
-  // ============================================
-  const loadPatient = async () => {
+  useEffect(() => {
     if (!id) {
-      setError("ID do paciente não fornecido");
-      setLoading(false);
+      navigate("/clientes");
       return;
     }
+    loadPatient();
+  }, [id]);
 
+  const loadPatient = async () => {
     try {
       setLoading(true);
-      setError(null);
-
-      console.log('📋 Carregando detalhes do paciente:', id);
-      const data = await patientService.getById(id);
-
-      console.log('✅ Paciente carregado:', data);
+      const data = await patientService.getById(id!);
       setPatient(data);
     } catch (error: any) {
-      console.error('❌ Erro ao carregar paciente:', error);
-      setError(error.message);
-      toast.error('Erro ao carregar detalhes do paciente');
+      console.error("Erro ao carregar paciente:", error);
+      setError(error.message || "Erro ao carregar dados do paciente");
+      toast.error(error.message || "Erro ao carregar dados do paciente");
     } finally {
       setLoading(false);
     }
   };
 
-  // ============================================
-  // CARREGAR AO MONTAR
-  // ============================================
-  useEffect(() => {
-    loadPatient();
-  }, [id]);
-
-  // ============================================
-  // FORMATAR DATA
-  // ============================================
-  const formatDate = (dateString?: string): string => {
-    if (!dateString) return '-';
-
+  const handleDelete = async () => {
     try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('pt-BR');
-    } catch {
-      return dateString;
+      setDeleting(true);
+      await patientService.delete(id!);
+      toast.success("Paciente excluído com sucesso!");
+      navigate("/clientes");
+    } catch (error: any) {
+      console.error("Erro ao excluir:", error);
+      toast.error(error.message || "Erro ao excluir paciente");
+    } finally {
+      setDeleting(false);
+      setDeleteModalOpen(false);
     }
   };
 
-  // ============================================
-  // CALCULAR IDADE
-  // ============================================
   const calculateAge = (birthDate: string): number => {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-
-    return age;
+    return dayjs().diff(dayjs(birthDate), "year");
   };
 
-  // ============================================
-  // RENDER - LOADING
-  // ============================================
+  const formatDate = (date?: string): string => {
+    return date ? dayjs(date).format("DD/MM/YYYY") : "Não informado";
+  };
+
+  const getStatusColor = (
+    status?: string,
+  ): "success" | "warning" | "error" | "default" => {
+    switch (status) {
+      case "Active":
+        return "success";
+      case "Under Review":
+        return "warning";
+      case "Inactive":
+        return "error";
+      default:
+        return "default";
+    }
+  };
+
+  const getStatusLabel = (status?: string): string => {
+    switch (status) {
+      case "Active":
+        return "Ativo";
+      case "Under Review":
+        return "Em Análise";
+      case "Inactive":
+        return "Inativo";
+      case "Completed":
+        return "Concluído";
+      default:
+        return status || "Desconhecido";
+    }
+  };
+
+  const countDeliveredDocuments = (): { delivered: number; total: number } => {
+    if (!patient?.documents) return { delivered: 0, total: 10 };
+
+    const docs = patient.documents;
+    const total = 10;
+    const delivered = [
+      docs.identity,
+      docs.cpfDoc,
+      docs.marriageCertificate,
+      docs.medicalReport,
+      docs.recentExams,
+      docs.addressProof,
+      docs.incomeProof,
+      docs.hospitalCardDoc,
+      docs.susCardDoc,
+      docs.biopsyResultDoc,
+    ].filter(Boolean).length;
+
+    return { delivered, total };
+  };
+
   if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-        <CircularProgress />
-      </Box>
-    );
+    return <PatientDetailsSkeleton />;
   }
 
-  // ============================================
-  // RENDER - ERRO
-  // ============================================
   if (error || !patient) {
     return (
       <Box p={3}>
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {error || 'Paciente não encontrado'}
+        <Alert severity="error" onClose={() => navigate("/clientes")}>
+          {error || "Paciente não encontrado"}
         </Alert>
-        <Button
-          variant="contained"
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/clientes')}
-        >
-          Voltar para Lista
-        </Button>
       </Box>
     );
   }
 
-  // ============================================
-  // RENDER - DETALHES
-  // ============================================
+  const docStats = countDeliveredDocuments();
+
   return (
     <Box p={3}>
-      {/* Cabeçalho */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box
+        mb={3}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <Box display="flex" alignItems="center" gap={2}>
-          <Button
-            variant="outlined"
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/clientes')}
-          >
-            Voltar
-          </Button>
-          <Typography variant="h4" fontWeight="bold">
-            Detalhes do Cliente
-          </Typography>
-        </Box>
-
-        <Button
-          variant="contained"
-          startIcon={<EditIcon />}
-          onClick={() => navigate(`/clientes/${id}/editar`)}
-        >
-          Editar
-        </Button>
-      </Box>
-
-      {/* Card Principal - Informações Básicas */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Box display="flex" alignItems="center" gap={3} mb={3}>
-          <Avatar sx={{ width: 80, height: 80, bgcolor: 'primary.main' }}>
-            <PersonIcon sx={{ fontSize: 50 }} />
-          </Avatar>
-          <Box flex={1}>
-            <Typography variant="h5" fontWeight="bold" gutterBottom>
+          <IconButton onClick={() => navigate("/clientes")} color="primary">
+            <ArrowBackIcon />
+          </IconButton>
+          <Box>
+            <Typography variant="h4" fontWeight="bold">
               {patient.name}
             </Typography>
-            <Stack direction="row" spacing={2}>
-              <Chip
-                label={patient.status || 'Em Análise'}
-                color={patient.active ? 'success' : 'default'}
-              />
-              <Chip label={`${calculateAge(patient.birthDate)} anos`} variant="outlined" />
-              <Chip label={patient.gender} variant="outlined" />
-            </Stack>
+            <Typography variant="body2" color="text.secondary">
+              CPF: {patientService.formatCPF(patient.cpf)} •{" "}
+              {calculateAge(patient.birthDate)} anos
+            </Typography>
           </Box>
         </Box>
-
-        <Divider sx={{ my: 3 }} />
-
-        <Grid container spacing={3}>
-          {/* CPF */}
-          <Grid item xs={12} md={6}>
-            <Typography variant="caption" color="text.secondary">
-              CPF
-            </Typography>
-            <Typography variant="body1" fontWeight="medium">
-              {patientService.formatCPF(patient.cpf)}
-            </Typography>
-          </Grid>
-
-          {/* RG */}
-          {patient.rg && (
-            <Grid item xs={12} md={6}>
-              <Typography variant="caption" color="text.secondary">
-                RG
-              </Typography>
-              <Typography variant="body1" fontWeight="medium">
-                {patient.rg}
-              </Typography>
-            </Grid>
-          )}
-
-          {/* Data de Nascimento */}
-          <Grid item xs={12} md={6}>
-            <Typography variant="caption" color="text.secondary">
-              Data de Nascimento
-            </Typography>
-            <Typography variant="body1" fontWeight="medium">
-              {formatDate(patient.birthDate)}
-            </Typography>
-          </Grid>
-
-          {/* Estado Civil */}
-          {patient.maritalStatus && (
-            <Grid item xs={12} md={6}>
-              <Typography variant="caption" color="text.secondary">
-                Estado Civil
-              </Typography>
-              <Typography variant="body1" fontWeight="medium">
-                {patient.maritalStatus}
-              </Typography>
-            </Grid>
-          )}
-        </Grid>
-      </Paper>
-
-      {/* Contato */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Box display="flex" alignItems="center" gap={1} mb={2}>
-            <PhoneIcon color="primary" />
-            <Typography variant="h6" fontWeight="bold">
-              Contato
-            </Typography>
-          </Box>
-
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
-              <Typography variant="caption" color="text.secondary">
-                Telefone Principal
-              </Typography>
-              <Typography variant="body1" fontWeight="medium">
-                {patient.phone}
-              </Typography>
-            </Grid>
-
-            {patient.secondaryPhone && (
-              <Grid item xs={12} md={4}>
-                <Typography variant="caption" color="text.secondary">
-                  Telefone Secundário
-                </Typography>
-                <Typography variant="body1" fontWeight="medium">
-                  {patient.secondaryPhone}
-                </Typography>
-              </Grid>
-            )}
-
-            {patient.email && (
-              <Grid item xs={12} md={4}>
-                <Typography variant="caption" color="text.secondary">
-                  E-mail
-                </Typography>
-                <Typography variant="body1" fontWeight="medium">
-                  {patient.email}
-                </Typography>
-              </Grid>
-            )}
-          </Grid>
-        </CardContent>
-      </Card>
-
-      {/* Endereço */}
-      {patient.address && (
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Box display="flex" alignItems="center" gap={1} mb={2}>
-              <LocationIcon color="primary" />
-              <Typography variant="h6" fontWeight="bold">
-                Endereço
-              </Typography>
-            </Box>
-
-            <Typography variant="body1">
-              {patient.address.street}
-              {patient.address.number && `, ${patient.address.number}`}
-              {patient.address.complement && ` - ${patient.address.complement}`}
-            </Typography>
-            <Typography variant="body1">
-              {patient.address.neighborhood}
-              {patient.address.city && ` - ${patient.address.city}`}
-              {patient.address.state && `/${patient.address.state}`}
-            </Typography>
-            {patient.address.zipCode && (
-              <Typography variant="body1">
-                CEP: {patient.address.zipCode}
-              </Typography>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Informações de Câncer */}
-      {patient.cancer && (
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Box display="flex" alignItems="center" gap={1} mb={2}>
-              <HospitalIcon color="primary" />
-              <Typography variant="h6" fontWeight="bold">
-                Informações sobre Câncer
-              </Typography>
-            </Box>
-
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Typography variant="caption" color="text.secondary">
-                  Tipo de Câncer
-                </Typography>
-                <Typography variant="body1" fontWeight="medium">
-                  {patient.cancer.type}
-                </Typography>
-              </Grid>
-
-              {patient.cancer.stage && (
-                <Grid item xs={12} md={6}>
-                  <Typography variant="caption" color="text.secondary">
-                    Estágio
-                  </Typography>
-                  <Typography variant="body1" fontWeight="medium">
-                    {patient.cancer.stage}
-                  </Typography>
-                </Grid>
-              )}
-
-              {patient.cancer.detectionDate && (
-                <Grid item xs={12} md={6}>
-                  <Typography variant="caption" color="text.secondary">
-                    Data de Detecção
-                  </Typography>
-                  <Typography variant="body1" fontWeight="medium">
-                    {formatDate(patient.cancer.detectionDate)}
-                  </Typography>
-                </Grid>
-              )}
-
-              {patient.cancer.treatmentLocation && (
-                <Grid item xs={12} md={6}>
-                  <Typography variant="caption" color="text.secondary">
-                    Local de Tratamento
-                  </Typography>
-                  <Typography variant="body1" fontWeight="medium">
-                    {patient.cancer.treatmentLocation}
-                  </Typography>
-                </Grid>
-              )}
-
-              {patient.cancer.currentTreatment && (
-                <Grid item xs={12}>
-                  <Typography variant="caption" color="text.secondary">
-                    Tratamento Atual
-                  </Typography>
-                  <Typography variant="body1" fontWeight="medium">
-                    {patient.cancer.currentTreatment}
-                  </Typography>
-                </Grid>
-              )}
-            </Grid>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Histórico Médico */}
-      {patient.medicalHistory && (
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Box display="flex" alignItems="center" gap={1} mb={2}>
-              <MedicalIcon color="primary" />
-              <Typography variant="h6" fontWeight="bold">
-                Histórico Médico
-              </Typography>
-            </Box>
-
-            <Stack direction="row" spacing={1} flexWrap="wrap">
-              {patient.medicalHistory.diabetes && <Chip label="Diabetes" color="warning" size="small" />}
-              {patient.medicalHistory.hypertension && <Chip label="Hipertensão" color="warning" size="small" />}
-              {patient.medicalHistory.cholesterol && <Chip label="Colesterol" color="warning" size="small" />}
-              {patient.medicalHistory.triglycerides && <Chip label="Triglicerídeos" color="warning" size="small" />}
-              {patient.medicalHistory.kidneyProblems && <Chip label="Problemas Renais" color="warning" size="small" />}
-              {patient.medicalHistory.anxiety && <Chip label="Ansiedade" color="warning" size="small" />}
-              {patient.medicalHistory.heartAttack && <Chip label="Infarto" color="error" size="small" />}
-            </Stack>
-
-            {patient.medicalHistory.others && (
-              <Box mt={2}>
-                <Typography variant="caption" color="text.secondary">
-                  Outros
-                </Typography>
-                <Typography variant="body1">
-                  {patient.medicalHistory.others}
+        <Box display="flex" gap={1}>
+          <Tooltip title="Editar">
+            <Button
+              variant="contained"
+              startIcon={<EditIcon />}
+              onClick={() => navigate(`/clientes/${id}/editar`)}
+            >
+              Editar
+            </Button>
+          </Tooltip>
+          <Tooltip title="Excluir">
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => setDeleteModalOpen(true)}
+            >
+              Excluir
+            </Button>
+          </Tooltip>
+        </Box>
+      </Box>
+      <Box mb={3} display="flex" gap={1} flexWrap="wrap">
+        <Chip
+          label={getStatusLabel(patient.status)}
+          color={getStatusColor(patient.status)}
+          variant="filled"
+        />
+        <Chip
+          label={patient.active ? "Ativo" : "Inativo"}
+          color={patient.active ? "success" : "default"}
+          variant="outlined"
+        />
+        {patient.fiveYears && (
+          <Chip
+            label="Completou 5 anos"
+            color="info"
+            icon={<CheckCircleIcon />}
+          />
+        )}
+        {patient.authorizeImage && (
+          <Chip
+            label="Autoriza imagem"
+            color="secondary"
+            icon={<ImageIcon />}
+          />
+        )}
+        <Chip
+          label={`Documentos: ${docStats.delivered}/${docStats.total}`}
+          color="info"
+          icon={<DescriptionIcon />}
+        />
+      </Box>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Box display="flex" alignItems="center" mb={2}>
+                <PersonIcon color="primary" sx={{ mr: 1 }} />
+                <Typography variant="h6" fontWeight="bold">
+                  Dados Pessoais
                 </Typography>
               </Box>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Datas Importantes */}
-      <Card>
-        <CardContent>
-          <Box display="flex" alignItems="center" gap={1} mb={2}>
-            <CalendarIcon color="primary" />
-            <Typography variant="h6" fontWeight="bold">
-              Datas Importantes
-            </Typography>
-          </Box>
-
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
-              <Typography variant="caption" color="text.secondary">
-                Data de Cadastro
-              </Typography>
-              <Typography variant="body1" fontWeight="medium">
-                {formatDate(patient.registrationDate)}
-              </Typography>
-            </Grid>
-
-            {patient.lastReviewDate && (
-              <Grid item xs={12} md={4}>
-                <Typography variant="caption" color="text.secondary">
-                  Última Revisão
+              <Divider sx={{ mb: 2 }} />
+              <List dense>
+                <ListItem>
+                  <ListItemText
+                    primary="Nome Completo"
+                    secondary={patient.name}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      color: "text.secondary",
+                    }}
+                    secondaryTypographyProps={{
+                      variant: "body1",
+                      fontWeight: "medium",
+                    }}
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemText
+                    primary="CPF"
+                    secondary={patientService.formatCPF(patient.cpf)}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      color: "text.secondary",
+                    }}
+                    secondaryTypographyProps={{
+                      variant: "body1",
+                      fontWeight: "medium",
+                    }}
+                  />
+                </ListItem>
+                {patient.rg && (
+                  <ListItem>
+                    <ListItemText
+                      primary="RG"
+                      secondary={patient.rg}
+                      primaryTypographyProps={{
+                        variant: "body2",
+                        color: "text.secondary",
+                      }}
+                      secondaryTypographyProps={{
+                        variant: "body1",
+                        fontWeight: "medium",
+                      }}
+                    />
+                  </ListItem>
+                )}
+                <ListItem>
+                  <ListItemText
+                    primary="Data de Nascimento"
+                    secondary={`${formatDate(patient.birthDate)} (${calculateAge(patient.birthDate)} anos)`}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      color: "text.secondary",
+                    }}
+                    secondaryTypographyProps={{
+                      variant: "body1",
+                      fontWeight: "medium",
+                    }}
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemText
+                    primary="Gênero"
+                    secondary={patient.gender}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      color: "text.secondary",
+                    }}
+                    secondaryTypographyProps={{
+                      variant: "body1",
+                      fontWeight: "medium",
+                    }}
+                  />
+                </ListItem>
+                {patient.maritalStatus && (
+                  <ListItem>
+                    <ListItemText
+                      primary="Estado Civil"
+                      secondary={patient.maritalStatus}
+                      primaryTypographyProps={{
+                        variant: "body2",
+                        color: "text.secondary",
+                      }}
+                      secondaryTypographyProps={{
+                        variant: "body1",
+                        fontWeight: "medium",
+                      }}
+                    />
+                  </ListItem>
+                )}
+                <ListItem>
+                  <ListItemText
+                    primary="Data de Cadastro"
+                    secondary={formatDate(patient.registrationDate)}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      color: "text.secondary",
+                    }}
+                    secondaryTypographyProps={{
+                      variant: "body1",
+                      fontWeight: "medium",
+                    }}
+                  />
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Box display="flex" alignItems="center" mb={2}>
+                <PhoneIcon color="primary" sx={{ mr: 1 }} />
+                <Typography variant="h6" fontWeight="bold">
+                  Contato
                 </Typography>
-                <Typography variant="body1" fontWeight="medium">
-                  {formatDate(patient.lastReviewDate)}
+              </Box>
+              <Divider sx={{ mb: 2 }} />
+              <List dense>
+                <ListItem>
+                  <ListItemIcon>
+                    <PhoneIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Telefone Principal"
+                    secondary={patient.phone}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      color: "text.secondary",
+                    }}
+                    secondaryTypographyProps={{
+                      variant: "body1",
+                      fontWeight: "medium",
+                    }}
+                  />
+                </ListItem>
+                {patient.secondaryPhone && (
+                  <ListItem>
+                    <ListItemIcon>
+                      <PhoneIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Telefone Secundário"
+                      secondary={patient.secondaryPhone}
+                      primaryTypographyProps={{
+                        variant: "body2",
+                        color: "text.secondary",
+                      }}
+                      secondaryTypographyProps={{
+                        variant: "body1",
+                        fontWeight: "medium",
+                      }}
+                    />
+                  </ListItem>
+                )}
+                {patient.email && (
+                  <ListItem>
+                    <ListItemIcon>
+                      <EmailIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="E-mail"
+                      secondary={patient.email}
+                      primaryTypographyProps={{
+                        variant: "body2",
+                        color: "text.secondary",
+                      }}
+                      secondaryTypographyProps={{
+                        variant: "body1",
+                        fontWeight: "medium",
+                      }}
+                    />
+                  </ListItem>
+                )}
+              </List>
+            </CardContent>
+          </Card>
+          <Card sx={{ mt: 3 }}>
+            <CardContent>
+              <Box display="flex" alignItems="center" mb={2}>
+                <HomeIcon color="primary" sx={{ mr: 1 }} />
+                <Typography variant="h6" fontWeight="bold">
+                  Endereço
                 </Typography>
-              </Grid>
-            )}
-
-            {patient.nextReviewDate && (
-              <Grid item xs={12} md={4}>
-                <Typography variant="caption" color="text.secondary">
-                  Próxima Revisão
+              </Box>
+              <Divider sx={{ mb: 2 }} />
+              {patient.address ? (
+                <Typography variant="body1">
+                  {patient.address.street && `${patient.address.street}, `}
+                  {patient.address.number && `${patient.address.number}`}
+                  {patient.address.complement &&
+                    ` - ${patient.address.complement}`}
+                  <br />
+                  {patient.address.neighborhood}
+                  <br />
+                  {patient.address.city || "Araxá"} -{" "}
+                  {patient.address.state || "MG"}
+                  {patient.address.zipCode &&
+                    ` • CEP: ${patient.address.zipCode}`}
                 </Typography>
-                <Typography variant="body1" fontWeight="medium">
-                  {formatDate(patient.nextReviewDate)}
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  Endereço não informado
                 </Typography>
-              </Grid>
-            )}
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Box display="flex" alignItems="center" mb={2}>
+                <LocalHospitalIcon color="primary" sx={{ mr: 1 }} />
+                <Typography variant="h6" fontWeight="bold">
+                  Informações de Câncer
+                </Typography>
+              </Box>
+              <Divider sx={{ mb: 2 }} />
+              {patient.cancer ? (
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Typography variant="body2" color="text.secondary">
+                      Tipo de Câncer
+                    </Typography>
+                    <Typography variant="body1" fontWeight="medium">
+                      {patient.cancer.type}
+                    </Typography>
+                  </Grid>
+                  {patient.cancer.stage && (
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Typography variant="body2" color="text.secondary">
+                        Estágio
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        {patient.cancer.stage}
+                      </Typography>
+                    </Grid>
+                  )}
+                  {patient.cancer.detectionDate && (
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Typography variant="body2" color="text.secondary">
+                        Data de Detecção
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        {formatDate(patient.cancer.detectionDate)}
+                      </Typography>
+                    </Grid>
+                  )}
+                  {patient.treatmentYear && (
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Typography variant="body2" color="text.secondary">
+                        Ano do Tratamento
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        {patient.treatmentYear}
+                      </Typography>
+                    </Grid>
+                  )}
+                  {patient.cancer.treatmentLocation && (
+                    <Grid item xs={12} sm={6} md={4}>
+                      <Typography variant="body2" color="text.secondary">
+                        Local de Tratamento
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        {patient.cancer.treatmentLocation}
+                      </Typography>
+                    </Grid>
+                  )}
+                  {patient.cancer.treatmentStartDate && (
+                    <Grid item xs={12} sm={6} md={4}>
+                      <Typography variant="body2" color="text.secondary">
+                        Início do Tratamento
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        {formatDate(patient.cancer.treatmentStartDate)}
+                      </Typography>
+                    </Grid>
+                  )}
+                  {patient.cancer.currentTreatment && (
+                    <Grid item xs={12} sm={6} md={4}>
+                      <Typography variant="body2" color="text.secondary">
+                        Tratamento Atual
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        {patient.cancer.currentTreatment}
+                      </Typography>
+                    </Grid>
+                  )}
+                  {patient.deathDate && (
+                    <Grid item xs={12} sm={6} md={4}>
+                      <Typography variant="body2" color="text.secondary">
+                        Data de Óbito
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        fontWeight="medium"
+                        color="error"
+                      >
+                        {formatDate(patient.deathDate)}
+                      </Typography>
+                    </Grid>
+                  )}
+                </Grid>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  Informações não disponíveis
+                </Typography>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Box display="flex" alignItems="center" mb={2}>
+                <DescriptionIcon color="primary" sx={{ mr: 1 }} />
+                <Typography variant="h6" fontWeight="bold">
+                  Cartões
+                </Typography>
+              </Box>
+              <Divider sx={{ mb: 2 }} />
+              <List dense>
+                <ListItem>
+                  <ListItemText
+                    primary="Cartão SUS"
+                    secondary={patient.susCard || "Não informado"}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      color: "text.secondary",
+                    }}
+                    secondaryTypographyProps={{
+                      variant: "body1",
+                      fontWeight: "medium",
+                    }}
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemText
+                    primary="Cartão do Hospital"
+                    secondary={patient.hospitalCard || "Não informado"}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      color: "text.secondary",
+                    }}
+                    secondaryTypographyProps={{
+                      variant: "body1",
+                      fontWeight: "medium",
+                    }}
+                  />
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Box display="flex" alignItems="center" mb={2}>
+                <LocalHospitalIcon color="primary" sx={{ mr: 1 }} />
+                <Typography variant="h6" fontWeight="bold">
+                  Histórico Médico
+                </Typography>
+              </Box>
+              <Divider sx={{ mb: 2 }} />
+              {patient.medicalHistory ? (
+                <Box>
+                  <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
+                    {patient.medicalHistory.diabetes && (
+                      <Chip label="Diabetes" size="small" color="warning" />
+                    )}
+                    {patient.medicalHistory.hypertension && (
+                      <Chip label="Hipertensão" size="small" color="warning" />
+                    )}
+                    {patient.medicalHistory.cholesterol && (
+                      <Chip
+                        label="Colesterol Alto"
+                        size="small"
+                        color="warning"
+                      />
+                    )}
+                    {patient.medicalHistory.triglycerides && (
+                      <Chip
+                        label="Triglicerídeos Alto"
+                        size="small"
+                        color="warning"
+                      />
+                    )}
+                    {patient.medicalHistory.kidneyProblems && (
+                      <Chip
+                        label="Problemas Renais"
+                        size="small"
+                        color="warning"
+                      />
+                    )}
+                    {patient.medicalHistory.anxiety && (
+                      <Chip label="Ansiedade" size="small" color="warning" />
+                    )}
+                    {patient.medicalHistory.heartAttack && (
+                      <Chip label="Infarto" size="small" color="error" />
+                    )}
+                  </Box>
+                  {patient.medicalHistory.others && (
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        Outras Condições:
+                      </Typography>
+                      <Typography variant="body1">
+                        {patient.medicalHistory.others}
+                      </Typography>
+                    </Box>
+                  )}
+                  {!patient.medicalHistory.diabetes &&
+                    !patient.medicalHistory.hypertension &&
+                    !patient.medicalHistory.cholesterol &&
+                    !patient.medicalHistory.triglycerides &&
+                    !patient.medicalHistory.kidneyProblems &&
+                    !patient.medicalHistory.anxiety &&
+                    !patient.medicalHistory.heartAttack &&
+                    !patient.medicalHistory.others && (
+                      <Typography variant="body2" color="text.secondary">
+                        Nenhuma condição registrada
+                      </Typography>
+                    )}
+                </Box>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  Histórico não disponível
+                </Typography>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Box display="flex" alignItems="center" mb={2}>
+                <DescriptionIcon color="primary" sx={{ mr: 1 }} />
+                <Typography variant="h6" fontWeight="bold">
+                  Documentos Entregues ({docStats.delivered}/{docStats.total})
+                </Typography>
+              </Box>
+              <Divider sx={{ mb: 2 }} />
+              {patient.documents ? (
+                <Grid container spacing={1}>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Chip
+                      label="RG"
+                      icon={
+                        patient.documents.identity ? (
+                          <CheckCircleIcon />
+                        ) : (
+                          <CancelIcon />
+                        )
+                      }
+                      color={patient.documents.identity ? "success" : "default"}
+                      variant={
+                        patient.documents.identity ? "filled" : "outlined"
+                      }
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Chip
+                      label="CPF"
+                      icon={
+                        patient.documents.cpfDoc ? (
+                          <CheckCircleIcon />
+                        ) : (
+                          <CancelIcon />
+                        )
+                      }
+                      color={patient.documents.cpfDoc ? "success" : "default"}
+                      variant={patient.documents.cpfDoc ? "filled" : "outlined"}
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Chip
+                      label="Certidão Casamento"
+                      icon={
+                        patient.documents.marriageCertificate ? (
+                          <CheckCircleIcon />
+                        ) : (
+                          <CancelIcon />
+                        )
+                      }
+                      color={
+                        patient.documents.marriageCertificate
+                          ? "success"
+                          : "default"
+                      }
+                      variant={
+                        patient.documents.marriageCertificate
+                          ? "filled"
+                          : "outlined"
+                      }
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Chip
+                      label="Laudo Médico"
+                      icon={
+                        patient.documents.medicalReport ? (
+                          <CheckCircleIcon />
+                        ) : (
+                          <CancelIcon />
+                        )
+                      }
+                      color={
+                        patient.documents.medicalReport ? "success" : "default"
+                      }
+                      variant={
+                        patient.documents.medicalReport ? "filled" : "outlined"
+                      }
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Chip
+                      label="Exames Recentes"
+                      icon={
+                        patient.documents.recentExams ? (
+                          <CheckCircleIcon />
+                        ) : (
+                          <CancelIcon />
+                        )
+                      }
+                      color={
+                        patient.documents.recentExams ? "success" : "default"
+                      }
+                      variant={
+                        patient.documents.recentExams ? "filled" : "outlined"
+                      }
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Chip
+                      label="Comprov. Residência"
+                      icon={
+                        patient.documents.addressProof ? (
+                          <CheckCircleIcon />
+                        ) : (
+                          <CancelIcon />
+                        )
+                      }
+                      color={
+                        patient.documents.addressProof ? "success" : "default"
+                      }
+                      variant={
+                        patient.documents.addressProof ? "filled" : "outlined"
+                      }
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Chip
+                      label="Comprov. Renda"
+                      icon={
+                        patient.documents.incomeProof ? (
+                          <CheckCircleIcon />
+                        ) : (
+                          <CancelIcon />
+                        )
+                      }
+                      color={
+                        patient.documents.incomeProof ? "success" : "default"
+                      }
+                      variant={
+                        patient.documents.incomeProof ? "filled" : "outlined"
+                      }
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Chip
+                      label="Cartão Hospital"
+                      icon={
+                        patient.documents.hospitalCardDoc ? (
+                          <CheckCircleIcon />
+                        ) : (
+                          <CancelIcon />
+                        )
+                      }
+                      color={
+                        patient.documents.hospitalCardDoc
+                          ? "success"
+                          : "default"
+                      }
+                      variant={
+                        patient.documents.hospitalCardDoc
+                          ? "filled"
+                          : "outlined"
+                      }
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Chip
+                      label="Cartão SUS"
+                      icon={
+                        patient.documents.susCardDoc ? (
+                          <CheckCircleIcon />
+                        ) : (
+                          <CancelIcon />
+                        )
+                      }
+                      color={
+                        patient.documents.susCardDoc ? "success" : "default"
+                      }
+                      variant={
+                        patient.documents.susCardDoc ? "filled" : "outlined"
+                      }
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Chip
+                      label="Biópsia"
+                      icon={
+                        patient.documents.biopsyResultDoc ? (
+                          <CheckCircleIcon />
+                        ) : (
+                          <CancelIcon />
+                        )
+                      }
+                      color={
+                        patient.documents.biopsyResultDoc
+                          ? "success"
+                          : "default"
+                      }
+                      variant={
+                        patient.documents.biopsyResultDoc
+                          ? "filled"
+                          : "outlined"
+                      }
+                      size="small"
+                    />
+                  </Grid>
+                </Grid>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  Nenhum documento registrado
+                </Typography>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+        {patient.notes && (
+          <Grid item xs={12}>
+            <Card>
+              <CardContent>
+                <Box display="flex" alignItems="center" mb={2}>
+                  <DescriptionIcon color="primary" sx={{ mr: 1 }} />
+                  <Typography variant="h6" fontWeight="bold">
+                    Observações
+                  </Typography>
+                </Box>
+                <Divider sx={{ mb: 2 }} />
+                <Typography variant="body1" style={{ whiteSpace: "pre-line" }}>
+                  {patient.notes}
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
-        </CardContent>
-      </Card>
-
-      {/* Observações */}
-      {patient.notes && (
-        <Card sx={{ mt: 3 }}>
-          <CardContent>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              Observações
-            </Typography>
-            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-              {patient.notes}
-            </Typography>
-          </CardContent>
-        </Card>
-      )}
+        )}
+      </Grid>
+      <ConfirmDeleteModal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        patientName={patient.name}
+        loading={deleting}
+      />
     </Box>
   );
 };

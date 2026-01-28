@@ -2,192 +2,226 @@ import React, { useState, useEffect, FormEvent } from "react";
 import {
   Box,
   Button,
-  Divider,
-  Grid,
   TextField,
   Typography,
+  Grid,
+  Divider,
   FormControl,
   InputLabel,
-  MenuItem,
   Select,
-  Paper,
-  CircularProgress,
+  MenuItem,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
   Alert,
+  CircularProgress,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from "@mui/material";
 import {
-  ArrowBack as ArrowBackIcon,
+  ExpandMore as ExpandMoreIcon,
   Save as SaveIcon,
+  Cancel as CancelIcon,
 } from "@mui/icons-material";
-import InputMask from "react-input-mask";
-import { useNavigate, useParams } from "react-router-dom";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import "dayjs/locale/pt-br";
+import InputMask from "react-input-mask";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import patientService, { Patient } from "../services/patientService";
+import UnsavedChangesDialog from "../components/UnsavedChangesDialog";
+import { FormSkeleton } from "../components/LoadingSkeletons";
+import "dayjs/locale/pt-br";
+import { useUnsavedChangesWarning } from "../hooks/higherOrderComponent";
 
 dayjs.locale("pt-br");
 
 const ClientEdit: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
-  // ============================================
-  // STATE
-  // ============================================
-  const [loading, setLoading] = useState(false);
-  const [loadingData, setLoadingData] = useState(true);
+  const { id } = useParams<{ id: string }>();
+  const [name, setName] = useState<string>("");
+  const [cpf, setCpf] = useState<string>("");
+  const [rg, setRg] = useState<string>("");
+  const [birthDate, setBirthDate] = useState<Dayjs | null>(null);
+  const [gender, setGender] = useState<string>("Masculino");
+  const [maritalStatus, setMaritalStatus] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [secondaryPhone, setSecondaryPhone] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [street, setStreet] = useState<string>("");
+  const [number, setNumber] = useState<string>("");
+  const [complement, setComplement] = useState<string>("");
+  const [neighborhood, setNeighborhood] = useState<string>("");
+  const [city, setCity] = useState<string>("Araxá");
+  const [state, setState] = useState<string>("MG");
+  const [zipCode, setZipCode] = useState<string>("");
+  const [cancerType, setCancerType] = useState<string>("");
+  const [cancerStage, setCancerStage] = useState<string>("");
+  const [treatmentLocation, setTreatmentLocation] = useState<string>("Hospital de Araxá");
+  const [currentTreatment, setCurrentTreatment] = useState<string>("");
+  const [detectionDate, setDetectionDate] = useState<Dayjs | null>(null);
+  const [treatmentStartDate, setTreatmentStartDate] = useState<Dayjs | null>(null);
+  const [diabetes, setDiabetes] = useState<boolean>(false);
+  const [hypertension, setHypertension] = useState<boolean>(false);
+  const [cholesterol, setCholesterol] = useState<boolean>(false);
+  const [triglycerides, setTriglycerides] = useState<boolean>(false);
+  const [kidneyProblems, setKidneyProblems] = useState<boolean>(false);
+  const [anxiety, setAnxiety] = useState<boolean>(false);
+  const [heartAttack, setHeartAttack] = useState<boolean>(false);
+  const [otherConditions, setOtherConditions] = useState<string>("");
+  const [susCard, setSusCard] = useState<string>("");
+  const [hospitalCard, setHospitalCard] = useState<string>("");
+  const [treatmentYear, setTreatmentYear] = useState<string>("");
+  const [fiveYears, setFiveYears] = useState<boolean>(false);
+  const [deathDate, setDeathDate] = useState<Dayjs | null>(null);
+  const [authorizeImage, setAuthorizeImage] = useState<boolean>(false);
+  const [docIdentity, setDocIdentity] = useState<boolean>(false);
+  const [docCPF, setDocCPF] = useState<boolean>(false);
+  const [docMarriage, setDocMarriage] = useState<boolean>(false);
+  const [docMedicalReport, setDocMedicalReport] = useState<boolean>(false);
+  const [docRecentExams, setDocRecentExams] = useState<boolean>(false);
+  const [docAddressProof, setDocAddressProof] = useState<boolean>(false);
+  const [docIncomeProof, setDocIncomeProof] = useState<boolean>(false);
+  const [docHospitalCard, setDocHospitalCard] = useState<boolean>(false);
+  const [docSUSCard, setDocSUSCard] = useState<boolean>(false);
+  const [docBiopsyResult, setDocBiopsyResult] = useState<boolean>(false);
+  const [notes, setNotes] = useState<string>("");
+  const [status, setStatus] = useState<string>("Under Review");
+  const [active, setActive] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingData, setLoadingData] = useState<boolean>(true);
+  const [hasChanges, setHasChanges] = useState<boolean>(false);
+  const [originalData, setOriginalData] = useState<string>("");
+  const {
+    showPrompt,
+    handleConfirmNavigation,
+    handleCancelNavigation,
+    navigateWithPrompt,
+    message,
+  } = useUnsavedChangesWarning(hasChanges);
   const [error, setError] = useState<string | null>(null);
 
-  // Campos obrigatórios
-  const [name, setName] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [birthDate, setBirthDate] = useState<Dayjs | null>(null);
-  const [gender, setGender] = useState("");
-  const [phone, setPhone] = useState("");
-  const [susCard, setSusCard] = useState("");
-  const [hospitalCard, setHospitalCard] = useState("");
-
-  // Campos opcionais
-  const [rg, setRg] = useState("");
-  const [email, setEmail] = useState("");
-  const [secondaryPhone, setSecondaryPhone] = useState("");
-  const [maritalStatus, setMaritalStatus] = useState("");
-
-  // Endereço
-  const [street, setStreet] = useState("");
-  const [number, setNumber] = useState("");
-  const [complement, setComplement] = useState("");
-  const [neighborhood, setNeighborhood] = useState("");
-  const [city, setCity] = useState("Araxá");
-  const [state, setState] = useState("MG");
-  const [zipCode, setZipCode] = useState("");
-
-  // Informações de Câncer
-  const [cancerType, setCancerType] = useState("");
-  const [cancerStage, setCancerStage] = useState("");
-  const [treatmentLocation, setTreatmentLocation] =
-    useState("Hospital de Araxá");
-  const [currentTreatment, setCurrentTreatment] = useState("");
-
-  // Observações
-  const [notes, setNotes] = useState("");
-
-  const [status, setStatus] = useState("Under Review");
-
-  const [hasDiabetes, setHasDiabetes] = useState(false);
-  const [hasHypertension, setHasHypertension] = useState(false);
-  const [hasCholesterol, setHasCholesterol] = useState(false);
-  const [hasTriglycerides, setHasTriglycerides] = useState(false);
-  const [hasKidneyProblems, setHasKidneyProblems] = useState(false);
-  const [hasAnxiety, setHasAnxiety] = useState(false);
-  const [hasHeartAttack, setHasHeartAttack] = useState(false);
-  const [medicalHistoryOthers, setMedicalHistoryOthers] = useState("");
-
-  // ============================================
-  // CARREGAR DADOS DO PACIENTE
-  // ============================================
   useEffect(() => {
-    const loadPatient = async () => {
-      if (!id) {
-        setError("ID do paciente não fornecido");
-        setLoadingData(false);
-        return;
-      }
-
-      try {
-        setLoadingData(true);
-        console.log("📋 Carregando dados do paciente para edição:", id);
-
-        const patient = await patientService.getById(id);
-        console.log("✅ Dados carregados:", patient);
-
-        // Preencher campos obrigatórios
-        setName(patient.name || "");
-        setCpf(patient.cpf || "");
-        setBirthDate(patient.birthDate ? dayjs(patient.birthDate) : null);
-        setGender(patient.gender || "");
-        setPhone(patient.phone || "");
-        setSusCard(patient.susCard || "");
-        setHospitalCard(patient.hospitalCard || "");
-
-        // Preencher campos opcionais
-        setRg(patient.rg || "");
-        setEmail(patient.email || "");
-        setSecondaryPhone(patient.secondaryPhone || "");
-        setMaritalStatus(patient.maritalStatus || "");
-
-        // Preencher endereço
-        if (patient.address) {
-          setStreet(patient.address.street || "");
-          setNumber(patient.address.number || "");
-          setComplement(patient.address.complement || "");
-          setNeighborhood(patient.address.neighborhood || "");
-          setCity(patient.address.city || "Araxá");
-          setState(patient.address.state || "MG");
-          setZipCode(patient.address.zipCode || "");
-        }
-
-        // Preencher informações de câncer
-        if (patient.cancer) {
-          setCancerType(patient.cancer.type || "");
-          setCancerStage(patient.cancer.stage || "");
-          setTreatmentLocation(
-            patient.cancer.treatmentLocation || "Hospital de Araxá",
-          );
-          setCurrentTreatment(patient.cancer.currentTreatment || "");
-        }
-
-        // Observações
-        setNotes(patient.notes || "");
-        setStatus(patient.status || "Under Review");
-
-        // Histórico médico
-        if (patient.medicalHistory) {
-          setHasDiabetes(patient.medicalHistory.diabetes || false);
-          setHasHypertension(patient.medicalHistory.hypertension || false);
-          setHasCholesterol(patient.medicalHistory.cholesterol || false);
-          setHasTriglycerides(patient.medicalHistory.triglycerides || false);
-          setHasKidneyProblems(patient.medicalHistory.kidneyProblems || false);
-          setHasAnxiety(patient.medicalHistory.anxiety || false);
-          setHasHeartAttack(patient.medicalHistory.heartAttack || false);
-          setMedicalHistoryOthers(patient.medicalHistory.others || "");
-        }
-      } catch (error: any) {
-        console.error("❌ Erro ao carregar paciente:", error);
-        setError(error.message);
-        toast.error("Erro ao carregar dados do paciente");
-      } finally {
-        setLoadingData(false);
-      }
-    };
+    if (!id) {
+      navigate("/clientes");
+      return;
+    }
 
     loadPatient();
   }, [id]);
 
-  // ============================================
-  // VALIDAÇÃO
-  // ============================================
+  const loadPatient = async () => {
+    try {
+      setLoadingData(true);
+      console.log("📋 Carregando paciente:", id);
+
+      const patient = await patientService.getById(id!);
+      console.log("✅ Paciente carregado:", patient);
+
+      setName(patient.name || "");
+      setCpf(patientService.formatCPF(patient.cpf || ""));
+      setRg(patient.rg || "");
+      setBirthDate(patient.birthDate ? dayjs(patient.birthDate) : null);
+      setGender(patient.gender || "Masculino");
+      setMaritalStatus(patient.maritalStatus || "");
+      setPhone(patient.phone || "");
+      setSecondaryPhone(patient.secondaryPhone || "");
+      setEmail(patient.email || "");
+
+      if (patient.address) {
+        setStreet(patient.address.street || "");
+        setNumber(patient.address.number || "");
+        setComplement(patient.address.complement || "");
+        setNeighborhood(patient.address.neighborhood || "");
+        setCity(patient.address.city || "Araxá");
+        setState(patient.address.state || "MG");
+        setZipCode(patient.address.zipCode || "");
+      }
+
+      if (patient.cancer) {
+        setCancerType(patient.cancer.type || "");
+        setCancerStage(patient.cancer.stage || "");
+        setTreatmentLocation(patient.cancer.treatmentLocation || "Hospital de Araxá");
+        setCurrentTreatment(patient.cancer.currentTreatment || "");
+        setDetectionDate(patient.cancer.detectionDate ? dayjs(patient.cancer.detectionDate) : null);
+        setTreatmentStartDate(patient.cancer.treatmentStartDate ? dayjs(patient.cancer.treatmentStartDate) : null);
+      }
+
+      if (patient.medicalHistory) {
+        setDiabetes(patient.medicalHistory.diabetes || false);
+        setHypertension(patient.medicalHistory.hypertension || false);
+        setCholesterol(patient.medicalHistory.cholesterol || false);
+        setTriglycerides(patient.medicalHistory.triglycerides || false);
+        setKidneyProblems(patient.medicalHistory.kidneyProblems || false);
+        setAnxiety(patient.medicalHistory.anxiety || false);
+        setHeartAttack(patient.medicalHistory.heartAttack || false);
+        setOtherConditions(patient.medicalHistory.others || "");
+      }
+
+      setSusCard(patient.susCard || "");
+      setHospitalCard(patient.hospitalCard || "");
+
+      setTreatmentYear(patient.treatmentYear ? patient.treatmentYear.toString() : "");
+      setFiveYears(patient.fiveYears || false);
+      setDeathDate(patient.deathDate ? dayjs(patient.deathDate) : null);
+      setAuthorizeImage(patient.authorizeImage || false);
+
+      if (patient.documents) {
+        setDocIdentity(patient.documents.identity || false);
+        setDocCPF(patient.documents.cpfDoc || false);
+        setDocMarriage(patient.documents.marriageCertificate || false);
+        setDocMedicalReport(patient.documents.medicalReport || false);
+        setDocRecentExams(patient.documents.recentExams || false);
+        setDocAddressProof(patient.documents.addressProof || false);
+        setDocIncomeProof(patient.documents.incomeProof || false);
+        setDocHospitalCard(patient.documents.hospitalCardDoc || false);
+        setDocSUSCard(patient.documents.susCardDoc || false);
+        setDocBiopsyResult(patient.documents.biopsyResultDoc || false);
+      }
+
+      setNotes(patient.notes || "");
+      setStatus(patient.status || "");
+      setActive(patient.active !== undefined ? patient.active : true);
+
+      setOriginalData(JSON.stringify({
+        name: patient.name,
+        cpf: patient.cpf,
+        phone: patient.phone,
+        email: patient.email,
+        status: patient.status,
+        active: patient.active,
+      }));
+
+    } catch (error: any) {
+      console.error("❌ Erro ao carregar paciente:", error);
+      setError(error.message || "Erro ao carregar dados do paciente");
+      toast.error(error.message || "Erro ao carregar dados do paciente");
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!originalData) return;
+
+    const currentData = JSON.stringify({
+      name,
+      cpf: cpf.replace(/\D/g, ""),
+      phone: phone.replace(/\D/g, ""),
+      email,
+      status,
+      active,
+    });
+
+    setHasChanges(currentData !== originalData);
+  }, [name, cpf, phone, email, status, active, originalData]);
+
   const validateForm = (): boolean => {
     if (!name.trim()) {
       setError("Nome é obrigatório");
-      return false;
-    }
-
-    if (!cpf.trim() || cpf.replace(/\D/g, "").length !== 11) {
-      setError("CPF inválido");
-      return false;
-    }
-
-    if (!birthDate) {
-      setError("Data de nascimento é obrigatória");
-      return false;
-    }
-
-    if (!gender) {
-      setError("Gênero é obrigatório");
       return false;
     }
 
@@ -196,668 +230,830 @@ const ClientEdit: React.FC = () => {
       return false;
     }
 
-    if (!susCard.trim()) {
-      setError("Cartão SUS é obrigatório");
-      return false;
-    }
-
-    if (!hospitalCard.trim()) {
-      setError("Cartão do Hospital é obrigatório");
-      return false;
-    }
-
-    setError(null);
     return true;
   };
 
-  // ============================================
-  // SUBMIT - ATUALIZAR PACIENTE
-  // ============================================
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setError(null);
 
-    if (!validateForm() || !id) {
+    if (!validateForm()) {
       return;
     }
 
     try {
       setLoading(true);
-      setError(null);
 
-      // Montar objeto com dados atualizados
-      const updatedData: Partial<Patient> = {
+      const updateData: Partial<Patient> = {
         name: name.trim(),
-        cpf: cpf.replace(/\D/g, ""),
         rg: rg.trim() || undefined,
-        birthDate: birthDate!.format("YYYY-MM-DD"),
         gender,
         maritalStatus: maritalStatus || undefined,
         phone: phone.replace(/\D/g, ""),
-        secondaryPhone: secondaryPhone
-          ? secondaryPhone.replace(/\D/g, "")
-          : undefined,
+        secondaryPhone: secondaryPhone ? secondaryPhone.replace(/\D/g, "") : "",
         email: email.trim() || undefined,
+
+        address: {
+          street: street.trim(),
+          number: number.trim() || undefined,
+          complement: complement.trim() || undefined,
+          neighborhood: neighborhood.trim(),
+          city: city.trim() || "Araxá",
+          state: state.trim() || "MG",
+          zipCode: zipCode.replace(/\D/g, "") || undefined,
+        },
+
+        cancer: {
+          type: cancerType.trim(),
+          stage: cancerStage.trim() || undefined,
+          treatmentLocation: treatmentLocation.trim() || "Hospital de Araxá",
+          currentTreatment: currentTreatment.trim() || undefined,
+          detectionDate: detectionDate ? detectionDate.format("YYYY-MM-DD") : undefined,
+          treatmentStartDate: treatmentStartDate ? treatmentStartDate.format("YYYY-MM-DD") : undefined,
+          hasBiopsyResult: docBiopsyResult,
+        },
+
+        medicalHistory: {
+          diabetes,
+          hypertension,
+          cholesterol,
+          triglycerides,
+          kidneyProblems,
+          anxiety,
+          heartAttack,
+          others: otherConditions.trim() || "",
+        },
+
         susCard: susCard.trim(),
         hospitalCard: hospitalCard.trim(),
 
-        // Endereço
-        address: street.trim()
-          ? {
-              street: street.trim(),
-              number: number.trim() || undefined,
-              complement: complement.trim() || undefined,
-              neighborhood: neighborhood.trim(),
-              city: city.trim() || "Araxá",
-              state: state || "MG",
-              zipCode: zipCode.replace(/\D/g, "") || undefined,
-            }
-          : undefined,
+        treatmentYear: treatmentYear ? parseInt(treatmentYear) : undefined,
+        fiveYears,
+        deathDate: deathDate ? deathDate.format("YYYY-MM-DD") : undefined,
+        authorizeImage,
 
-        // Câncer
-        cancer: cancerType.trim()
-          ? {
-              type: cancerType.trim(),
-              stage: cancerStage.trim() || undefined,
-              treatmentLocation:
-                treatmentLocation.trim() || "Hospital de Araxá",
-              currentTreatment: currentTreatment.trim() || undefined,
-            }
-          : undefined,
-
-        // Observações
-        notes: notes.trim() || undefined,
-
-        status: status,
-
-        // Histórico Médico (sempre enviar, mesmo que vazio)
-        medicalHistory: {
-          diabetes: hasDiabetes,
-          hypertension: hasHypertension,
-          cholesterol: hasCholesterol,
-          triglycerides: hasTriglycerides,
-          kidneyProblems: hasKidneyProblems,
-          anxiety: hasAnxiety,
-          heartAttack: hasHeartAttack,
-          others: medicalHistoryOthers.trim() || undefined,
+        documents: {
+          identity: docIdentity,
+          cpfDoc: docCPF,
+          marriageCertificate: docMarriage,
+          medicalReport: docMedicalReport,
+          recentExams: docRecentExams,
+          addressProof: docAddressProof,
+          incomeProof: docIncomeProof,
+          hospitalCardDoc: docHospitalCard,
+          susCardDoc: docSUSCard,
+          biopsyResultDoc: docBiopsyResult,
         },
+
+        notes: notes.trim() || "",
+        status,
+        active,
       };
 
-      console.log("✏️ Atualizando paciente:", updatedData);
 
-      // Chamar API
-      await patientService.update(id, updatedData);
+      const result = await patientService.update(id!, updateData);
 
-      console.log("✅ Paciente atualizado com sucesso");
       toast.success("Paciente atualizado com sucesso!");
 
-      // Redirecionar para detalhes
+      setHasChanges(false);
+
       setTimeout(() => {
         navigate(`/clientes/${id}`);
       }, 1000);
+
     } catch (error: any) {
-      console.error("❌ Erro ao atualizar paciente:", error);
+      console.error("❌ Erro ao atualizar:", error);
       setError(error.message || "Erro ao atualizar paciente");
-      toast.error("Erro ao atualizar paciente");
+      toast.error(error.message || "Erro ao atualizar paciente");
     } finally {
       setLoading(false);
     }
   };
 
-  // ============================================
-  // RENDER - LOADING INICIAL
-  // ============================================
   if (loadingData) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="60vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <FormSkeleton />;
   }
 
-  // ============================================
-  // RENDER - ERRO
-  // ============================================
-  if (error && !name) {
-    return (
-      <Box p={3}>
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {error}
-        </Alert>
-        <Button
-          variant="contained"
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate("/clientes")}
-        >
-          Voltar para Lista
-        </Button>
-      </Box>
-    );
-  }
-
-  // ============================================
-  // RENDER - FORMULÁRIO
-  // ============================================
   return (
-    <Box p={3}>
-      <Paper elevation={3} sx={{ p: 4, maxWidth: 900, mx: "auto" }}>
-        {/* Cabeçalho */}
-        <Box display="flex" alignItems="center" gap={2} mb={4}>
-          <Button
-            variant="outlined"
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate(`/clientes/${id}`)}
-            disabled={loading}
-          >
-            Voltar
-          </Button>
-          <Typography variant="h4" fontWeight="bold">
-            Editar Cliente
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+      <Box p={3}>
+        <Box mb={3}>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            Editar Paciente
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Atualize as informações do paciente
           </Typography>
         </Box>
-
-        {/* Erro Global */}
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
-            {error}
-          </Alert>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          {/* INFORMAÇÕES PESSOAIS */}
-          <Typography variant="h6" gutterBottom sx={{ mb: 2, fontWeight: 600 }}>
-            1. Informações Pessoais
-          </Typography>
-
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={8}>
-              <TextField
-                label="Nome Completo *"
-                fullWidth
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <LocalizationProvider
-                dateAdapter={AdapterDayjs}
-                adapterLocale="pt-br"
-              >
-                <DatePicker
-                  label="Data de Nascimento *"
-                  value={birthDate}
-                  onChange={(newValue) => setBirthDate(newValue)}
-                  format="DD/MM/YYYY"
-                  disabled={loading}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                    },
-                  }}
-                />
-              </LocalizationProvider>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <InputMask
-                mask="999.999.999-99"
-                value={patientService.formatCPF(cpf)}
-                onChange={(e) => setCpf(e.target.value)}
-                disabled={loading}
-              >
-                {(inputProps: any) => (
-                  <TextField {...inputProps} label="CPF *" fullWidth />
-                )}
-              </InputMask>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <TextField
-                label="RG"
-                fullWidth
-                value={rg}
-                onChange={(e) => setRg(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <FormControl fullWidth disabled={loading}>
-                <InputLabel>Gênero *</InputLabel>
-                <Select
-                  value={gender}
-                  label="Gênero *"
-                  onChange={(e) => setGender(e.target.value)}
-                >
-                  <MenuItem value="Masculino">Masculino</MenuItem>
-                  <MenuItem value="Feminino">Feminino</MenuItem>
-                  <MenuItem value="Outro">Outro</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <FormControl fullWidth disabled={loading}>
-                <InputLabel>Estado Civil</InputLabel>
-                <Select
-                  value={maritalStatus}
-                  label="Estado Civil"
-                  onChange={(e) => setMaritalStatus(e.target.value)}
-                >
-                  <MenuItem value="">--Selecione--</MenuItem>
-                  <MenuItem value="Solteiro(a)">Solteiro(a)</MenuItem>
-                  <MenuItem value="Casado(a)">Casado(a)</MenuItem>
-                  <MenuItem value="Divorciado(a)">Divorciado(a)</MenuItem>
-                  <MenuItem value="Viúvo(a)">Viúvo(a)</MenuItem>
-                  <MenuItem value="União Estável">União Estável</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <InputMask
-                mask="(99) 99999-9999"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                disabled={loading}
-              >
-                {(inputProps: any) => (
-                  <TextField
-                    {...inputProps}
-                    label="Telefone Principal *"
-                    fullWidth
-                  />
-                )}
-              </InputMask>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <InputMask
-                mask="(99) 99999-9999"
-                value={secondaryPhone}
-                onChange={(e) => setSecondaryPhone(e.target.value)}
-                disabled={loading}
-              >
-                {(inputProps: any) => (
-                  <TextField
-                    {...inputProps}
-                    label="Telefone Secundário"
-                    fullWidth
-                  />
-                )}
-              </InputMask>
-            </Grid>
-
+        <Box component="form" onSubmit={handleSubmit}>
+          <Grid container spacing={3}>
             <Grid item xs={12}>
-              <TextField
-                label="E-mail"
-                type="email"
-                fullWidth
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-              />
+              <Accordion defaultExpanded>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    1. Dados Pessoais
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        required
+                        label="Nome Completo"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        fullWidth
+                        label="CPF"
+                        value={cpf}
+                        disabled
+                        helperText="CPF não pode ser alterado"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        fullWidth
+                        label="RG"
+                        value={rg}
+                        onChange={(e) => setRg(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <DatePicker
+                        label="Data de Nascimento"
+                        value={birthDate}
+                        onChange={(date) => setBirthDate(date)}
+                        disabled
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            helperText: "Data de nascimento não pode ser alterada"
+                          },
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <FormControl fullWidth>
+                        <InputLabel>Gênero</InputLabel>
+                        <Select
+                          value={gender}
+                          label="Gênero"
+                          onChange={(e) => setGender(e.target.value)}
+                          disabled={loading}
+                        >
+                          <MenuItem value="Masculino">Masculino</MenuItem>
+                          <MenuItem value="Feminino">Feminino</MenuItem>
+                          <MenuItem value="Outro">Outro</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <FormControl fullWidth>
+                        <InputLabel>Estado Civil</InputLabel>
+                        <Select
+                          value={maritalStatus}
+                          label="Estado Civil"
+                          onChange={(e) => setMaritalStatus(e.target.value)}
+                          disabled={loading}
+                        >
+                          <MenuItem value="">Não informado</MenuItem>
+                          <MenuItem value="Solteiro(a)">Solteiro(a)</MenuItem>
+                          <MenuItem value="Casado(a)">Casado(a)</MenuItem>
+                          <MenuItem value="Divorciado(a)">Divorciado(a)</MenuItem>
+                          <MenuItem value="Viúvo(a)">Viúvo(a)</MenuItem>
+                          <MenuItem value="União Estável">União Estável</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <InputMask
+                        mask="(99) 99999-9999"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        disabled={loading}
+                      >
+                        {(inputProps: any) => (
+                          <TextField
+                            {...inputProps}
+                            fullWidth
+                            required
+                            label="Telefone Principal"
+                          />
+                        )}
+                      </InputMask>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <InputMask
+                        mask="(99) 99999-9999"
+                        value={secondaryPhone}
+                        onChange={(e) => setSecondaryPhone(e.target.value)}
+                        disabled={loading}
+                      >
+                        {(inputProps: any) => (
+                          <TextField
+                            {...inputProps}
+                            fullWidth
+                            label="Telefone Secundário"
+                          />
+                        )}
+                      </InputMask>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        type="email"
+                        label="E-mail"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
             </Grid>
-          </Grid>
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* ENDEREÇO */}
-          <Typography variant="h6" gutterBottom sx={{ mb: 2, fontWeight: 600 }}>
-            2. Endereço
-          </Typography>
-
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={8}>
-              <TextField
-                label="Rua/Avenida"
-                fullWidth
-                value={street}
-                onChange={(e) => setStreet(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <TextField
-                label="Número"
-                fullWidth
-                value={number}
-                onChange={(e) => setNumber(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Complemento"
-                fullWidth
-                value={complement}
-                onChange={(e) => setComplement(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Bairro"
-                fullWidth
-                value={neighborhood}
-                onChange={(e) => setNeighborhood(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Cidade"
-                fullWidth
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={3}>
-              <TextField
-                label="Estado"
-                fullWidth
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                disabled={loading}
-                inputProps={{ maxLength: 2 }}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={3}>
-              <InputMask
-                mask="99999-999"
-                value={zipCode}
-                onChange={(e) => setZipCode(e.target.value)}
-                disabled={loading}
-              >
-                {(inputProps: any) => (
-                  <TextField {...inputProps} label="CEP" fullWidth />
-                )}
-              </InputMask>
-            </Grid>
-          </Grid>
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* INFORMAÇÕES DE CÂNCER */}
-          <Typography variant="h6" gutterBottom sx={{ mb: 2, fontWeight: 600 }}>
-            3. Informações sobre Câncer
-          </Typography>
-
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Tipo de Câncer"
-                fullWidth
-                value={cancerType}
-                onChange={(e) => setCancerType(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Estágio"
-                fullWidth
-                value={cancerStage}
-                onChange={(e) => setCancerStage(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Local de Tratamento"
-                fullWidth
-                value={treatmentLocation}
-                onChange={(e) => setTreatmentLocation(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Tratamento Atual"
-                fullWidth
-                value={currentTreatment}
-                onChange={(e) => setCurrentTreatment(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Cartão SUS *"
-                fullWidth
-                value={susCard}
-                onChange={(e) => setSusCard(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Cartão do Hospital *"
-                fullWidth
-                value={hospitalCard}
-                onChange={(e) => setHospitalCard(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-          </Grid>
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* OBSERVAÇÕES */}
-          <Typography variant="h6" gutterBottom sx={{ mb: 2, fontWeight: 600 }}>
-            4. Observações
-          </Typography>
-
-          <Grid container spacing={2} sx={{ mb: 4 }}>
             <Grid item xs={12}>
-              <TextField
-                label="Observações Gerais"
-                fullWidth
-                multiline
-                rows={4}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                disabled={loading}
-              />
+              <Accordion defaultExpanded>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    2. Endereço
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Rua/Avenida"
+                        value={street}
+                        onChange={(e) => setStreet(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                      <TextField
+                        fullWidth
+                        label="Número"
+                        value={number}
+                        onChange={(e) => setNumber(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        fullWidth
+                        label="Complemento"
+                        value={complement}
+                        onChange={(e) => setComplement(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        fullWidth
+                        label="Bairro"
+                        value={neighborhood}
+                        onChange={(e) => setNeighborhood(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        fullWidth
+                        label="Cidade"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                      <TextField
+                        fullWidth
+                        label="Estado"
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                        disabled={loading}
+                        inputProps={{ maxLength: 2 }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                      <InputMask
+                        mask="99999-999"
+                        value={zipCode}
+                        onChange={(e) => setZipCode(e.target.value)}
+                        disabled={loading}
+                      >
+                        {(inputProps: any) => (
+                          <TextField {...inputProps} fullWidth label="CEP" />
+                        )}
+                      </InputMask>
+                    </Grid>
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+            <Grid item xs={12}>
+              <Accordion defaultExpanded>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    3. Informações de Câncer
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Tipo de Câncer"
+                        value={cancerType}
+                        onChange={(e) => setCancerType(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        fullWidth
+                        label="Estágio"
+                        value={cancerStage}
+                        onChange={(e) => setCancerStage(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <DatePicker
+                        label="Data de Detecção"
+                        value={detectionDate}
+                        onChange={(date) => setDetectionDate(date)}
+                        disabled={loading}
+                        slotProps={{
+                          textField: { fullWidth: true },
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Local de Tratamento"
+                        value={treatmentLocation}
+                        onChange={(e) => setTreatmentLocation(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <DatePicker
+                        label="Início do Tratamento"
+                        value={treatmentStartDate}
+                        onChange={(date) => setTreatmentStartDate(date)}
+                        disabled={loading}
+                        slotProps={{
+                          textField: { fullWidth: true },
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        fullWidth
+                        label="Ano do Tratamento"
+                        type="number"
+                        value={treatmentYear}
+                        onChange={(e) => setTreatmentYear(e.target.value)}
+                        disabled={loading}
+                        inputProps={{ min: 1900, max: 2100 }}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Tratamento Atual"
+                        value={currentTreatment}
+                        onChange={(e) => setCurrentTreatment(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+            <Grid item xs={12}>
+              <Accordion defaultExpanded>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    4. Cartões e Informações AMPARA
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Cartão SUS"
+                        value={susCard}
+                        onChange={(e) => setSusCard(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Cartão do Hospital"
+                        value={hospitalCard}
+                        onChange={(e) => setHospitalCard(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Divider sx={{ my: 1 }} />
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        Informações Adicionais
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={fiveYears}
+                            onChange={(e) => setFiveYears(e.target.checked)}
+                            disabled={loading}
+                          />
+                        }
+                        label="Já completou 5 anos de tratamento"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={authorizeImage}
+                            onChange={(e) => setAuthorizeImage(e.target.checked)}
+                            disabled={loading}
+                          />
+                        }
+                        label="Autoriza uso de imagem"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <DatePicker
+                        label="Data de Óbito (se aplicável)"
+                        value={deathDate}
+                        onChange={(date) => setDeathDate(date)}
+                        disabled={loading}
+                        slotProps={{
+                          textField: { fullWidth: true },
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+            <Grid item xs={12}>
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    5. Histórico Médico
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <FormLabel component="legend">
+                    Marque as condições que se aplicam:
+                  </FormLabel>
+                  <FormGroup>
+                    <Grid container spacing={1}>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={diabetes}
+                              onChange={(e) => setDiabetes(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Diabetes"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={hypertension}
+                              onChange={(e) => setHypertension(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Hipertensão"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={cholesterol}
+                              onChange={(e) => setCholesterol(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Colesterol Alto"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={triglycerides}
+                              onChange={(e) => setTriglycerides(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Triglicerídeos Alto"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={kidneyProblems}
+                              onChange={(e) => setKidneyProblems(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Problemas Renais"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={anxiety}
+                              onChange={(e) => setAnxiety(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Ansiedade"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={heartAttack}
+                              onChange={(e) => setHeartAttack(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Infarto"
+                        />
+                      </Grid>
+                    </Grid>
+                    <Box mt={2}>
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
+                        label="Outras Condições"
+                        value={otherConditions}
+                        onChange={(e) => setOtherConditions(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Box>
+                  </FormGroup>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+            <Grid item xs={12}>
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    6. Documentos Entregues
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <FormLabel component="legend">
+                    Marque os documentos que foram entregues:
+                  </FormLabel>
+                  <FormGroup>
+                    <Grid container spacing={1}>
+                      <Grid item xs={12} sm={6} md={4}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={docIdentity}
+                              onChange={(e) => setDocIdentity(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="RG (Identidade)"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={4}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={docCPF}
+                              onChange={(e) => setDocCPF(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="CPF"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={4}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={docMarriage}
+                              onChange={(e) => setDocMarriage(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Certidão de Casamento"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={4}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={docMedicalReport}
+                              onChange={(e) => setDocMedicalReport(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Laudo Médico"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={4}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={docRecentExams}
+                              onChange={(e) => setDocRecentExams(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Exames Recentes"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={4}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={docAddressProof}
+                              onChange={(e) => setDocAddressProof(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Comprovante de Residência"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={4}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={docIncomeProof}
+                              onChange={(e) => setDocIncomeProof(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Comprovante de Renda"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={4}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={docHospitalCard}
+                              onChange={(e) => setDocHospitalCard(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Cartão do Hospital"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={4}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={docSUSCard}
+                              onChange={(e) => setDocSUSCard(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Cartão SUS"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={4}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={docBiopsyResult}
+                              onChange={(e) => setDocBiopsyResult(e.target.checked)}
+                              disabled={loading}
+                            />
+                          }
+                          label="Resultado de Biópsia"
+                        />
+                      </Grid>
+                    </Grid>
+                  </FormGroup>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+            <Grid item xs={12}>
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    7. Observações e Status
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={4}
+                        label="Observações"
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        disabled={loading}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <FormControl fullWidth>
+                        <InputLabel>Status</InputLabel>
+                        <Select
+                          value={status}
+                          label="Status"
+                          onChange={(e) => setStatus(e.target.value)}
+                          disabled={loading}
+                        >
+                          <MenuItem value="Under Review">Em Análise</MenuItem>
+                          <MenuItem value="Active">Ativo</MenuItem>
+                          <MenuItem value="Inactive">Inativo</MenuItem>
+                          <MenuItem value="Completed">Concluído</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={active}
+                            onChange={(e) => setActive(e.target.checked)}
+                            disabled={loading}
+                          />
+                        }
+                        label="Paciente Ativo"
+                      />
+                    </Grid>
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+            {error && (
+              <Grid item xs={12}>
+                <Alert severity="error" onClose={() => setError(null)}>
+                  {error}
+                </Alert>
+              </Grid>
+            )}
+            <Grid item xs={12}>
+              <Box display="flex" gap={2} justifyContent="flex-end">
+                <Button
+                  variant="outlined"
+                  size="large"
+                  startIcon={<CancelIcon />}
+                  onClick={() => navigateWithPrompt(`/clientes/${id}`)}
+                  disabled={loading}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  startIcon={loading ? <CircularProgress size={20} /> : <SaveIcon />}
+                  disabled={loading}
+                >
+                  {loading ? "Salvando..." : "Salvar Alterações"}
+                </Button>
+              </Box>
             </Grid>
           </Grid>
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* HISTÓRICO MÉDICO */}
-          <Typography variant="h6" gutterBottom sx={{ mb: 2, fontWeight: 600 }}>
-            5. Histórico Médico
-          </Typography>
-
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={4}>
-              <FormControl fullWidth>
-                <InputLabel>Status *</InputLabel>
-                <Select
-                  value={status}
-                  label="Status *"
-                  onChange={(e) => setStatus(e.target.value)}
-                  disabled={loading}
-                >
-                  <MenuItem value="Under Review">Em Análise</MenuItem>
-                  <MenuItem value="Active">Ativo</MenuItem>
-                  <MenuItem value="Inactive">Inativo</MenuItem>
-                  <MenuItem value="Completed">Concluído</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                Condições Médicas:
-              </Typography>
-            </Grid>
-
-            <Grid item xs={12} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Diabetes</InputLabel>
-                <Select
-                  value={hasDiabetes ? "Sim" : "Não"}
-                  label="Diabetes"
-                  onChange={(e) => setHasDiabetes(e.target.value === "Sim")}
-                  disabled={loading}
-                >
-                  <MenuItem value="Não">Não</MenuItem>
-                  <MenuItem value="Sim">Sim</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Hipertensão</InputLabel>
-                <Select
-                  value={hasHypertension ? "Sim" : "Não"}
-                  label="Hipertensão"
-                  onChange={(e) => setHasHypertension(e.target.value === "Sim")}
-                  disabled={loading}
-                >
-                  <MenuItem value="Não">Não</MenuItem>
-                  <MenuItem value="Sim">Sim</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Colesterol</InputLabel>
-                <Select
-                  value={hasCholesterol ? "Sim" : "Não"}
-                  label="Colesterol"
-                  onChange={(e) => setHasCholesterol(e.target.value === "Sim")}
-                  disabled={loading}
-                >
-                  <MenuItem value="Não">Não</MenuItem>
-                  <MenuItem value="Sim">Sim</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Triglicerídeos</InputLabel>
-                <Select
-                  value={hasTriglycerides ? "Sim" : "Não"}
-                  label="Triglicerídeos"
-                  onChange={(e) =>
-                    setHasTriglycerides(e.target.value === "Sim")
-                  }
-                  disabled={loading}
-                >
-                  <MenuItem value="Não">Não</MenuItem>
-                  <MenuItem value="Sim">Sim</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <FormControl fullWidth>
-                <InputLabel>Problemas Renais</InputLabel>
-                <Select
-                  value={hasKidneyProblems ? "Sim" : "Não"}
-                  label="Problemas Renais"
-                  onChange={(e) =>
-                    setHasKidneyProblems(e.target.value === "Sim")
-                  }
-                  disabled={loading}
-                >
-                  <MenuItem value="Não">Não</MenuItem>
-                  <MenuItem value="Sim">Sim</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <FormControl fullWidth>
-                <InputLabel>Ansiedade</InputLabel>
-                <Select
-                  value={hasAnxiety ? "Sim" : "Não"}
-                  label="Ansiedade"
-                  onChange={(e) => setHasAnxiety(e.target.value === "Sim")}
-                  disabled={loading}
-                >
-                  <MenuItem value="Não">Não</MenuItem>
-                  <MenuItem value="Sim">Sim</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <FormControl fullWidth>
-                <InputLabel>Infarto</InputLabel>
-                <Select
-                  value={hasHeartAttack ? "Sim" : "Não"}
-                  label="Infarto"
-                  onChange={(e) => setHasHeartAttack(e.target.value === "Sim")}
-                  disabled={loading}
-                >
-                  <MenuItem value="Não">Não</MenuItem>
-                  <MenuItem value="Sim">Sim</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                label="Outras Condições Médicas"
-                fullWidth
-                multiline
-                rows={2}
-                value={medicalHistoryOthers}
-                onChange={(e) => setMedicalHistoryOthers(e.target.value)}
-                disabled={loading}
-                placeholder="Descreva outras condições médicas relevantes..."
-              />
-            </Grid>
-          </Grid>
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* Botões */}
-          <Box display="flex" justifyContent="center" gap={2} mt={4}>
-            <Button
-              variant="outlined"
-              size="large"
-              onClick={() => navigate(`/clientes/${id}`)}
-              disabled={loading}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="contained"
-              size="large"
-              type="submit"
-              disabled={loading}
-              startIcon={<SaveIcon />}
-            >
-              {loading ? <CircularProgress size={24} /> : "Salvar Alterações"}
-            </Button>
-          </Box>
-        </form>
-      </Paper>
-    </Box>
+        </Box>
+      </Box>
+      <UnsavedChangesDialog
+        open={showPrompt}
+        onConfirm={handleConfirmNavigation}
+        onCancel={handleCancelNavigation}
+        message={message}
+      />
+    </LocalizationProvider>
   );
 };
 

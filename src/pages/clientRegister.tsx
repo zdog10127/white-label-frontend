@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import {
   Box,
   Button,
@@ -34,16 +34,15 @@ import InputMask from "react-input-mask";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import patientService, { Patient } from "../services/patientService";
+import UnsavedChangesDialog from "../components/UnsavedChangesDialog";
 import "dayjs/locale/pt-br";
+import { useUnsavedChangesWarning } from "../hooks/higherOrderComponent";
 
 dayjs.locale("pt-br");
 
 const ClientRegister: React.FC = () => {
   const navigate = useNavigate();
   
-  // ============================================
-  // STATE - Dados Pessoais
-  // ============================================
   const [name, setName] = useState<string>("");
   const [cpf, setCpf] = useState<string>("");
   const [rg, setRg] = useState<string>("");
@@ -53,31 +52,19 @@ const ClientRegister: React.FC = () => {
   const [phone, setPhone] = useState<string>("");
   const [secondaryPhone, setSecondaryPhone] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-
-  // ============================================
-  // STATE - Endereço
-  // ============================================
   const [street, setStreet] = useState<string>("");
   const [number, setNumber] = useState<string>("");
   const [complement, setComplement] = useState<string>("");
   const [neighborhood, setNeighborhood] = useState<string>("");
-  const [city, setCity] = useState<string>("Araxá");
-  const [state, setState] = useState<string>("MG");
+  const [city, setCity] = useState<string>("");
+  const [state, setState] = useState<string>("");
   const [zipCode, setZipCode] = useState<string>("");
-
-  // ============================================
-  // STATE - Informações de Câncer
-  // ============================================
   const [cancerType, setCancerType] = useState<string>("");
   const [cancerStage, setCancerStage] = useState<string>("");
-  const [treatmentLocation, setTreatmentLocation] = useState<string>("Hospital de Araxá");
+  const [treatmentLocation, setTreatmentLocation] = useState<string>("");
   const [currentTreatment, setCurrentTreatment] = useState<string>("");
   const [detectionDate, setDetectionDate] = useState<Dayjs | null>(null);
   const [treatmentStartDate, setTreatmentStartDate] = useState<Dayjs | null>(null);
-
-  // ============================================
-  // STATE - Histórico Médico
-  // ============================================
   const [diabetes, setDiabetes] = useState<boolean>(false);
   const [hypertension, setHypertension] = useState<boolean>(false);
   const [cholesterol, setCholesterol] = useState<boolean>(false);
@@ -86,24 +73,12 @@ const ClientRegister: React.FC = () => {
   const [anxiety, setAnxiety] = useState<boolean>(false);
   const [heartAttack, setHeartAttack] = useState<boolean>(false);
   const [otherConditions, setOtherConditions] = useState<string>("");
-
-  // ============================================
-  // STATE - Cartões
-  // ============================================
   const [susCard, setSusCard] = useState<string>("");
   const [hospitalCard, setHospitalCard] = useState<string>("");
-
-  // ============================================
-  // STATE - NOVOS CAMPOS AMPARA
-  // ============================================
   const [treatmentYear, setTreatmentYear] = useState<string>("");
   const [fiveYears, setFiveYears] = useState<boolean>(false);
   const [deathDate, setDeathDate] = useState<Dayjs | null>(null);
   const [authorizeImage, setAuthorizeImage] = useState<boolean>(false);
-
-  // ============================================
-  // STATE - Documentos
-  // ============================================
   const [docIdentity, setDocIdentity] = useState<boolean>(false);
   const [docCPF, setDocCPF] = useState<boolean>(false);
   const [docMarriage, setDocMarriage] = useState<boolean>(false);
@@ -114,23 +89,32 @@ const ClientRegister: React.FC = () => {
   const [docHospitalCard, setDocHospitalCard] = useState<boolean>(false);
   const [docSUSCard, setDocSUSCard] = useState<boolean>(false);
   const [docBiopsyResult, setDocBiopsyResult] = useState<boolean>(false);
-
-  // ============================================
-  // STATE - Observações e Status
-  // ============================================
   const [notes, setNotes] = useState<string>("");
-  const [status, setStatus] = useState<string>("Under Review");
+  const [status, setStatus] = useState<string>("");
   const [active, setActive] = useState<boolean>(true);
-
-  // ============================================
-  // STATE - UI
-  // ============================================
   const [loading, setLoading] = useState<boolean>(false);
+  const [hasChanges, setHasChanges] = useState<boolean>(false);
+
+  const {
+    showPrompt,
+    handleConfirmNavigation,
+    handleCancelNavigation,
+    navigateWithPrompt,
+    message,
+  } = useUnsavedChangesWarning(hasChanges);
   const [error, setError] = useState<string | null>(null);
 
-  // ============================================
-  // VALIDAÇÃO
-  // ============================================
+  useEffect(() => {
+    const hasAnyData = 
+      name.trim() !== "" ||
+      cpf.trim() !== "" ||
+      rg.trim() !== "" ||
+      phone.trim() !== "" ||
+      email.trim() !== "";
+    
+    setHasChanges(hasAnyData);
+  }, [name, cpf, rg, phone, email]);
+
   const validateForm = (): boolean => {
     if (!name.trim()) {
       setError("Nome é obrigatório");
@@ -167,22 +151,9 @@ const ClientRegister: React.FC = () => {
       return false;
     }
 
-    if (!susCard.trim()) {
-      setError("Cartão SUS é obrigatório");
-      return false;
-    }
-
-    if (!hospitalCard.trim()) {
-      setError("Cartão do Hospital é obrigatório");
-      return false;
-    }
-
     return true;
   };
 
-  // ============================================
-  // SUBMIT
-  // ============================================
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -202,7 +173,7 @@ const ClientRegister: React.FC = () => {
         gender,
         maritalStatus: maritalStatus || undefined,
         phone: phone.replace(/\D/g, ""),
-        secondaryPhone: secondaryPhone ? secondaryPhone.replace(/\D/g, "") : undefined,
+        secondaryPhone: secondaryPhone ? secondaryPhone.replace(/\D/g, "") : "",
         email: email.trim() || undefined,
 
         address: {
@@ -233,13 +204,12 @@ const ClientRegister: React.FC = () => {
           kidneyProblems,
           anxiety,
           heartAttack,
-          others: otherConditions.trim() || undefined,
+          others: otherConditions.trim() || "",
         },
 
         susCard: susCard.trim(),
         hospitalCard: hospitalCard.trim(),
 
-        // NOVOS CAMPOS AMPARA
         treatmentYear: treatmentYear ? parseInt(treatmentYear) : undefined,
         fiveYears,
         deathDate: deathDate ? deathDate.format("YYYY-MM-DD") : undefined,
@@ -258,20 +228,17 @@ const ClientRegister: React.FC = () => {
           biopsyResultDoc: docBiopsyResult,
         },
 
-        notes: notes.trim() || undefined,
+        notes: notes.trim() || "",
         status,
         active,
       };
 
-      console.log("📝 Criando paciente:", patientData);
-
       const result = await patientService.create(patientData);
-
-      console.log("✅ Paciente criado:", result);
 
       toast.success("Paciente cadastrado com sucesso!");
 
-      // Redirecionar para detalhes do paciente
+      setHasChanges(false);
+
       setTimeout(() => {
         navigate(`/clientes/${result.id}`);
       }, 1000);
@@ -285,13 +252,9 @@ const ClientRegister: React.FC = () => {
     }
   };
 
-  // ============================================
-  // RENDER
-  // ============================================
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
       <Box p={3}>
-        {/* Cabeçalho */}
         <Box mb={3}>
           <Typography variant="h4" fontWeight="bold" gutterBottom>
             Cadastro de Paciente
@@ -300,14 +263,8 @@ const ClientRegister: React.FC = () => {
             Sistema AMPARA - Preencha todos os campos obrigatórios (*)
           </Typography>
         </Box>
-
-        {/* Formulário */}
         <Box component="form" onSubmit={handleSubmit}>
           <Grid container spacing={3}>
-            
-            {/* ============================================ */}
-            {/* SEÇÃO 1: DADOS PESSOAIS */}
-            {/* ============================================ */}
             <Grid item xs={12}>
               <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -327,7 +284,6 @@ const ClientRegister: React.FC = () => {
                         disabled={loading}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={3}>
                       <InputMask
                         mask="999.999.999-99"
@@ -345,7 +301,6 @@ const ClientRegister: React.FC = () => {
                         )}
                       </InputMask>
                     </Grid>
-
                     <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
@@ -355,7 +310,6 @@ const ClientRegister: React.FC = () => {
                         disabled={loading}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={3}>
                       <DatePicker
                         label="Data de Nascimento *"
@@ -370,7 +324,6 @@ const ClientRegister: React.FC = () => {
                         }}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={3}>
                       <FormControl fullWidth required>
                         <InputLabel>Gênero</InputLabel>
@@ -386,7 +339,6 @@ const ClientRegister: React.FC = () => {
                         </Select>
                       </FormControl>
                     </Grid>
-
                     <Grid item xs={12} md={3}>
                       <FormControl fullWidth>
                         <InputLabel>Estado Civil</InputLabel>
@@ -405,7 +357,6 @@ const ClientRegister: React.FC = () => {
                         </Select>
                       </FormControl>
                     </Grid>
-
                     <Grid item xs={12} md={3}>
                       <InputMask
                         mask="(99) 99999-9999"
@@ -423,7 +374,6 @@ const ClientRegister: React.FC = () => {
                         )}
                       </InputMask>
                     </Grid>
-
                     <Grid item xs={12} md={3}>
                       <InputMask
                         mask="(99) 99999-9999"
@@ -440,7 +390,6 @@ const ClientRegister: React.FC = () => {
                         )}
                       </InputMask>
                     </Grid>
-
                     <Grid item xs={12} md={6}>
                       <TextField
                         fullWidth
@@ -455,10 +404,6 @@ const ClientRegister: React.FC = () => {
                 </AccordionDetails>
               </Accordion>
             </Grid>
-
-            {/* ============================================ */}
-            {/* SEÇÃO 2: ENDEREÇO */}
-            {/* ============================================ */}
             <Grid item xs={12}>
               <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -477,7 +422,6 @@ const ClientRegister: React.FC = () => {
                         disabled={loading}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={2}>
                       <TextField
                         fullWidth
@@ -487,7 +431,6 @@ const ClientRegister: React.FC = () => {
                         disabled={loading}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={4}>
                       <TextField
                         fullWidth
@@ -497,7 +440,6 @@ const ClientRegister: React.FC = () => {
                         disabled={loading}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={4}>
                       <TextField
                         fullWidth
@@ -508,7 +450,6 @@ const ClientRegister: React.FC = () => {
                         disabled={loading}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={4}>
                       <TextField
                         fullWidth
@@ -518,7 +459,6 @@ const ClientRegister: React.FC = () => {
                         disabled={loading}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={2}>
                       <TextField
                         fullWidth
@@ -529,7 +469,6 @@ const ClientRegister: React.FC = () => {
                         inputProps={{ maxLength: 2 }}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={2}>
                       <InputMask
                         mask="99999-999"
@@ -546,10 +485,6 @@ const ClientRegister: React.FC = () => {
                 </AccordionDetails>
               </Accordion>
             </Grid>
-
-            {/* ============================================ */}
-            {/* SEÇÃO 3: INFORMAÇÕES DE CÂNCER */}
-            {/* ============================================ */}
             <Grid item xs={12}>
               <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -570,7 +505,6 @@ const ClientRegister: React.FC = () => {
                         placeholder="Ex: Mama, Próstata, Pulmão..."
                       />
                     </Grid>
-
                     <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
@@ -581,7 +515,6 @@ const ClientRegister: React.FC = () => {
                         placeholder="Ex: I, II, III, IV"
                       />
                     </Grid>
-
                     <Grid item xs={12} md={3}>
                       <DatePicker
                         label="Data de Detecção"
@@ -593,7 +526,6 @@ const ClientRegister: React.FC = () => {
                         }}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={6}>
                       <TextField
                         fullWidth
@@ -603,7 +535,6 @@ const ClientRegister: React.FC = () => {
                         disabled={loading}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={3}>
                       <DatePicker
                         label="Início do Tratamento"
@@ -615,7 +546,6 @@ const ClientRegister: React.FC = () => {
                         }}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
@@ -628,7 +558,6 @@ const ClientRegister: React.FC = () => {
                         inputProps={{ min: 1900, max: 2100 }}
                       />
                     </Grid>
-
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
@@ -643,10 +572,6 @@ const ClientRegister: React.FC = () => {
                 </AccordionDetails>
               </Accordion>
             </Grid>
-
-            {/* ============================================ */}
-            {/* SEÇÃO 4: CARTÕES E INFORMAÇÕES AMPARA */}
-            {/* ============================================ */}
             <Grid item xs={12}>
               <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -659,32 +584,27 @@ const ClientRegister: React.FC = () => {
                     <Grid item xs={12} md={6}>
                       <TextField
                         fullWidth
-                        required
                         label="Cartão SUS"
                         value={susCard}
                         onChange={(e) => setSusCard(e.target.value)}
                         disabled={loading}
                       />
                     </Grid>
-
                     <Grid item xs={12} md={6}>
                       <TextField
                         fullWidth
-                        required
                         label="Cartão do Hospital"
                         value={hospitalCard}
                         onChange={(e) => setHospitalCard(e.target.value)}
                         disabled={loading}
                       />
                     </Grid>
-
                     <Grid item xs={12}>
                       <Divider sx={{ my: 1 }} />
                       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                         Informações Adicionais
                       </Typography>
                     </Grid>
-
                     <Grid item xs={12} md={4}>
                       <FormControlLabel
                         control={
@@ -697,7 +617,6 @@ const ClientRegister: React.FC = () => {
                         label="Já completou 5 anos de tratamento"
                       />
                     </Grid>
-
                     <Grid item xs={12} md={4}>
                       <FormControlLabel
                         control={
@@ -710,7 +629,6 @@ const ClientRegister: React.FC = () => {
                         label="Autoriza uso de imagem"
                       />
                     </Grid>
-
                     <Grid item xs={12} md={4}>
                       <DatePicker
                         label="Data de Óbito (se aplicável)"
@@ -726,10 +644,6 @@ const ClientRegister: React.FC = () => {
                 </AccordionDetails>
               </Accordion>
             </Grid>
-
-            {/* ============================================ */}
-            {/* SEÇÃO 5: HISTÓRICO MÉDICO */}
-            {/* ============================================ */}
             <Grid item xs={12}>
               <Accordion>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -755,7 +669,6 @@ const ClientRegister: React.FC = () => {
                           label="Diabetes"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={3}>
                         <FormControlLabel
                           control={
@@ -768,7 +681,6 @@ const ClientRegister: React.FC = () => {
                           label="Hipertensão"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={3}>
                         <FormControlLabel
                           control={
@@ -781,7 +693,6 @@ const ClientRegister: React.FC = () => {
                           label="Colesterol Alto"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={3}>
                         <FormControlLabel
                           control={
@@ -794,7 +705,6 @@ const ClientRegister: React.FC = () => {
                           label="Triglicerídeos Alto"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={3}>
                         <FormControlLabel
                           control={
@@ -807,7 +717,6 @@ const ClientRegister: React.FC = () => {
                           label="Problemas Renais"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={3}>
                         <FormControlLabel
                           control={
@@ -820,7 +729,6 @@ const ClientRegister: React.FC = () => {
                           label="Ansiedade"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={3}>
                         <FormControlLabel
                           control={
@@ -834,7 +742,6 @@ const ClientRegister: React.FC = () => {
                         />
                       </Grid>
                     </Grid>
-
                     <Box mt={2}>
                       <TextField
                         fullWidth
@@ -851,10 +758,6 @@ const ClientRegister: React.FC = () => {
                 </AccordionDetails>
               </Accordion>
             </Grid>
-
-            {/* ============================================ */}
-            {/* SEÇÃO 6: DOCUMENTOS ENTREGUES */}
-            {/* ============================================ */}
             <Grid item xs={12}>
               <Accordion>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -880,7 +783,6 @@ const ClientRegister: React.FC = () => {
                           label="RG (Identidade)"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={4}>
                         <FormControlLabel
                           control={
@@ -893,7 +795,6 @@ const ClientRegister: React.FC = () => {
                           label="CPF"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={4}>
                         <FormControlLabel
                           control={
@@ -906,7 +807,6 @@ const ClientRegister: React.FC = () => {
                           label="Certidão de Casamento"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={4}>
                         <FormControlLabel
                           control={
@@ -919,7 +819,6 @@ const ClientRegister: React.FC = () => {
                           label="Laudo Médico"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={4}>
                         <FormControlLabel
                           control={
@@ -932,7 +831,6 @@ const ClientRegister: React.FC = () => {
                           label="Exames Recentes"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={4}>
                         <FormControlLabel
                           control={
@@ -945,7 +843,6 @@ const ClientRegister: React.FC = () => {
                           label="Comprovante de Residência"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={4}>
                         <FormControlLabel
                           control={
@@ -958,7 +855,6 @@ const ClientRegister: React.FC = () => {
                           label="Comprovante de Renda"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={4}>
                         <FormControlLabel
                           control={
@@ -971,7 +867,6 @@ const ClientRegister: React.FC = () => {
                           label="Cartão do Hospital"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={4}>
                         <FormControlLabel
                           control={
@@ -984,7 +879,6 @@ const ClientRegister: React.FC = () => {
                           label="Cartão SUS"
                         />
                       </Grid>
-
                       <Grid item xs={12} sm={6} md={4}>
                         <FormControlLabel
                           control={
@@ -1002,10 +896,6 @@ const ClientRegister: React.FC = () => {
                 </AccordionDetails>
               </Accordion>
             </Grid>
-
-            {/* ============================================ */}
-            {/* SEÇÃO 7: OBSERVAÇÕES E STATUS */}
-            {/* ============================================ */}
             <Grid item xs={12}>
               <Accordion>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -1027,7 +917,6 @@ const ClientRegister: React.FC = () => {
                         placeholder="Informações adicionais sobre o paciente..."
                       />
                     </Grid>
-
                     <Grid item xs={12} md={6}>
                       <FormControl fullWidth>
                         <InputLabel>Status</InputLabel>
@@ -1044,7 +933,6 @@ const ClientRegister: React.FC = () => {
                         </Select>
                       </FormControl>
                     </Grid>
-
                     <Grid item xs={12} md={6}>
                       <FormControlLabel
                         control={
@@ -1061,10 +949,6 @@ const ClientRegister: React.FC = () => {
                 </AccordionDetails>
               </Accordion>
             </Grid>
-
-            {/* ============================================ */}
-            {/* ERRO */}
-            {/* ============================================ */}
             {error && (
               <Grid item xs={12}>
                 <Alert severity="error" onClose={() => setError(null)}>
@@ -1072,22 +956,17 @@ const ClientRegister: React.FC = () => {
                 </Alert>
               </Grid>
             )}
-
-            {/* ============================================ */}
-            {/* BOTÕES */}
-            {/* ============================================ */}
             <Grid item xs={12}>
               <Box display="flex" gap={2} justifyContent="flex-end">
                 <Button
                   variant="outlined"
                   size="large"
                   startIcon={<CancelIcon />}
-                  onClick={() => navigate("/clientes")}
+                  onClick={() => navigateWithPrompt("/clientes")}
                   disabled={loading}
                 >
                   Cancelar
                 </Button>
-
                 <Button
                   type="submit"
                   variant="contained"
@@ -1102,6 +981,12 @@ const ClientRegister: React.FC = () => {
           </Grid>
         </Box>
       </Box>
+      <UnsavedChangesDialog
+        open={showPrompt}
+        onConfirm={handleConfirmNavigation}
+        onCancel={handleCancelNavigation}
+        message={message}
+      />
     </LocalizationProvider>
   );
 };

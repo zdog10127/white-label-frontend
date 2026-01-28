@@ -20,10 +20,11 @@ import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../shared/contexts/AuthContext";
 import { HeaderProps } from "../types/header";
+import NotificationBadge from "./NotificationBadge";
 
 const Header: React.FC<HeaderProps> = ({
   onMenuClick,
-  title = "White Label",
+  title = "MedInova",
 }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -98,11 +99,7 @@ const Header: React.FC<HeaderProps> = ({
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <IconButton color="inherit" aria-label="Notificações">
-              <Badge badgeContent={3} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            <NotificationBadge /> 
 
             <IconButton
               color="inherit"
@@ -127,8 +124,6 @@ const Header: React.FC<HeaderProps> = ({
           </Box>
         </Toolbar>
       </AppBar>
-
-      {/* Menu Dropdown do Usuário */}
       <Menu
         id="user-menu"
         anchorEl={anchorEl}
@@ -149,7 +144,6 @@ const Header: React.FC<HeaderProps> = ({
           },
         }}
       >
-        {/* Informações do Usuário */}
         <Box sx={{ px: 2, py: 1.5 }}>
           <Typography variant="subtitle1" fontWeight="bold">
             {user?.name || "Usuário"}
@@ -158,20 +152,14 @@ const Header: React.FC<HeaderProps> = ({
             {user?.email}
           </Typography>
         </Box>
-
         <Divider />
-
-        {/* Opção: Perfil */}
         <MenuItem onClick={handleProfile}>
           <ListItemIcon>
             <PersonIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Meu Perfil</ListItemText>
         </MenuItem>
-
         <Divider />
-
-        {/* Opção: Logout */}
         <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
           <ListItemIcon>
             <LogoutIcon fontSize="small" color="error" />
