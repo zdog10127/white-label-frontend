@@ -8,31 +8,54 @@ import {
   Campaign,
   Groups2,
   Paid,
+  People,
   PersonalVideo,
   Settings,
 } from "@mui/icons-material";
 
 import ProtectedRoute from "./PrivateRoute";
+import PermissionProtectedRoute from "../../components/ProtectedRoute";
+import { Permissions } from "../../hooks/userPermission";
 import UserProfile from "../../pages/userPage";
 import Login from "../../pages/Login";
+import Register from "../../pages/Register";
 import Home from "../../pages/Home";
 import ClientList from "../../components/ClientList";
 import ClientRegister from "../../pages/clientRegister";
+import ClientDetails from "../../pages/ClientDetails";
+import ClientEdit from "../../pages/ClientEdit";
 import PrivateLayout from "../layouts/PrivateLayout";
 import Agenda from "../../pages/Schedule";
 import AlterCredentials from "../../pages/alterCredentials";
-import ReportPage from "../../pages/reportPage";
 import SettingsPage from "../../pages/settingsPage";
-import ClientDetails from "../../pages/ClientDetails";
-import ClientEdit from "../../pages/ClientEdit";
-import Register from "../../pages/Register";
-import NotificationsPage from "../../pages/NotificationPage";
+import PatientReportPage from "../../pages/PatientReportPage";
+import UsersListPage from "../../pages/UserListPage";
+import ReportsPage from "../../pages/ReportPage";
+import ReportPage from "../../pages/ReportPage";
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();
 
   useEffect(() => {
-    setDrawerOptions([
+    // Pegar usuário do localStorage
+    const userJson = localStorage.getItem('user');
+    let user = null;
+    if (userJson) {
+      try {
+        user = JSON.parse(userJson);
+      } catch {}
+    }
+
+    // Verificar se tem permissão
+    const hasPermission = (permission: string) => {
+      if (!user) return false;
+      if (user.role?.toLowerCase() === 'administrator') return true; // Admin vê tudo
+      if (!user.permissions || user.permissions.length === 0) return false;
+      return user.permissions.includes(permission);
+    };
+
+    // Montar menu baseado em permissões
+    const menuItems = [
       {
         label: "Painel",
         path: "/home",
@@ -44,22 +67,44 @@ export const AppRoutes = () => {
         path: "/clientes",
         icon: <Groups2 fontSize="large" />,
       },
+    ];
+
+    // Adicionar Usuários apenas se tiver permissão
+    if (hasPermission(Permissions.ViewUsers)) {
+      menuItems.push({
+        label: "Usuários",
+        path: "/usuarios",
+        icon: <People fontSize="large" />,
+      });
+    }
+
+    // Resto do menu
+    menuItems.push(
       {
         label: "Agenda",
         path: "/agenda",
         icon: <CalendarMonth fontSize="large" />,
       },
-      {
+    );
+
+    // Adicionar Relatórios apenas se tiver permissão
+    if (hasPermission(Permissions.ViewReports)) {
+      menuItems.push({
         label: "Relatórios",
         path: "/relatorios",
         icon: <Article fontSize="large" />,
-      },
-      {
-        label: "Configuração",
-        path: "/configuracao",
-        icon: <Settings fontSize="large" />,
-      },
-    ]);
+      });
+    }
+
+    // menuItems.push(
+    //   {
+    //     label: "Configuração",
+    //     path: "/configuracao",
+    //     icon: <Settings fontSize="large" />,
+    //   },
+    // );
+
+    setDrawerOptions(menuItems);
   }, [setDrawerOptions]);
 
   return (
@@ -71,15 +116,57 @@ export const AppRoutes = () => {
         <Route element={<PrivateLayout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/clientes" element={<ClientList />} />
-          <Route path="/cadastro-usuario" element={<ClientRegister />} />
           <Route path="/clientes/:id" element={<ClientDetails />} />
-          <Route path="/clientes/:id/editar" element={<ClientEdit />} />
+          <Route 
+            path="/clientes/:id/editar" 
+            element={
+              <PermissionProtectedRoute 
+                requiredPermissions={[Permissions.EditPatients]}
+                showAsModal
+              >
+                <ClientEdit />
+              </PermissionProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/cadastro-usuario" 
+            element={
+              <PermissionProtectedRoute 
+                requiredPermissions={[Permissions.CreatePatients]}
+                showAsModal
+              >
+                <ClientRegister />
+              </PermissionProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/usuarios" 
+            element={
+              <PermissionProtectedRoute requiredPermissions={[Permissions.ViewUsers]}>
+                <UsersListPage />
+              </PermissionProtectedRoute>
+            } 
+          />
           <Route path="/agenda" element={<Agenda />} />
-          <Route path="/perfil" element={<UserProfile />} />
-          <Route path="/alterar-credenciais" element={<AlterCredentials />} />
-          <Route path="/relatorios" element={<ReportPage />} />
+          <Route 
+            path="/relatorios" 
+            element={
+              <PermissionProtectedRoute requiredPermissions={[Permissions.ViewReports]}>
+                <ReportsPage />
+              </PermissionProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/relatorios/paciente/:patientId" 
+            element={
+              <PermissionProtectedRoute requiredPermissions={[Permissions.ViewReports]}>
+                <PatientReportPage />
+              </PermissionProtectedRoute>
+            } 
+          />
+          {/* <Route path="/perfil" element={<UserProfile />} /> */}
+          {/* <Route path="/alterar-credenciais" element={<AlterCredentials />} /> */}
           <Route path="/configuracao" element={<SettingsPage />} />
-          <Route path="/notificacoes" element={<NotificationsPage />} />
         </Route>
       </Route>
 

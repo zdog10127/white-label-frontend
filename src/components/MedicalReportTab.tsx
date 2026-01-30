@@ -31,6 +31,8 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [report, setReport] = useState<MedicalReport | null>(null);
+
+  // Form fields
   const [diagnosis, setDiagnosis] = useState("");
   const [medications, setMedications] = useState("");
   const [allergies, setAllergies] = useState("");
@@ -63,6 +65,7 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
         setGeneralNotes(data.generalNotes || "");
         setEditing(false);
       } else {
+        // Não existe relatório, habilitar edição
         setEditing(true);
       }
     } catch (error: any) {
@@ -91,9 +94,11 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
       };
 
       if (report?.id) {
+        // Atualizar
         await medicalReportService.updateReport(report.id, reportData);
         toast.success("Prontuário atualizado com sucesso!");
       } else {
+        // Criar
         await medicalReportService.createReport(reportData);
         toast.success("Prontuário criado com sucesso!");
       }
@@ -109,6 +114,7 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
 
   const handleCancel = () => {
     if (report) {
+      // Restaurar valores
       setDiagnosis(report.diagnosis || "");
       setMedications(report.medications || "");
       setAllergies(report.allergies || "");
@@ -132,19 +138,20 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
 
   return (
     <Box>
+      {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Box display="flex" alignItems="center" gap={1}>
           <DescriptionIcon color="primary" />
           <Typography variant="h6">Prontuário Médico</Typography>
         </Box>
 
-        {!editing && report && (
+        {!editing && (
           <Button
-            variant="outlined"
-            startIcon={<EditIcon />}
+            variant={report ? "outlined" : "contained"}
+            startIcon={report ? <EditIcon /> : <SaveIcon />}
             onClick={() => setEditing(true)}
           >
-            Editar
+            {report ? "Editar" : "Criar Prontuário"}
           </Button>
         )}
       </Box>
@@ -156,6 +163,7 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
       )}
 
       <Grid container spacing={3}>
+        {/* Informações Clínicas */}
         <Grid item xs={12}>
           <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -175,6 +183,7 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
                     placeholder="Diagnóstico completo do paciente..."
                   />
                 </Grid>
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
@@ -187,6 +196,7 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
                     placeholder="Liste as medicações..."
                   />
                 </Grid>
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
@@ -199,6 +209,7 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
                     placeholder="Alergias conhecidas..."
                   />
                 </Grid>
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
@@ -211,6 +222,7 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
                     placeholder="Outras doenças..."
                   />
                 </Grid>
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
@@ -227,6 +239,8 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
             </AccordionDetails>
           </Accordion>
         </Grid>
+
+        {/* Plano de Tratamento */}
         <Grid item xs={12}>
           <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -246,6 +260,7 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
                     placeholder="Descreva o plano de tratamento..."
                   />
                 </Grid>
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
@@ -258,6 +273,7 @@ const MedicalReportTab: React.FC<MedicalReportTabProps> = ({ patientId }) => {
                     placeholder="Recomendações gerais..."
                   />
                 </Grid>
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth

@@ -18,6 +18,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Tabs,
   Tab,
 } from "@mui/material";
 import {
@@ -40,8 +41,10 @@ import { toast } from "react-toastify";
 import patientService, { Patient } from "../services/patientService";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import { PatientDetailsSkeleton } from "../components/LoadingSkeletons";
+import MedicalReportTab from "../components/MedicalReportTab";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
+import EvolutionsTab from "../components/EvolutionTab";
 
 dayjs.locale("pt-br");
 
@@ -54,6 +57,7 @@ const ClientDetails: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const [deleting, setDeleting] = useState<boolean>(false);
+  const [tabValue, setTabValue] = useState<number>(0);
 
   useEffect(() => {
     if (!id) {
@@ -100,9 +104,7 @@ const ClientDetails: React.FC = () => {
     return date ? dayjs(date).format("DD/MM/YYYY") : "Não informado";
   };
 
-  const getStatusColor = (
-    status?: string,
-  ): "success" | "warning" | "error" | "default" => {
+  const getStatusColor = (status?: string): "success" | "warning" | "error" | "default" => {
     switch (status) {
       case "Active":
         return "success";
@@ -169,12 +171,8 @@ const ClientDetails: React.FC = () => {
 
   return (
     <Box p={3}>
-      <Box
-        mb={3}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-      >
+      {/* Cabeçalho */}
+      <Box mb={3} display="flex" justifyContent="space-between" alignItems="center">
         <Box display="flex" alignItems="center" gap={2}>
           <IconButton onClick={() => navigate("/clientes")} color="primary">
             <ArrowBackIcon />
@@ -184,11 +182,11 @@ const ClientDetails: React.FC = () => {
               {patient.name}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              CPF: {patientService.formatCPF(patient.cpf)} •{" "}
-              {calculateAge(patient.birthDate)} anos
+              CPF: {patientService.formatCPF(patient.cpf)} • {calculateAge(patient.birthDate)} anos
             </Typography>
           </Box>
         </Box>
+
         <Box display="flex" gap={1}>
           <Tooltip title="Editar">
             <Button
@@ -211,6 +209,8 @@ const ClientDetails: React.FC = () => {
           </Tooltip>
         </Box>
       </Box>
+
+      {/* Status Badges */}
       <Box mb={3} display="flex" gap={1} flexWrap="wrap">
         <Chip
           label={getStatusLabel(patient.status)}
@@ -223,18 +223,10 @@ const ClientDetails: React.FC = () => {
           variant="outlined"
         />
         {patient.fiveYears && (
-          <Chip
-            label="Completou 5 anos"
-            color="info"
-            icon={<CheckCircleIcon />}
-          />
+          <Chip label="Completou 5 anos" color="info" icon={<CheckCircleIcon />} />
         )}
         {patient.authorizeImage && (
-          <Chip
-            label="Autoriza imagem"
-            color="secondary"
-            icon={<ImageIcon />}
-          />
+          <Chip label="Autoriza imagem" color="secondary" icon={<ImageIcon />} />
         )}
         <Chip
           label={`Documentos: ${docStats.delivered}/${docStats.total}`}
@@ -242,7 +234,20 @@ const ClientDetails: React.FC = () => {
           icon={<DescriptionIcon />}
         />
       </Box>
+
+      {/* Tabs */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)}>
+          <Tab label="Dados Gerais" />
+          <Tab label="Prontuário" />
+          <Tab label="Evoluções" />
+        </Tabs>
+      </Box>
+
+      {/* Aba 0: Dados Gerais */}
+      {tabValue === 0 && (
       <Grid container spacing={3}>
+        {/* SEÇÃO 1: DADOS PESSOAIS */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
@@ -253,113 +258,80 @@ const ClientDetails: React.FC = () => {
                 </Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
+
               <List dense>
                 <ListItem>
                   <ListItemText
                     primary="Nome Completo"
                     secondary={patient.name}
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      color: "text.secondary",
-                    }}
-                    secondaryTypographyProps={{
-                      variant: "body1",
-                      fontWeight: "medium",
-                    }}
+                    primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+                    secondaryTypographyProps={{ variant: "body1", fontWeight: "medium" }}
                   />
                 </ListItem>
+
                 <ListItem>
                   <ListItemText
                     primary="CPF"
                     secondary={patientService.formatCPF(patient.cpf)}
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      color: "text.secondary",
-                    }}
-                    secondaryTypographyProps={{
-                      variant: "body1",
-                      fontWeight: "medium",
-                    }}
+                    primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+                    secondaryTypographyProps={{ variant: "body1", fontWeight: "medium" }}
                   />
                 </ListItem>
+
                 {patient.rg && (
                   <ListItem>
                     <ListItemText
                       primary="RG"
                       secondary={patient.rg}
-                      primaryTypographyProps={{
-                        variant: "body2",
-                        color: "text.secondary",
-                      }}
-                      secondaryTypographyProps={{
-                        variant: "body1",
-                        fontWeight: "medium",
-                      }}
+                      primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+                      secondaryTypographyProps={{ variant: "body1", fontWeight: "medium" }}
                     />
                   </ListItem>
                 )}
+
                 <ListItem>
                   <ListItemText
                     primary="Data de Nascimento"
                     secondary={`${formatDate(patient.birthDate)} (${calculateAge(patient.birthDate)} anos)`}
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      color: "text.secondary",
-                    }}
-                    secondaryTypographyProps={{
-                      variant: "body1",
-                      fontWeight: "medium",
-                    }}
+                    primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+                    secondaryTypographyProps={{ variant: "body1", fontWeight: "medium" }}
                   />
                 </ListItem>
+
                 <ListItem>
                   <ListItemText
                     primary="Gênero"
                     secondary={patient.gender}
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      color: "text.secondary",
-                    }}
-                    secondaryTypographyProps={{
-                      variant: "body1",
-                      fontWeight: "medium",
-                    }}
+                    primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+                    secondaryTypographyProps={{ variant: "body1", fontWeight: "medium" }}
                   />
                 </ListItem>
+
                 {patient.maritalStatus && (
                   <ListItem>
                     <ListItemText
                       primary="Estado Civil"
                       secondary={patient.maritalStatus}
-                      primaryTypographyProps={{
-                        variant: "body2",
-                        color: "text.secondary",
-                      }}
-                      secondaryTypographyProps={{
-                        variant: "body1",
-                        fontWeight: "medium",
-                      }}
+                      primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+                      secondaryTypographyProps={{ variant: "body1", fontWeight: "medium" }}
                     />
                   </ListItem>
                 )}
+
                 <ListItem>
                   <ListItemText
                     primary="Data de Cadastro"
                     secondary={formatDate(patient.registrationDate)}
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      color: "text.secondary",
-                    }}
-                    secondaryTypographyProps={{
-                      variant: "body1",
-                      fontWeight: "medium",
-                    }}
+                    primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+                    secondaryTypographyProps={{ variant: "body1", fontWeight: "medium" }}
                   />
                 </ListItem>
               </List>
             </CardContent>
           </Card>
         </Grid>
+
+        {/* SEÇÃO 2: CONTATO */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
@@ -370,6 +342,7 @@ const ClientDetails: React.FC = () => {
                 </Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
+
               <List dense>
                 <ListItem>
                   <ListItemIcon>
@@ -378,16 +351,11 @@ const ClientDetails: React.FC = () => {
                   <ListItemText
                     primary="Telefone Principal"
                     secondary={patient.phone}
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      color: "text.secondary",
-                    }}
-                    secondaryTypographyProps={{
-                      variant: "body1",
-                      fontWeight: "medium",
-                    }}
+                    primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+                    secondaryTypographyProps={{ variant: "body1", fontWeight: "medium" }}
                   />
                 </ListItem>
+
                 {patient.secondaryPhone && (
                   <ListItem>
                     <ListItemIcon>
@@ -396,17 +364,12 @@ const ClientDetails: React.FC = () => {
                     <ListItemText
                       primary="Telefone Secundário"
                       secondary={patient.secondaryPhone}
-                      primaryTypographyProps={{
-                        variant: "body2",
-                        color: "text.secondary",
-                      }}
-                      secondaryTypographyProps={{
-                        variant: "body1",
-                        fontWeight: "medium",
-                      }}
+                      primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+                      secondaryTypographyProps={{ variant: "body1", fontWeight: "medium" }}
                     />
                   </ListItem>
                 )}
+
                 {patient.email && (
                   <ListItem>
                     <ListItemIcon>
@@ -415,20 +378,16 @@ const ClientDetails: React.FC = () => {
                     <ListItemText
                       primary="E-mail"
                       secondary={patient.email}
-                      primaryTypographyProps={{
-                        variant: "body2",
-                        color: "text.secondary",
-                      }}
-                      secondaryTypographyProps={{
-                        variant: "body1",
-                        fontWeight: "medium",
-                      }}
+                      primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+                      secondaryTypographyProps={{ variant: "body1", fontWeight: "medium" }}
                     />
                   </ListItem>
                 )}
               </List>
             </CardContent>
           </Card>
+
+          {/* SEÇÃO 3: ENDEREÇO */}
           <Card sx={{ mt: 3 }}>
             <CardContent>
               <Box display="flex" alignItems="center" mb={2}>
@@ -438,19 +397,17 @@ const ClientDetails: React.FC = () => {
                 </Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
+
               {patient.address ? (
                 <Typography variant="body1">
                   {patient.address.street && `${patient.address.street}, `}
                   {patient.address.number && `${patient.address.number}`}
-                  {patient.address.complement &&
-                    ` - ${patient.address.complement}`}
+                  {patient.address.complement && ` - ${patient.address.complement}`}
                   <br />
                   {patient.address.neighborhood}
                   <br />
-                  {patient.address.city || "Araxá"} -{" "}
-                  {patient.address.state || "MG"}
-                  {patient.address.zipCode &&
-                    ` • CEP: ${patient.address.zipCode}`}
+                  {patient.address.city || "Araxá"} - {patient.address.state || "MG"}
+                  {patient.address.zipCode && ` • CEP: ${patient.address.zipCode}`}
                 </Typography>
               ) : (
                 <Typography variant="body2" color="text.secondary">
@@ -460,6 +417,8 @@ const ClientDetails: React.FC = () => {
             </CardContent>
           </Card>
         </Grid>
+
+        {/* SEÇÃO 4: INFORMAÇÕES DE CÂNCER */}
         <Grid item xs={12}>
           <Card>
             <CardContent>
@@ -470,6 +429,7 @@ const ClientDetails: React.FC = () => {
                 </Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
+
               {patient.cancer ? (
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6} md={3}>
@@ -480,6 +440,7 @@ const ClientDetails: React.FC = () => {
                       {patient.cancer.type}
                     </Typography>
                   </Grid>
+
                   {patient.cancer.stage && (
                     <Grid item xs={12} sm={6} md={3}>
                       <Typography variant="body2" color="text.secondary">
@@ -490,6 +451,7 @@ const ClientDetails: React.FC = () => {
                       </Typography>
                     </Grid>
                   )}
+
                   {patient.cancer.detectionDate && (
                     <Grid item xs={12} sm={6} md={3}>
                       <Typography variant="body2" color="text.secondary">
@@ -500,6 +462,7 @@ const ClientDetails: React.FC = () => {
                       </Typography>
                     </Grid>
                   )}
+
                   {patient.treatmentYear && (
                     <Grid item xs={12} sm={6} md={3}>
                       <Typography variant="body2" color="text.secondary">
@@ -510,6 +473,7 @@ const ClientDetails: React.FC = () => {
                       </Typography>
                     </Grid>
                   )}
+
                   {patient.cancer.treatmentLocation && (
                     <Grid item xs={12} sm={6} md={4}>
                       <Typography variant="body2" color="text.secondary">
@@ -520,6 +484,7 @@ const ClientDetails: React.FC = () => {
                       </Typography>
                     </Grid>
                   )}
+
                   {patient.cancer.treatmentStartDate && (
                     <Grid item xs={12} sm={6} md={4}>
                       <Typography variant="body2" color="text.secondary">
@@ -530,6 +495,7 @@ const ClientDetails: React.FC = () => {
                       </Typography>
                     </Grid>
                   )}
+
                   {patient.cancer.currentTreatment && (
                     <Grid item xs={12} sm={6} md={4}>
                       <Typography variant="body2" color="text.secondary">
@@ -540,16 +506,13 @@ const ClientDetails: React.FC = () => {
                       </Typography>
                     </Grid>
                   )}
+
                   {patient.deathDate && (
                     <Grid item xs={12} sm={6} md={4}>
                       <Typography variant="body2" color="text.secondary">
                         Data de Óbito
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        fontWeight="medium"
-                        color="error"
-                      >
+                      <Typography variant="body1" fontWeight="medium" color="error">
                         {formatDate(patient.deathDate)}
                       </Typography>
                     </Grid>
@@ -563,6 +526,8 @@ const ClientDetails: React.FC = () => {
             </CardContent>
           </Card>
         </Grid>
+
+        {/* SEÇÃO 5: CARTÕES E INFORMAÇÕES AMPARA */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
@@ -573,39 +538,31 @@ const ClientDetails: React.FC = () => {
                 </Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
+
               <List dense>
                 <ListItem>
                   <ListItemText
                     primary="Cartão SUS"
                     secondary={patient.susCard || "Não informado"}
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      color: "text.secondary",
-                    }}
-                    secondaryTypographyProps={{
-                      variant: "body1",
-                      fontWeight: "medium",
-                    }}
+                    primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+                    secondaryTypographyProps={{ variant: "body1", fontWeight: "medium" }}
                   />
                 </ListItem>
+
                 <ListItem>
                   <ListItemText
                     primary="Cartão do Hospital"
                     secondary={patient.hospitalCard || "Não informado"}
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      color: "text.secondary",
-                    }}
-                    secondaryTypographyProps={{
-                      variant: "body1",
-                      fontWeight: "medium",
-                    }}
+                    primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+                    secondaryTypographyProps={{ variant: "body1", fontWeight: "medium" }}
                   />
                 </ListItem>
               </List>
             </CardContent>
           </Card>
         </Grid>
+
+        {/* SEÇÃO 6: HISTÓRICO MÉDICO */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
@@ -616,6 +573,7 @@ const ClientDetails: React.FC = () => {
                 </Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
+
               {patient.medicalHistory ? (
                 <Box>
                   <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
@@ -626,25 +584,13 @@ const ClientDetails: React.FC = () => {
                       <Chip label="Hipertensão" size="small" color="warning" />
                     )}
                     {patient.medicalHistory.cholesterol && (
-                      <Chip
-                        label="Colesterol Alto"
-                        size="small"
-                        color="warning"
-                      />
+                      <Chip label="Colesterol Alto" size="small" color="warning" />
                     )}
                     {patient.medicalHistory.triglycerides && (
-                      <Chip
-                        label="Triglicerídeos Alto"
-                        size="small"
-                        color="warning"
-                      />
+                      <Chip label="Triglicerídeos Alto" size="small" color="warning" />
                     )}
                     {patient.medicalHistory.kidneyProblems && (
-                      <Chip
-                        label="Problemas Renais"
-                        size="small"
-                        color="warning"
-                      />
+                      <Chip label="Problemas Renais" size="small" color="warning" />
                     )}
                     {patient.medicalHistory.anxiety && (
                       <Chip label="Ansiedade" size="small" color="warning" />
@@ -653,20 +599,16 @@ const ClientDetails: React.FC = () => {
                       <Chip label="Infarto" size="small" color="error" />
                     )}
                   </Box>
+
                   {patient.medicalHistory.others && (
                     <Box>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        gutterBottom
-                      >
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
                         Outras Condições:
                       </Typography>
-                      <Typography variant="body1">
-                        {patient.medicalHistory.others}
-                      </Typography>
+                      <Typography variant="body1">{patient.medicalHistory.others}</Typography>
                     </Box>
                   )}
+
                   {!patient.medicalHistory.diabetes &&
                     !patient.medicalHistory.hypertension &&
                     !patient.medicalHistory.cholesterol &&
@@ -688,6 +630,8 @@ const ClientDetails: React.FC = () => {
             </CardContent>
           </Card>
         </Grid>
+
+        {/* SEÇÃO 7: DOCUMENTOS ENTREGUES */}
         <Grid item xs={12}>
           <Card>
             <CardContent>
@@ -698,201 +642,105 @@ const ClientDetails: React.FC = () => {
                 </Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
+
               {patient.documents ? (
                 <Grid container spacing={1}>
                   <Grid item xs={6} sm={4} md={3}>
                     <Chip
                       label="RG"
-                      icon={
-                        patient.documents.identity ? (
-                          <CheckCircleIcon />
-                        ) : (
-                          <CancelIcon />
-                        )
-                      }
+                      icon={patient.documents.identity ? <CheckCircleIcon /> : <CancelIcon />}
                       color={patient.documents.identity ? "success" : "default"}
-                      variant={
-                        patient.documents.identity ? "filled" : "outlined"
-                      }
+                      variant={patient.documents.identity ? "filled" : "outlined"}
                       size="small"
                     />
                   </Grid>
+
                   <Grid item xs={6} sm={4} md={3}>
                     <Chip
                       label="CPF"
-                      icon={
-                        patient.documents.cpfDoc ? (
-                          <CheckCircleIcon />
-                        ) : (
-                          <CancelIcon />
-                        )
-                      }
+                      icon={patient.documents.cpfDoc ? <CheckCircleIcon /> : <CancelIcon />}
                       color={patient.documents.cpfDoc ? "success" : "default"}
                       variant={patient.documents.cpfDoc ? "filled" : "outlined"}
                       size="small"
                     />
                   </Grid>
+
                   <Grid item xs={6} sm={4} md={3}>
                     <Chip
                       label="Certidão Casamento"
-                      icon={
-                        patient.documents.marriageCertificate ? (
-                          <CheckCircleIcon />
-                        ) : (
-                          <CancelIcon />
-                        )
-                      }
-                      color={
-                        patient.documents.marriageCertificate
-                          ? "success"
-                          : "default"
-                      }
-                      variant={
-                        patient.documents.marriageCertificate
-                          ? "filled"
-                          : "outlined"
-                      }
+                      icon={patient.documents.marriageCertificate ? <CheckCircleIcon /> : <CancelIcon />}
+                      color={patient.documents.marriageCertificate ? "success" : "default"}
+                      variant={patient.documents.marriageCertificate ? "filled" : "outlined"}
                       size="small"
                     />
                   </Grid>
+
                   <Grid item xs={6} sm={4} md={3}>
                     <Chip
                       label="Laudo Médico"
-                      icon={
-                        patient.documents.medicalReport ? (
-                          <CheckCircleIcon />
-                        ) : (
-                          <CancelIcon />
-                        )
-                      }
-                      color={
-                        patient.documents.medicalReport ? "success" : "default"
-                      }
-                      variant={
-                        patient.documents.medicalReport ? "filled" : "outlined"
-                      }
+                      icon={patient.documents.medicalReport ? <CheckCircleIcon /> : <CancelIcon />}
+                      color={patient.documents.medicalReport ? "success" : "default"}
+                      variant={patient.documents.medicalReport ? "filled" : "outlined"}
                       size="small"
                     />
                   </Grid>
+
                   <Grid item xs={6} sm={4} md={3}>
                     <Chip
                       label="Exames Recentes"
-                      icon={
-                        patient.documents.recentExams ? (
-                          <CheckCircleIcon />
-                        ) : (
-                          <CancelIcon />
-                        )
-                      }
-                      color={
-                        patient.documents.recentExams ? "success" : "default"
-                      }
-                      variant={
-                        patient.documents.recentExams ? "filled" : "outlined"
-                      }
+                      icon={patient.documents.recentExams ? <CheckCircleIcon /> : <CancelIcon />}
+                      color={patient.documents.recentExams ? "success" : "default"}
+                      variant={patient.documents.recentExams ? "filled" : "outlined"}
                       size="small"
                     />
                   </Grid>
+
                   <Grid item xs={6} sm={4} md={3}>
                     <Chip
                       label="Comprov. Residência"
-                      icon={
-                        patient.documents.addressProof ? (
-                          <CheckCircleIcon />
-                        ) : (
-                          <CancelIcon />
-                        )
-                      }
-                      color={
-                        patient.documents.addressProof ? "success" : "default"
-                      }
-                      variant={
-                        patient.documents.addressProof ? "filled" : "outlined"
-                      }
+                      icon={patient.documents.addressProof ? <CheckCircleIcon /> : <CancelIcon />}
+                      color={patient.documents.addressProof ? "success" : "default"}
+                      variant={patient.documents.addressProof ? "filled" : "outlined"}
                       size="small"
                     />
                   </Grid>
+
                   <Grid item xs={6} sm={4} md={3}>
                     <Chip
                       label="Comprov. Renda"
-                      icon={
-                        patient.documents.incomeProof ? (
-                          <CheckCircleIcon />
-                        ) : (
-                          <CancelIcon />
-                        )
-                      }
-                      color={
-                        patient.documents.incomeProof ? "success" : "default"
-                      }
-                      variant={
-                        patient.documents.incomeProof ? "filled" : "outlined"
-                      }
+                      icon={patient.documents.incomeProof ? <CheckCircleIcon /> : <CancelIcon />}
+                      color={patient.documents.incomeProof ? "success" : "default"}
+                      variant={patient.documents.incomeProof ? "filled" : "outlined"}
                       size="small"
                     />
                   </Grid>
+
                   <Grid item xs={6} sm={4} md={3}>
                     <Chip
                       label="Cartão Hospital"
-                      icon={
-                        patient.documents.hospitalCardDoc ? (
-                          <CheckCircleIcon />
-                        ) : (
-                          <CancelIcon />
-                        )
-                      }
-                      color={
-                        patient.documents.hospitalCardDoc
-                          ? "success"
-                          : "default"
-                      }
-                      variant={
-                        patient.documents.hospitalCardDoc
-                          ? "filled"
-                          : "outlined"
-                      }
+                      icon={patient.documents.hospitalCardDoc ? <CheckCircleIcon /> : <CancelIcon />}
+                      color={patient.documents.hospitalCardDoc ? "success" : "default"}
+                      variant={patient.documents.hospitalCardDoc ? "filled" : "outlined"}
                       size="small"
                     />
                   </Grid>
+
                   <Grid item xs={6} sm={4} md={3}>
                     <Chip
                       label="Cartão SUS"
-                      icon={
-                        patient.documents.susCardDoc ? (
-                          <CheckCircleIcon />
-                        ) : (
-                          <CancelIcon />
-                        )
-                      }
-                      color={
-                        patient.documents.susCardDoc ? "success" : "default"
-                      }
-                      variant={
-                        patient.documents.susCardDoc ? "filled" : "outlined"
-                      }
+                      icon={patient.documents.susCardDoc ? <CheckCircleIcon /> : <CancelIcon />}
+                      color={patient.documents.susCardDoc ? "success" : "default"}
+                      variant={patient.documents.susCardDoc ? "filled" : "outlined"}
                       size="small"
                     />
                   </Grid>
+
                   <Grid item xs={6} sm={4} md={3}>
                     <Chip
                       label="Biópsia"
-                      icon={
-                        patient.documents.biopsyResultDoc ? (
-                          <CheckCircleIcon />
-                        ) : (
-                          <CancelIcon />
-                        )
-                      }
-                      color={
-                        patient.documents.biopsyResultDoc
-                          ? "success"
-                          : "default"
-                      }
-                      variant={
-                        patient.documents.biopsyResultDoc
-                          ? "filled"
-                          : "outlined"
-                      }
+                      icon={patient.documents.biopsyResultDoc ? <CheckCircleIcon /> : <CancelIcon />}
+                      color={patient.documents.biopsyResultDoc ? "success" : "default"}
+                      variant={patient.documents.biopsyResultDoc ? "filled" : "outlined"}
                       size="small"
                     />
                   </Grid>
@@ -905,6 +753,8 @@ const ClientDetails: React.FC = () => {
             </CardContent>
           </Card>
         </Grid>
+
+        {/* SEÇÃO 8: OBSERVAÇÕES */}
         {patient.notes && (
           <Grid item xs={12}>
             <Card>
@@ -924,6 +774,17 @@ const ClientDetails: React.FC = () => {
           </Grid>
         )}
       </Grid>
+      )}
+      {tabValue === 1 && (
+        <Box>
+          <MedicalReportTab patientId={id!} />
+        </Box>
+      )}
+      {tabValue === 2 && (
+        <Box>
+          <EvolutionsTab patientId={id!} />
+        </Box>
+      )}
       <ConfirmDeleteModal
         open={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
