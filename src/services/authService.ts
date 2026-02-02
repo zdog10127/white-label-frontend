@@ -1,107 +1,132 @@
 import api from './api';
 
-export interface LoginRequest {
+interface LoginRequest {
   email: string;
   password: string;
 }
 
-export interface RegisterRequest {
+interface LoginResponse {
+  token: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    permissions: string[];
+    active: boolean;
+  };
+}
+
+interface RegisterRequest {
   name: string;
   email: string;
   password: string;
-  phone: string; 
-  confirmPassword: string; 
-}
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
+  confirmPassword: string;
+  phone: string;
   role: string;
-  phone?: string;
-  active: boolean;
-  createdAt: string;
-}
-
-export interface LoginResponse {
-  success: boolean;
-  data: {
-    token: string;
-    user: User;
-  };
-  message: string;
-}
-
-export interface RegisterResponse {
-  success: boolean;
-  data: {
-    token: string;
-    user: User;
-  };
-  message: string;
 }
 
 class AuthService {
-  async login(credentials: LoginRequest): Promise<LoginResponse> {
-    try {
-      const response = await api.post<LoginResponse>('/auth/login', credentials);
-      return response.data;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || error.response?.data?.title || 'Erro ao fazer login';
-      throw new Error(errorMessage);
-    }
+  /**
+   * Faz login do usuário
+   */
+  async login(email: string, password: string): Promise<LoginResponse> {
+    const response = await api.post<{ success: boolean; data: LoginResponse }>(
+      '/auth/login',
+      { email, password }
+    );
+
+    const { token, user } = response.data.data;
+
+    // Salvar no localStorage
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+
+    // Configurar token no header padrão
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+    return response.data.data;
   }
 
-  async register(userData: RegisterRequest): Promise<RegisterResponse> {
-    try {
-      const response = await api.post<RegisterResponse>('/auth/register', userData);
-      return response.data;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || error.response?.data?.title || 'Erro ao cadastrar usuário';
-      throw new Error(errorMessage);
-    }
+  /**
+   * Registra novo usuário
+   */
+  async register(data: RegisterRequest): Promise<LoginResponse> {
+    const response = await api.post<{ success: boolean; data: LoginResponse }>(
+      '/auth/register',
+      data
+    );
+
+    const { token, user } = response.data.data;
+
+    // Salvar no localStorage
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+
+    // Configurar token no header padrão
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+    return response.data.data;
   }
 
-  async verifyToken(token: string): Promise<boolean> {
-    try {
-      const response = await api.post('/auth/verify-token', { token });
-      return response.data.success;
-    } catch (error) {
-      console.error('Token verification failed:', error);
-      return false;
-    }
-  }
-
+  /**
+   * Faz logout do usuário
+   */
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    delete api.defaults.headers.common['Authorization'];
+    
+    // Disparar evento para sincronizar com outras abas
+    window.dispatchEvent(new Event('logout'));
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
+  /**
+   * Verifica se usuário está autenticado
+   */
+  isAuthenticated(): boolean {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    return !!(token && user);
   }
 
-  getUser(): User | null {
-    const userStr = localStorage.getItem('user');
-    if (!userStr) return null;
+  /**
+   * Obtém usuário atual do localStorage
+   */
+  getCurrentUser(): LoginResponse['user'] | null {
+    const userJson = localStorage.getItem('user');
+    if (!userJson) return null;
     
     try {
-      return JSON.parse(userStr);
-    } catch (error) {
-      console.error('Error parsing user from localStorage:', error);
+      return JSON.parse(userJson);
+    } catch {
       return null;
     }
   }
 
-  isAuthenticated(): boolean {
-    const token = this.getToken();
-    const user = this.getUser();
-    return !!(token && user);
+  /**
+   * Obtém token atual do localStorage
+   */
+  getToken(): string | null {
+    return localStorage.getItem('token');
   }
 
-  saveAuthData(token: string, user: User): void {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
+  /**
+   * Atualiza dados do usuário no localStorage
+   */
+  updateUser(user: Partial<LoginResponse['user']>): void {
+    const currentUser = this.getCurrentUser();
+    if (!currentUser) return;
+
+    const updatedUser = { ...currentUser, ...user };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    
+    // Disparar evento para sincronizar com outras abas
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'user',
+      newValue: JSON.stringify(updatedUser),
+      oldValue: JSON.stringify(currentUser),
+    }));
   }
 }
 

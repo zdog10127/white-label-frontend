@@ -169,7 +169,7 @@ export default function ReportsPage() {
                   </Paper>
                 </Grid>
 
-                {/* <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={6}>
                   <Paper
                     elevation={reportType === 'consolidated' ? 8 : 2}
                     sx={{
@@ -195,7 +195,7 @@ export default function ReportsPage() {
                       </Box>
                     </Box>
                   </Paper>
-                </Grid> */}
+                </Grid>
               </Grid>
             </CardContent>
           </Card>

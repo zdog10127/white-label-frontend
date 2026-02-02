@@ -13,9 +13,10 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../shared/contexts/AuthContext";
 import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
+import authService from "../services/authService";
+import { toast } from "react-toastify";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -24,7 +25,6 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const validateEmail = (email: string): boolean => {
@@ -67,17 +67,34 @@ const Login: React.FC = () => {
     try {
       setIsLoading(true);
 
-      const success = await login(email, password);
+      // Usar authService para fazer login com a API
+      const response = await authService.login(email, password);
 
-      if (success) {
-        console.log('✅ Login bem-sucedido! Redirecionando...');
+      console.log('✅ Login bem-sucedido!', response);
+      toast.success(`Bem-vindo, ${response.user.name}!`);
+
+      // Disparar evento customizado para o AuthContext sincronizar
+      window.dispatchEvent(new Event('auth-login'));
+
+      // Pequeno delay para garantir sincronização
+      setTimeout(() => {
         navigate("/home");
-      } else {
-        setError("E-mail ou senha incorretos");
-      }
+        // Recarregar para garantir sincronização completa do contexto
+        window.location.reload();
+      }, 100);
+      
     } catch (error: any) {
       console.error("❌ Erro no login:", error);
-      setError(error.message || "Erro ao fazer login. Tente novamente.");
+      
+      // Extrair mensagem de erro da API
+      const errorMessage = 
+        error.response?.data?.detail || 
+        error.response?.data?.message || 
+        error.response?.data?.title ||
+        "E-mail ou senha incorretos";
+      
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -188,29 +205,6 @@ const Login: React.FC = () => {
               "Entrar"
             )}
           </Button>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mt={2}
-          >
-            <Link
-              component={RouterLink}
-              to="/esqueci-senha"
-              variant="body2"
-              sx={{ textDecoration: "none" }}
-            >
-              Esqueceu sua senha?
-            </Link>
-            <Link
-              component={RouterLink}
-              to="/criar-conta"
-              variant="body2"
-              sx={{ textDecoration: "none" }}
-            >
-              Criar conta
-            </Link>
-          </Box>
         </Box>
         <Box textAlign="center" mt={4}>
           <Typography variant="caption" color="text.secondary">

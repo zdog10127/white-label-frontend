@@ -25,13 +25,13 @@ import ClientRegister from "../../pages/clientRegister";
 import ClientDetails from "../../pages/ClientDetails";
 import ClientEdit from "../../pages/ClientEdit";
 import PrivateLayout from "../layouts/PrivateLayout";
-import Agenda from "../../pages/Schedule";
+import Agenda from "../../pages/AppointmentPage";
 import AlterCredentials from "../../pages/alterCredentials";
 import SettingsPage from "../../pages/settingsPage";
 import PatientReportPage from "../../pages/PatientReportPage";
+import ConsolidatedReportPage from "../../pages/ConsolidatedReportPage";
 import UsersListPage from "../../pages/UserListPage";
 import ReportsPage from "../../pages/ReportPage";
-import ReportPage from "../../pages/ReportPage";
 
 export const AppRoutes = () => {
   const { setDrawerOptions } = useDrawerContext();
@@ -96,13 +96,13 @@ export const AppRoutes = () => {
       });
     }
 
-    // menuItems.push(
-    //   {
-    //     label: "Configuração",
-    //     path: "/configuracao",
-    //     icon: <Settings fontSize="large" />,
-    //   },
-    // );
+    menuItems.push(
+      {
+        label: "Configuração",
+        path: "/configuracao",
+        icon: <Settings fontSize="large" />,
+      },
+    );
 
     setDrawerOptions(menuItems);
   }, [setDrawerOptions]);
@@ -164,8 +164,17 @@ export const AppRoutes = () => {
               </PermissionProtectedRoute>
             } 
           />
+          <Route 
+            path="/relatorios/consolidado" 
+            element={
+              <PermissionProtectedRoute requiredPermissions={[Permissions.ViewReports]}>
+                <ConsolidatedReportPage />
+              </PermissionProtectedRoute>
+            } 
+          />
           {/* <Route path="/perfil" element={<UserProfile />} /> */}
           {/* <Route path="/alterar-credenciais" element={<AlterCredentials />} /> */}
+          <Route path="/relatorios" element={<ReportPage />} />
           <Route path="/configuracao" element={<SettingsPage />} />
         </Route>
       </Route>

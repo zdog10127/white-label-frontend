@@ -153,12 +153,12 @@ const Header: React.FC<HeaderProps> = ({
           </Typography>
         </Box>
         <Divider />
-        <MenuItem onClick={handleProfile}>
+        {/* <MenuItem onClick={handleProfile}>
           <ListItemIcon>
             <PersonIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Meu Perfil</ListItemText>
-        </MenuItem>
+        </MenuItem> */}
         <Divider />
         <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
           <ListItemIcon>
