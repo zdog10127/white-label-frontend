@@ -96,13 +96,13 @@ export const AppRoutes = () => {
       });
     }
 
-    menuItems.push(
-      {
-        label: "Configuração",
-        path: "/configuracao",
-        icon: <Settings fontSize="large" />,
-      },
-    );
+    // menuItems.push(
+    //   {
+    //     label: "Configuração",
+    //     path: "/configuracao",
+    //     icon: <Settings fontSize="large" />,
+    //   },
+    // );
 
     setDrawerOptions(menuItems);
   }, [setDrawerOptions]);

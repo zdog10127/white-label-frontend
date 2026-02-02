@@ -7,446 +7,451 @@ import {
   CardContent,
   CircularProgress,
   Chip,
-  Divider,
+  Avatar,
   List,
   ListItem,
+  ListItemAvatar,
   ListItemText,
-  LinearProgress,
+  Alert,
+  Divider,
+  IconButton,
+  Tooltip,
+  Paper,
 } from "@mui/material";
 import {
-  People as PeopleIcon,
-  PersonAdd as PersonAddIcon,
-  CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
-  Description as DescriptionIcon,
-  Image as ImageIcon,
-  LocalHospital as LocalHospitalIcon,
-  TrendingUp as TrendingUpIcon,
+  People,
+  EventAvailable,
+  CalendarToday,
+  Cake,
+  Warning,
+  Phone,
+  CheckCircle,
+  Cancel,
+  Schedule,
+  TrendingUp,
+  PersonAdd,
 } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import patientService, { Patient } from "../services/patientService";
-import dayjs from "dayjs";
-import { DashboardCardSkeleton, DashboardChartSkeleton } from "../components/LoadingSkeletons";
+import appointmentService, { Appointment } from "../services/appointmentService";
+import { format, isToday, differenceInYears } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip as RechartsTooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts";
 
 export default function DashboardHome(): JSX.Element {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    loadPatients();
+    loadData();
   }, []);
 
-  const loadPatients = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
-      const data = await patientService.getAll();
-      setPatients(data);
+      const [patientsData, appointmentsData] = await Promise.all([
+        patientService.getAll(),
+        appointmentService.getAll(),
+      ]);
+      setPatients(patientsData);
+      setAppointments(appointmentsData);
     } catch (error: any) {
-      console.error("Erro ao carregar pacientes:", error);
+      console.error("Erro ao carregar dados:", error);
       toast.error("Erro ao carregar dados do dashboard");
     } finally {
       setLoading(false);
     }
   };
 
-  const totalPatients = patients.length;
-  const activePatients = patients.filter((p) => p.active).length;
-  const inactivePatients = patients.filter((p) => !p.active).length;
-
-  const fiveYearsCompleted = patients.filter((p) => p.fiveYears).length;
-
-  const authorizeImage = patients.filter((p) => p.authorizeImage).length;
-
-  const totalDocsDelivered = patients.reduce((acc, p) => {
-    if (!p.documents) return acc;
-    const docs = p.documents;
-    const delivered = [
-      docs.identity,
-      docs.cpfDoc,
-      docs.marriageCertificate,
-      docs.medicalReport,
-      docs.recentExams,
-      docs.addressProof,
-      docs.incomeProof,
-      docs.hospitalCardDoc,
-      docs.susCardDoc,
-      docs.biopsyResultDoc,
-    ].filter(Boolean).length;
-    return acc + delivered;
-  }, 0);
-
-  const patientsByYear: { [key: string]: number } = {};
-  patients.forEach((p) => {
-    if (p.treatmentYear) {
-      const year = p.treatmentYear.toString();
-      patientsByYear[year] = (patientsByYear[year] || 0) + 1;
-    }
-  });
-
-  const sortedYears = Object.keys(patientsByYear).sort((a, b) => parseInt(b) - parseInt(a));
-
-  const cancerTypes: { [key: string]: number } = {};
-  patients.forEach((p) => {
-    if (p.cancer?.type) {
-      cancerTypes[p.cancer.type] = (cancerTypes[p.cancer.type] || 0) + 1;
-    }
-  });
-
-  const topCancerTypes = Object.entries(cancerTypes)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
-
-  const recentPatients = patients.filter((p) =>
-    dayjs(p.registrationDate).isAfter(dayjs().subtract(30, "day"))
-  ).length;
-
-  const statusCount = {
-    active: patients.filter((p) => p.status === "Active").length,
-    underReview: patients.filter((p) => p.status === "Under Review").length,
-    inactive: patients.filter((p) => p.status === "Inactive").length,
-    completed: patients.filter((p) => p.status === "Completed").length,
+  // Aniversariantes do dia
+  const getBirthdays = () => {
+    const today = new Date();
+    return patients
+      .filter((p) => {
+        if (!p.birthDate || !p.active) return false;
+        const birthDate = new Date(p.birthDate);
+        return (
+          birthDate.getMonth() === today.getMonth() &&
+          birthDate.getDate() === today.getDate()
+        );
+      })
+      .map((p) => ({
+        ...p,
+        age: differenceInYears(today, new Date(p.birthDate!)),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   };
+
+  // Agendamentos de hoje
+  const getTodayAppointments = () => {
+    return appointments
+      .filter((a) => isToday(new Date(a.date)))
+      .sort((a, b) => a.startTime.localeCompare(b.startTime));
+  };
+
+  // Estatísticas gerais
+  const stats = {
+    totalPatients: patients.length,
+    activePatients: patients.filter((p) => p.active).length,
+    inactivePatients: patients.filter((p) => !p.active).length,
+    todayAppointments: getTodayAppointments().length,
+    thisMonthAppointments: appointments.filter((a) => {
+      const date = new Date(a.date);
+      const today = new Date();
+      return date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+    }).length,
+  };
+
+  // Cadastros incompletos
+  const getIncompleteRegistrations = () => {
+    return patients
+      .filter((p) => p.active)
+      .map((p) => {
+        const missing: string[] = [];
+        
+        if (!p.cpf || !p.phone || !p.email) missing.push("Dados Básicos");
+        if (!p.address || !p.address.street || !p.address.city) missing.push("Endereço");
+        if (!p.cancer || !p.cancer.type) missing.push("Dados do Câncer");
+        if (!p.medicalHistory) missing.push("Histórico Médico");
+        if (!p.documents || (!p.documents.identity && !p.documents.cpfDoc && !p.documents.addressProof)) missing.push("Documentos");
+
+        return {
+          patient: p,
+          missingCount: missing.length,
+          missingFields: missing,
+        };
+      })
+      .filter((item) => item.missingCount > 0)
+      .sort((a, b) => b.missingCount - a.missingCount);
+  };
+
+  // Dados para gráfico de cadastros incompletos
+  const getIncompleteChartData = () => {
+    const incomplete = getIncompleteRegistrations();
+    const categories = ["Dados Básicos", "Endereço", "Dados do Câncer", "Histórico Médico", "Documentos"];
+    
+    return categories.map((category) => ({
+      name: category,
+      value: incomplete.filter((item) => item.missingFields.includes(category)).length,
+    }));
+  };
+
+  // Dados para gráfico de status de agendamentos
+  const getAppointmentStatusData = () => {
+    const statuses = ["Agendado", "Confirmado", "Concluído", "Cancelado", "Faltou"];
+    return statuses.map((status) => ({
+      name: status,
+      value: appointments.filter((a) => a.status === status).length,
+    }));
+  };
+
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
+
+  const birthdays = getBirthdays();
+  const todayAppointments = getTodayAppointments();
+  const incompleteRegistrations = getIncompleteRegistrations();
 
   if (loading) {
     return (
-      <Box p={3}>
-        <Box mb={4}>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
-            Dashboard
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Sistema de Gestão de Pacientes - Visão Geral
-          </Typography>
-        </Box>
-        <Grid container spacing={3} mb={4}>
-          {[1, 2, 3, 4].map((item) => (
-            <Grid item xs={12} sm={6} md={3} key={item}>
-              <DashboardCardSkeleton />
-            </Grid>
-          ))}
-        </Grid>
-        <Grid container spacing={3}>
-          {[1, 2, 3, 4].map((item) => (
-            <Grid item xs={12} md={6} key={item}>
-              <DashboardChartSkeleton />
-            </Grid>
-          ))}
-        </Grid>
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <CircularProgress size={60} />
       </Box>
     );
   }
 
   return (
     <Box p={3}>
+      {/* Cabeçalho */}
       <Box mb={4}>
         <Typography variant="h4" fontWeight="bold" gutterBottom>
-          Dashboard
+          📊 Dashboard
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Sistema de Gestão de Pacientes - Visão Geral
+          Bem-vindo! Aqui está um resumo do sistema.
         </Typography>
       </Box>
+
+      {/* Cards de Estatísticas */}
       <Grid container spacing={3} mb={4}>
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
+              <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <Typography color="text.secondary" variant="body2" gutterBottom>
                     Total de Pacientes
                   </Typography>
                   <Typography variant="h4" fontWeight="bold">
-                    {totalPatients}
+                    {stats.totalPatients}
                   </Typography>
                 </Box>
-                <PeopleIcon sx={{ fontSize: 48, color: "primary.main", opacity: 0.3 }} />
-              </Box>
-              <Box mt={2} display="flex" gap={1}>
-                <Chip label={`${activePatients} ativos`} size="small" color="success" />
-                <Chip label={`${inactivePatients} inativos`} size="small" color="default" />
+                <Avatar sx={{ bgcolor: "primary.main", width: 56, height: 56 }}>
+                  <People fontSize="large" />
+                </Avatar>
               </Box>
             </CardContent>
           </Card>
         </Grid>
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
+              <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Novos (30 dias)
+                  <Typography color="text.secondary" variant="body2" gutterBottom>
+                    Pacientes Ativos
                   </Typography>
-                  <Typography variant="h4" fontWeight="bold">
-                    {recentPatients}
+                  <Typography variant="h4" fontWeight="bold" color="success.main">
+                    {stats.activePatients}
                   </Typography>
                 </Box>
-                <PersonAddIcon sx={{ fontSize: 48, color: "info.main", opacity: 0.3 }} />
-              </Box>
-              <Box mt={2}>
-                <Typography variant="body2" color="text.secondary">
-                  Cadastrados no último mês
-                </Typography>
+                <Avatar sx={{ bgcolor: "success.main", width: 56, height: 56 }}>
+                  <CheckCircle fontSize="large" />
+                </Avatar>
               </Box>
             </CardContent>
           </Card>
         </Grid>
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
+              <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Completaram 5 Anos
+                  <Typography color="text.secondary" variant="body2" gutterBottom>
+                    Agendamentos Hoje
                   </Typography>
-                  <Typography variant="h4" fontWeight="bold">
-                    {fiveYearsCompleted}
+                  <Typography variant="h4" fontWeight="bold" color="info.main">
+                    {stats.todayAppointments}
                   </Typography>
                 </Box>
-                <CheckCircleIcon sx={{ fontSize: 48, color: "success.main", opacity: 0.3 }} />
-              </Box>
-              <Box mt={2}>
-                <Typography variant="body2" color="text.secondary">
-                  {((fiveYearsCompleted / totalPatients) * 100 || 0).toFixed(1)}% do total
-                </Typography>
+                <Avatar sx={{ bgcolor: "info.main", width: 56, height: 56 }}>
+                  <CalendarToday fontSize="large" />
+                </Avatar>
               </Box>
             </CardContent>
           </Card>
         </Grid>
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
+              <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Docs Entregues
+                  <Typography color="text.secondary" variant="body2" gutterBottom>
+                    Agendamentos do Mês
                   </Typography>
-                  <Typography variant="h4" fontWeight="bold">
-                    {totalDocsDelivered}
+                  <Typography variant="h4" fontWeight="bold" color="secondary.main">
+                    {stats.thisMonthAppointments}
                   </Typography>
                 </Box>
-                <DescriptionIcon sx={{ fontSize: 48, color: "info.main", opacity: 0.3 }} />
-              </Box>
-              <Box mt={2}>
-                <Typography variant="body2" color="text.secondary">
-                  Total de documentos no sistema
-                </Typography>
+                <Avatar sx={{ bgcolor: "secondary.main", width: 56, height: 56 }}>
+                  <EventAvailable fontSize="large" />
+                </Avatar>
               </Box>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
+
       <Grid container spacing={3}>
+        {/* Aniversariantes do Dia */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center" mb={2}>
-                <TrendingUpIcon color="primary" sx={{ mr: 1 }} />
+                <Cake sx={{ mr: 1, color: "secondary.main" }} />
                 <Typography variant="h6" fontWeight="bold">
-                  Pacientes por Ano de Tratamento
+                  🎂 Aniversariantes de Hoje
                 </Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
-              {sortedYears.length > 0 ? (
-                <List dense>
-                  {sortedYears.map((year) => (
-                    <ListItem key={year}>
-                      <ListItemText
-                        primary={year}
-                        secondary={
-                          <Box width="100%" mt={1}>
-                            <Box display="flex" justifyContent="space-between" mb={0.5}>
-                              <Typography variant="body2">
-                                {patientsByYear[year]} pacientes
-                              </Typography>
-                              <Typography variant="body2">
-                                {((patientsByYear[year] / totalPatients) * 100).toFixed(1)}%
-                              </Typography>
-                            </Box>
-                            <LinearProgress
-                              variant="determinate"
-                              value={(patientsByYear[year] / totalPatients) * 100}
-                            />
-                          </Box>
-                        }
-                      />
-                    </ListItem>
-                  ))}
-                </List>
+
+              {birthdays.length === 0 ? (
+                <Alert severity="info">Nenhum aniversariante hoje</Alert>
               ) : (
-                <Typography variant="body2" color="text.secondary" textAlign="center" py={3}>
-                  Nenhum ano de tratamento registrado
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Box display="flex" alignItems="center" mb={2}>
-                <LocalHospitalIcon color="primary" sx={{ mr: 1 }} />
-                <Typography variant="h6" fontWeight="bold">
-                  Top 5 Tipos de Câncer
-                </Typography>
-              </Box>
-              <Divider sx={{ mb: 2 }} />
-              {topCancerTypes.length > 0 ? (
-                <List dense>
-                  {topCancerTypes.map(([type, count]) => (
-                    <ListItem key={type}>
+                <List>
+                  {birthdays.map((patient) => (
+                    <ListItem key={patient.id} divider>
+                      <ListItemAvatar>
+                        <Avatar sx={{ bgcolor: "secondary.main" }}>
+                          <Cake />
+                        </Avatar>
+                      </ListItemAvatar>
                       <ListItemText
-                        primary={type}
-                        secondary={
-                          <Box width="100%" mt={1}>
-                            <Box display="flex" justifyContent="space-between" mb={0.5}>
-                              <Typography variant="body2">{count} casos</Typography>
-                              <Typography variant="body2">
-                                {((count / totalPatients) * 100).toFixed(1)}%
-                              </Typography>
-                            </Box>
-                            <LinearProgress
-                              variant="determinate"
-                              value={(count / totalPatients) * 100}
+                        primary={
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <Typography variant="body1" fontWeight="bold">
+                              {patient.name}
+                            </Typography>
+                            <Chip
+                              label={`${patient.age} anos`}
+                              size="small"
                               color="secondary"
                             />
                           </Box>
                         }
+                        secondary={
+                          <Box display="flex" alignItems="center" gap={1} mt={0.5}>
+                            <Phone fontSize="small" />
+                            <Typography variant="body2">{patient.phone || "Sem telefone"}</Typography>
+                          </Box>
+                        }
                       />
                     </ListItem>
                   ))}
                 </List>
-              ) : (
-                <Typography variant="body2" color="text.secondary" textAlign="center" py={3}>
-                  Nenhum tipo de câncer registrado
-                </Typography>
               )}
             </CardContent>
           </Card>
         </Grid>
+
+        {/* Agendamentos de Hoje */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center" mb={2}>
-                <DescriptionIcon color="primary" sx={{ mr: 1 }} />
+                <CalendarToday sx={{ mr: 1, color: "info.main" }} />
                 <Typography variant="h6" fontWeight="bold">
-                  Documentos no Sistema
+                  📅 Agendamentos de Hoje
                 </Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
-              <Box>
-                <Box
-                  p={3}
-                  bgcolor="grey.100"
-                  borderRadius={1}
-                  textAlign="center"
-                >
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Total de Documentos Cadastrados
-                  </Typography>
-                  <Typography variant="h2" fontWeight="bold" color="primary.main">
-                    {totalDocsDelivered}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" mt={1}>
-                    Documentos entregues pelos pacientes
-                  </Typography>
-                </Box>
-                <Box mt={3}>
-                  <Typography variant="body2" color="text.secondary" textAlign="center">
-                    Os documentos são opcionais e servem para
-                    <br />
-                    complementar o cadastro dos pacientes
-                  </Typography>
-                </Box>
-              </Box>
+
+              {todayAppointments.length === 0 ? (
+                <Alert severity="info">Nenhum agendamento para hoje</Alert>
+              ) : (
+                <List sx={{ maxHeight: 400, overflow: "auto" }}>
+                  {todayAppointments.map((appointment) => (
+                    <ListItem key={appointment.id} divider>
+                      <ListItemAvatar>
+                        <Avatar sx={{ bgcolor: appointmentService.getStatusColor(appointment.status) }}>
+                          <Schedule />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <Typography variant="body1" fontWeight="bold">
+                              {appointment.startTime} - {appointment.patientName}
+                            </Typography>
+                            <Chip
+                              label={appointment.status}
+                              size="small"
+                              color={appointmentService.getStatusColor(appointment.status)}
+                            />
+                          </Box>
+                        }
+                        secondary={
+                          <Typography variant="body2" color="text.secondary">
+                            {appointment.professionalName} • {appointment.type}
+                          </Typography>
+                        }
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              )}
             </CardContent>
           </Card>
         </Grid>
+
+        {/* Gráfico de Cadastros Incompletos */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center" mb={2}>
-                <ImageIcon color="primary" sx={{ mr: 1 }} />
+                <Warning sx={{ mr: 1, color: "warning.main" }} />
                 <Typography variant="h6" fontWeight="bold">
-                  Informações Adicionais
+                  ⚠️ Cadastros Incompletos ({incompleteRegistrations.length})
                 </Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
-              <Box>
-                <Box mb={3}>
-                  <Typography variant="subtitle2" gutterBottom fontWeight="bold">
-                    Status dos Pacientes
-                  </Typography>
-                  <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
-                    <Chip
-                      label={`Ativo: ${statusCount.active}`}
-                      color="success"
-                      size="small"
-                    />
-                    <Chip
-                      label={`Em Análise: ${statusCount.underReview}`}
-                      color="warning"
-                      size="small"
-                    />
-                    <Chip
-                      label={`Inativo: ${statusCount.inactive}`}
-                      color="default"
-                      size="small"
-                    />
-                    <Chip
-                      label={`Concluído: ${statusCount.completed}`}
-                      color="info"
-                      size="small"
-                    />
-                  </Box>
-                </Box>
-                <Box mb={3}>
-                  <Typography variant="subtitle2" gutterBottom fontWeight="bold">
-                    Autorização de Imagem
-                  </Typography>
-                  <Box display="flex" justifyContent="space-between" mt={1}>
-                    <Typography variant="body2">Autorizaram:</Typography>
-                    <Typography variant="body2" fontWeight="bold" color="success.main">
-                      {authorizeImage} ({((authorizeImage / totalPatients) * 100 || 0).toFixed(1)}%)
+
+              {incompleteRegistrations.length === 0 ? (
+                <Alert severity="success">Todos os cadastros estão completos! 🎉</Alert>
+              ) : (
+                <>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={getIncompleteChartData()}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} fontSize={12} />
+                      <YAxis />
+                      <RechartsTooltip />
+                      <Bar dataKey="value" fill="#ff9800" />
+                    </BarChart>
+                  </ResponsiveContainer>
+
+                  <Box mt={2}>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      Top 5 pacientes com mais campos faltando:
                     </Typography>
+                    <List dense>
+                      {incompleteRegistrations.slice(0, 5).map((item, index) => (
+                        <ListItem key={item.patient.id}>
+                          <ListItemText
+                            primary={item.patient.name}
+                            secondary={`${item.missingCount} campos faltando: ${item.missingFields.join(", ")}`}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
                   </Box>
-                  <Box display="flex" justifyContent="space-between" mt={1}>
-                    <Typography variant="body2">Não autorizaram:</Typography>
-                    <Typography variant="body2" fontWeight="bold" color="error.main">
-                      {totalPatients - authorizeImage} (
-                      {(((totalPatients - authorizeImage) / totalPatients) * 100 || 0).toFixed(1)}
-                      %)
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box>
-                  <Typography variant="subtitle2" gutterBottom fontWeight="bold">
-                    Distribuição por Gênero
-                  </Typography>
-                  <Box display="flex" gap={1} mt={1}>
-                    <Chip
-                      label={`Masculino: ${
-                        patients.filter((p) => p.gender === "Masculino").length
-                      }`}
-                      size="small"
-                      variant="outlined"
-                    />
-                    <Chip
-                      label={`Feminino: ${
-                        patients.filter((p) => p.gender === "Feminino").length
-                      }`}
-                      size="small"
-                      variant="outlined"
-                    />
-                    <Chip
-                      label={`Outro: ${
-                        patients.filter((p) => p.gender === "Outro").length
-                      }`}
-                      size="small"
-                      variant="outlined"
-                    />
-                  </Box>
-                </Box>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Gráfico de Status de Agendamentos */}
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Box display="flex" alignItems="center" mb={2}>
+                <TrendingUp sx={{ mr: 1, color: "primary.main" }} />
+                <Typography variant="h6" fontWeight="bold">
+                  📈 Status dos Agendamentos
+                </Typography>
               </Box>
+              <Divider sx={{ mb: 2 }} />
+
+              {appointments.length === 0 ? (
+                <Alert severity="info">Nenhum agendamento cadastrado</Alert>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={getAppointmentStatusData()}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={(entry) => `${entry.name}: ${entry.value}`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {getAppointmentStatusData().map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <RechartsTooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
             </CardContent>
           </Card>
         </Grid>

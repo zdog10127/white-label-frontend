@@ -98,7 +98,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const loadPatients = async () => {
     try {
       setLoadingPatients(true);
-      const data = await patientService.getAllPatients();
+      const data = await patientService.getAll();
       setPatients(data.filter(p => p.active));
     } catch (error) {
       console.error("Erro ao carregar pacientes:", error);
