@@ -174,7 +174,6 @@ export const AppRoutes = () => {
           />
           {/* <Route path="/perfil" element={<UserProfile />} /> */}
           {/* <Route path="/alterar-credenciais" element={<AlterCredentials />} /> */}
-          <Route path="/relatorios" element={<ReportPage />} />
           <Route path="/configuracao" element={<SettingsPage />} />
         </Route>
       </Route>
