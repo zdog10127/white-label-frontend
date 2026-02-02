@@ -10,13 +10,14 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
+  Fade,
+  Slide,
 } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff, LocalHospital } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { Link as RouterLink } from "react-router-dom";
-import Link from "@mui/material/Link";
 import authService from "../services/authService";
 import { toast } from "react-toastify";
+import Logo from "../components/Logo";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -49,14 +50,15 @@ const Login: React.FC = () => {
     }
 
     if (password.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres");
+      setError("A senha deve ter no mínimo 6 caracteres");
       return false;
     }
 
+    setError(null);
     return true;
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
@@ -101,118 +103,244 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Container
-      maxWidth={false}
-      disableGutters
+    <Box
       sx={{
-        height: "100vh",
+        minHeight: "100vh",
         width: "100vw",
-        backgroundImage: `url('assets/fundo3dbranco.jpg')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
         display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        background: `
+          linear-gradient(135deg, 
+            #667eea 0%, 
+            #764ba2 25%, 
+            #f093fb 50%, 
+            #4facfe 75%, 
+            #00f2fe 100%
+          )`,
+        backgroundSize: "400% 400%",
+        animation: "gradientShift 15s ease infinite",
+        "@keyframes gradientShift": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <Paper
-        elevation={15}
+      {/* Elementos decorativos flutuantes */}
+      <Box
         sx={{
-          padding: 4,
-          width: { xs: "90%", sm: 400 },
-          border: 3,
-          borderColor: "GrayText",
-          borderRadius: 4,
+          position: "absolute",
+          width: "300px",
+          height: "300px",
+          borderRadius: "50%",
+          background: "rgba(255, 255, 255, 0.1)",
+          top: "-100px",
+          left: "-100px",
+          animation: "float 20s ease-in-out infinite",
+          "@keyframes float": {
+            "0%, 100%": { transform: "translate(0, 0)" },
+            "50%": { transform: "translate(50px, 50px)" },
+          },
+        }}
+      />
+      <Box
+        sx={{
+          position: "absolute",
+          width: "400px",
+          height: "400px",
+          borderRadius: "50%",
+          background: "rgba(255, 255, 255, 0.05)",
+          bottom: "-150px",
+          right: "-150px",
+          animation: "float 25s ease-in-out infinite reverse",
+        }}
+      />
+      <Box
+        sx={{
+          position: "absolute",
+          width: "200px",
+          height: "200px",
+          borderRadius: "50%",
+          background: "rgba(255, 255, 255, 0.08)",
+          top: "30%",
+          right: "10%",
+          animation: "float 18s ease-in-out infinite",
+        }}
+      />
+
+      {/* Container do formulário */}
+      <Container
+        maxWidth="sm"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+          position: "relative",
+          zIndex: 1,
+          py: 4,
         }}
       >
-        <Box textAlign="center" mb={3}>
-          <Typography variant="h4" gutterBottom fontWeight="bold">
-            MedInova
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Sistema de Gestão
-          </Typography>
-        </Box>
-        <Box component="form" onSubmit={handleSubmit}>
-          <TextField
-            fullWidth
-            label="E-mail"
-            variant="outlined"
-            type="email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setError(null);
-            }}
-            margin="normal"
-            disabled={isLoading}
-            autoComplete="email"
-            placeholder="seu@email.com"
-            error={!!error && !email}
-          />
-          <TextField
-            fullWidth
-            label="Senha"
-            variant="outlined"
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setError(null);
-            }}
-            margin="normal"
-            disabled={isLoading}
-            autoComplete="current-password"
-            placeholder="Mínimo 6 caracteres"
-            error={!!error && !password}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                    disabled={isLoading}
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {error}
-            </Alert>
-          )}
-          <Button
-            fullWidth
-            variant="contained"
-            type="submit"
-            size="large"
-            disabled={isLoading}
+        <Slide direction="down" in={true} timeout={800}>
+          <Paper
+            elevation={24}
             sx={{
-              mt: 3,
-              mb: 2,
-              height: 48,
-              fontSize: "1rem",
-              fontWeight: "bold",
+              padding: { xs: 3, sm: 5 },
+              width: "100%",
+              maxWidth: 450,
+              borderRadius: 4,
+              background: "rgba(255, 255, 255, 0.95)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+              boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
             }}
           >
-            {isLoading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "Entrar"
-            )}
-          </Button>
-        </Box>
-        <Box textAlign="center" mt={4}>
-          <Typography variant="caption" color="text.secondary">
-            © 2025 MedInova
-          </Typography>
-        </Box>
-      </Paper>
-    </Container>
+            <Fade in={true} timeout={1000}>
+              <Box>
+                {/* Logo e Título */}
+                <Box textAlign="center" mb={4}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      mb: 2,
+                    }}
+                  >
+                    <Logo size={100} variant="icon" />
+                  </Box>
+                  <Typography
+                    variant="h4"
+                    gutterBottom
+                    fontWeight="bold"
+                    sx={{
+                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}
+                  >
+                    MedInova
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" fontWeight={500}>
+                    Sistema de Gestão em Saúde
+                  </Typography>
+                </Box>
+
+                {/* Formulário */}
+                <Box component="form" onSubmit={handleSubmit}>
+                  <TextField
+                    fullWidth
+                    label="E-mail"
+                    variant="outlined"
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setError(null);
+                    }}
+                    margin="normal"
+                    disabled={isLoading}
+                    autoComplete="email"
+                    placeholder="seu@email.com"
+                    error={!!error && !email}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 2,
+                        background: "rgba(255, 255, 255, 0.8)",
+                      },
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Senha"
+                    variant="outlined"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setError(null);
+                    }}
+                    margin="normal"
+                    disabled={isLoading}
+                    autoComplete="current-password"
+                    placeholder="Mínimo 6 caracteres"
+                    error={!!error && !password}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 2,
+                        background: "rgba(255, 255, 255, 0.8)",
+                      },
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                            disabled={isLoading}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+
+                  {error && (
+                    <Fade in={!!error}>
+                      <Alert severity="error" sx={{ mt: 2, borderRadius: 2 }}>
+                        {error}
+                      </Alert>
+                    </Fade>
+                  )}
+
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    type="submit"
+                    size="large"
+                    disabled={isLoading}
+                    sx={{
+                      mt: 3,
+                      mb: 2,
+                      height: 56,
+                      fontSize: "1.1rem",
+                      fontWeight: "bold",
+                      borderRadius: 2,
+                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      boxShadow: "0 4px 15px 0 rgba(102, 126, 234, 0.4)",
+                      transition: "all 0.3s ease",
+                      "&:hover": {
+                        background: "linear-gradient(135deg, #764ba2 0%, #667eea 100%)",
+                        boxShadow: "0 6px 20px 0 rgba(102, 126, 234, 0.6)",
+                        transform: "translateY(-2px)",
+                      },
+                      "&:disabled": {
+                        background: "linear-gradient(135deg, #ccc 0%, #999 100%)",
+                      },
+                    }}
+                  >
+                    {isLoading ? (
+                      <CircularProgress size={28} color="inherit" />
+                    ) : (
+                      "Entrar"
+                    )}
+                  </Button>
+                </Box>
+
+                {/* Rodapé */}
+                <Box textAlign="center" mt={4}>
+                  <Typography variant="caption" color="text.secondary">
+                    © 2025 MedInova - Sistema de Gestão em Saúde
+                  </Typography>
+                </Box>
+              </Box>
+            </Fade>
+          </Paper>
+        </Slide>
+      </Container>
+    </Box>
   );
 };
 

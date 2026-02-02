@@ -20,7 +20,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../shared/contexts/AuthContext";
 import { HeaderProps } from "../types/header";
-import NotificationBadge from "./NotificationBadge";
+import Logo from "./Logo";
+import { toast } from "react-toastify";
 
 const Header: React.FC<HeaderProps> = ({
   onMenuClick,
@@ -32,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const menuOpen = Boolean(anchorEl);
+  const open = Boolean(anchorEl);
 
   useEffect(() => {
     if (user?.email) {
@@ -57,117 +58,191 @@ const Header: React.FC<HeaderProps> = ({
     setAnchorEl(null);
   };
 
-  const handleProfile = () => {
-    handleMenuClose();
-    navigate("/perfil");
-  };
-
   const handleLogout = () => {
     handleMenuClose();
     logout();
+    toast.success("Logout realizado com sucesso!");
     navigate("/login");
   };
 
+  // Obter inicial do nome do usuário
+  const getUserInitial = () => {
+    if (firstName) return firstName.charAt(0).toUpperCase();
+    if (user?.email) return user.email.charAt(0).toUpperCase();
+    return "U";
+  };
+
   return (
-    <>
-      <AppBar
-        position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+    <AppBar
+      position="fixed"
+      sx={{ 
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+        background: (theme) => 
+          theme.palette.mode === 'dark' 
+            ? 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)'
+            : 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+        boxShadow: (theme) => 
+          theme.palette.mode === 'dark'
+            ? '0 4px 20px 0 rgba(0,0,0,0.4)'
+            : '0 2px 10px 0 rgba(25,118,210,0.2)',
+      }}
+    >
+      <Toolbar
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          minHeight: { xs: 56, sm: 64 },
+        }}
       >
-        <Toolbar
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            {onMenuClick && (
-              <IconButton
-                color="inherit"
-                edge="start"
-                onClick={onMenuClick}
-                sx={{ ml: 1 }}
-                aria-label="menu"
-              >
-                <MenuIcon />
-              </IconButton>
-            )}
-            <Typography variant="h6" noWrap component="div">
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          {onMenuClick && (
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={onMenuClick}
+              sx={{ 
+                ml: 1,
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                },
+              }}
+              aria-label="menu"
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+          
+          {/* Logo + Título */}
+          <Box 
+            sx={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: 1.5,
+              cursor: 'pointer',
+            }}
+            onClick={() => navigate("/home")}
+          >
+            <Logo size={40} variant="icon" />
+            <Typography 
+              variant="h6" 
+              noWrap 
+              component="div"
+              sx={{
+                fontWeight: 700,
+                fontSize: { xs: '1.1rem', sm: '1.25rem' },
+                letterSpacing: '0.5px',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              }}
+            >
               {title}
             </Typography>
           </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <NotificationBadge /> 
-
-            <IconButton
-              color="inherit"
-              onClick={handleMenuOpen}
-              aria-label="Menu do usuário"
-              aria-controls={menuOpen ? "user-menu" : undefined}
-              aria-haspopup="true"
-              aria-expanded={menuOpen ? "true" : undefined}
-            >
-              <Avatar
-                alt={user?.name || user?.email || "Usuário"}
-                src={avatarPreview || undefined}
-                sx={{ bgcolor: avatarPreview ? "transparent" : "primary.dark" }}
-              >
-                {!avatarPreview && firstName
-                  ? firstName.charAt(0).toUpperCase()
-                  : !avatarPreview && user?.name
-                  ? user.name.charAt(0).toUpperCase()
-                  : "U"}
-              </Avatar>
-            </IconButton>
-          </Box>
-        </Toolbar>
-      </AppBar>
-      <Menu
-        id="user-menu"
-        anchorEl={anchorEl}
-        open={menuOpen}
-        onClose={handleMenuClose}
-        onClick={handleMenuClose}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        PaperProps={{
-          elevation: 3,
-          sx: {
-            mt: 1.5,
-            minWidth: 220,
-            "& .MuiMenuItem-root": {
-              px: 2,
-              py: 1.5,
-            },
-          },
-        }}
-      >
-        <Box sx={{ px: 2, py: 1.5 }}>
-          <Typography variant="subtitle1" fontWeight="bold">
-            {user?.name || "Usuário"}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" noWrap>
-            {user?.email}
-          </Typography>
         </Box>
-        <Divider />
-        {/* <MenuItem onClick={handleProfile}>
-          <ListItemIcon>
-            <PersonIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Meu Perfil</ListItemText>
-        </MenuItem> */}
-        <Divider />
-        <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
-          <ListItemIcon>
-            <LogoutIcon fontSize="small" color="error" />
-          </ListItemIcon>
-          <ListItemText>Sair</ListItemText>
-        </MenuItem>
-      </Menu>
-    </>
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          {/* <IconButton 
+            color="inherit" 
+            aria-label="Notificações"
+            sx={{
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              },
+            }}
+          >
+            <Badge badgeContent={3} color="error">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton> */}
+
+          <IconButton
+            color="inherit"
+            onClick={handleMenuOpen}
+            aria-label="Menu do usuário"
+            aria-controls={open ? 'user-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              },
+            }}
+          >
+            <Avatar
+              alt={user?.email || "Usuário"}
+              src={avatarPreview || undefined}
+              sx={{ 
+                bgcolor: avatarPreview ? "transparent" : "rgba(255, 255, 255, 0.2)",
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+                width: 40,
+                height: 40,
+                fontWeight: 600,
+              }}
+            >
+              {!avatarPreview && getUserInitial()}
+            </Avatar>
+          </IconButton>
+
+          {/* Menu do Usuário */}
+          <Menu
+            id="user-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleMenuClose}
+            onClick={handleMenuClose}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            PaperProps={{
+              elevation: 8,
+              sx: {
+                overflow: 'visible',
+                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.15))',
+                mt: 1.5,
+                minWidth: 200,
+                '& .MuiAvatar-root': {
+                  width: 32,
+                  height: 32,
+                  ml: -0.5,
+                  mr: 1,
+                },
+                '&:before': {
+                  content: '""',
+                  display: 'block',
+                  position: 'absolute',
+                  top: 0,
+                  right: 14,
+                  width: 10,
+                  height: 10,
+                  bgcolor: 'background.paper',
+                  transform: 'translateY(-50%) rotate(45deg)',
+                  zIndex: 0,
+                },
+              },
+            }}
+          >
+            {/* Info do Usuário */}
+            <Box sx={{ px: 2, py: 1.5 }}>
+              <Typography variant="subtitle2" noWrap>
+                {firstName || "Usuário"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" noWrap>
+                {user?.email}
+              </Typography>
+            </Box>
+
+            <Divider />
+
+            {/* Opção de Logout */}
+            <MenuItem onClick={handleLogout}>
+              <ListItemIcon>
+                <LogoutIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Sair</ListItemText>
+            </MenuItem>
+          </Menu>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 };
 
