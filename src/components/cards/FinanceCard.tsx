@@ -17,7 +17,6 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { fetchFinanceData } from "../../services/financeService";
 
 export default function FinanceCard() {
   const theme = useTheme();
@@ -34,22 +33,22 @@ export default function FinanceCard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadFinanceData = async () => {
-      try {
-        const data = await fetchFinanceData();
-        setFinancialSummary(data.financialSummary);
-        setFinancialGraphData(data.financialGraphData);
-        setLoading(false);
-      } catch (err) {
-        setError("Erro ao carregar dados financeiros.");
-        setLoading(false);
-        console.error(err);
-      }
-    };
+  // useEffect(() => {
+  //   const loadFinanceData = async () => {
+  //     try {
+  //       const data = await fetchFinanceData();
+  //       setFinancialSummary(data.financialSummary);
+  //       setFinancialGraphData(data.financialGraphData);
+  //       setLoading(false);
+  //     } catch (err) {
+  //       setError("Erro ao carregar dados financeiros.");
+  //       setLoading(false);
+  //       console.error(err);
+  //     }
+  //   };
 
-    loadFinanceData();
-  }, []);
+  //   loadFinanceData();
+  // }, []);
 
   if (loading) {
     return (

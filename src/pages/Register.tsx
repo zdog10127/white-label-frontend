@@ -112,6 +112,7 @@ const Register: React.FC = () => {
         password: password,
         phone: phone.replace(/\D/g, ""),
         confirmPassword: confirmPassword,
+        role: ""
       });
 
       if (success) {

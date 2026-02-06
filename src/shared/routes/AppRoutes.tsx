@@ -49,7 +49,7 @@ export const AppRoutes = () => {
     // Verificar se tem permissão
     const hasPermission = (permission: string) => {
       if (!user) return false;
-      if (user.role?.toLowerCase() === 'administrator') return true; // Admin vê tudo
+      if (user.role?.toLowerCase() === 'administrator') return true;
       if (!user.permissions || user.permissions.length === 0) return false;
       return user.permissions.includes(permission);
     };
@@ -60,7 +60,7 @@ export const AppRoutes = () => {
         label: "Painel",
         path: "/home",
         icon: <PersonalVideo fontSize="large" />,
-        flexDirection: "column",
+        flexDirection: "column" as const, // FIX: adicionar 'as const'
       },
       {
         label: "Clientes",
@@ -172,8 +172,6 @@ export const AppRoutes = () => {
               </PermissionProtectedRoute>
             } 
           />
-          {/* <Route path="/perfil" element={<UserProfile />} /> */}
-          {/* <Route path="/alterar-credenciais" element={<AlterCredentials />} /> */}
           <Route path="/configuracao" element={<SettingsPage />} />
         </Route>
       </Route>
